@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "4T+bp5r6LekvSQ8J1RvWM0yfYTfLtj2Pu9zvgBWaqKA=",
+  "Source": "MTA.API",
+  "BasePath": "_content/MTA.API",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

@@ -1,0 +1,15 @@
+C:\Users\essan\MasterTrackAgenda\src\MTA.Application\bin\Debug\net8.0\MTA.Application.deps.json
+C:\Users\essan\MasterTrackAgenda\src\MTA.Application\bin\Debug\net8.0\MTA.Application.dll
+C:\Users\essan\MasterTrackAgenda\src\MTA.Application\bin\Debug\net8.0\MTA.Application.pdb
+C:\Users\essan\MasterTrackAgenda\src\MTA.Application\bin\Debug\net8.0\MTA.Domain.dll
+C:\Users\essan\MasterTrackAgenda\src\MTA.Application\bin\Debug\net8.0\MTA.Domain.pdb
+C:\Users\essan\MasterTrackAgenda\src\MTA.Application\obj\Debug\net8.0\MTA.Application.csproj.AssemblyReference.cache
+C:\Users\essan\MasterTrackAgenda\src\MTA.Application\obj\Debug\net8.0\MTA.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\essan\MasterTrackAgenda\src\MTA.Application\obj\Debug\net8.0\MTA.Application.AssemblyInfoInputs.cache
+C:\Users\essan\MasterTrackAgenda\src\MTA.Application\obj\Debug\net8.0\MTA.Application.AssemblyInfo.cs
+C:\Users\essan\MasterTrackAgenda\src\MTA.Application\obj\Debug\net8.0\MTA.Application.csproj.CoreCompileInputs.cache
+C:\Users\essan\MasterTrackAgenda\src\MTA.Application\obj\Debug\net8.0\MTA.Application.csproj.CopyComplete
+C:\Users\essan\MasterTrackAgenda\src\MTA.Application\obj\Debug\net8.0\MTA.Application.dll
+C:\Users\essan\MasterTrackAgenda\src\MTA.Application\obj\Debug\net8.0\refint\MTA.Application.dll
+C:\Users\essan\MasterTrackAgenda\src\MTA.Application\obj\Debug\net8.0\MTA.Application.pdb
+C:\Users\essan\MasterTrackAgenda\src\MTA.Application\obj\Debug\net8.0\ref\MTA.Application.dll
