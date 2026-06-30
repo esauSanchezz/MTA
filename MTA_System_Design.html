@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MasterTrackAgenda (MTA) — System Design</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue: #3b82f6; --blue-light: #eff6ff; --blue-mid: #bfdbfe;
+    --green: #22c55e; --green-light: #dcfce7; --green-dark: #15803d;
+    --yellow-light: #fef9c3; --yellow-dark: #a16207;
+    --pink-light: #fce7f3; --pink-dark: #be185d;
+    --purple-light: #f3e8ff; --purple-dark: #7c3aed;
+    --gray-50: #f8fafc; --gray-100: #f1f5f9; --gray-200: #e2e8f0;
+    --gray-400: #94a3b8; --gray-600: #475569; --gray-800: #1e293b;
+    --text: #1a1a1a; --text-muted: #64748b; --border: #e5e7eb;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f8fafc;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* HEADER */
+  .hero {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    color: white;
+    padding: 48px 40px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 70% 50%, rgba(59,130,246,.15) 0%, transparent 60%);
+  }
+  .hero-inner { position: relative; max-width: 900px; margin: 0 auto; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(59,130,246,.2); border: 1px solid rgba(59,130,246,.4);
+    color: #93c5fd; padding: 4px 12px; border-radius: 999px;
+    font-size: 12px; font-weight: 600; letter-spacing: .05em;
+    text-transform: uppercase; margin-bottom: 16px;
+  }
+  .hero h1 { font-size: 36px; font-weight: 800; margin-bottom: 8px; letter-spacing: -.02em; }
+  .hero-sub { font-size: 16px; color: #94a3b8; margin-bottom: 28px; }
+  .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .hero-tag {
+    background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15);
+    color: #cbd5e1; padding: 4px 12px; border-radius: 6px; font-size: 12px;
+  }
+
+  /* LAYOUT */
+  .container { max-width: 960px; margin: 0 auto; padding: 40px 24px; }
+  .section { margin-bottom: 48px; }
+  .section-title {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .08em; color: var(--text-muted);
+    margin-bottom: 16px; padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-heading { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+  .section-desc { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.7; }
+
+  /* NAV TABS */
+  .nav {
+    display: flex; gap: 2px; background: var(--gray-100);
+    padding: 4px; border-radius: 10px; margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+  .nav-btn {
+    flex: 1; min-width: 120px; padding: 8px 16px; border: none; background: transparent;
+    border-radius: 7px; font-size: 13px; font-weight: 500; cursor: pointer;
+    color: var(--text-muted); transition: all .15s;
+  }
+  .nav-btn.active { background: white; color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,.1); }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* PROGRESS */
+  .progress-card {
+    background: white; border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px; margin-bottom: 20px;
+  }
+  .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .progress-title { font-size: 15px; font-weight: 600; }
+  .progress-pct { font-size: 15px; font-weight: 700; color: var(--green-dark); }
+  .progress-bar { background: var(--gray-200); border-radius: 999px; height: 8px; overflow: hidden; margin-bottom: 16px; }
+  .progress-fill { height: 100%; border-radius: 999px; background: var(--green); }
+  .progress-items { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .p-item { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .p-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  /* ER DIAGRAM */
+  .er-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+  @media (max-width: 640px) { .er-grid { grid-template-columns: 1fr 1fr; } }
+  .er-card {
+    background: white; border: 1.5px solid var(--border);
+    border-radius: 10px; overflow: hidden; cursor: pointer;
+    transition: all .15s;
+  }
+  .er-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.08); transform: translateY(-1px); }
+  .er-card.selected { border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-mid); }
+  .er-head {
+    padding: 8px 12px; font-size: 12px; font-weight: 700;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .er-body { padding: 8px 12px 10px; }
+  .er-field {
+    font-size: 11px; padding: 2px 0; display: flex; gap: 6px;
+    color: var(--text-muted); border-bottom: 1px solid var(--gray-100);
+  }
+  .er-field:last-child { border-bottom: none; }
+  .er-field .fn { color: var(--text); font-weight: 500; }
+  .tag-pk { color: #f59e0b; font-size: 10px; font-weight: 700; }
+  .tag-fk { color: var(--blue); font-size: 10px; font-weight: 700; }
+
+  .detail-card {
+    background: var(--blue-light); border: 1.5px solid var(--blue-mid);
+    border-radius: 12px; padding: 20px; margin-top: 4px;
+    animation: fadeIn .2s ease;
+  }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
+  .detail-card h3 { font-size: 16px; font-weight: 700; color: #1d4ed8; margin-bottom: 8px; }
+  .detail-card p { font-size: 13px; color: #1e3a5f; line-height: 1.7; }
+  .detail-card ul { font-size: 13px; color: #1e3a5f; line-height: 1.8; margin: 8px 0 0 18px; }
+
+  /* FLOWS */
+  .flow-group { margin-bottom: 32px; }
+  .flow-group-title {
+    font-size: 14px; font-weight: 700; margin-bottom: 16px;
+    padding: 10px 16px; background: white;
+    border: 1px solid var(--border); border-radius: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .flow-steps { display: flex; flex-direction: column; gap: 0; }
+  .flow-step { display: flex; gap: 16px; }
+  .flow-left { display: flex; flex-direction: column; align-items: center; }
+  .step-circle {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; flex-shrink: 0;
+  }
+  .step-line { width: 2px; flex: 1; min-height: 20px; background: var(--gray-200); margin: 4px 0; }
+  .flow-content {
+    background: white; border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 16px; margin-bottom: 8px; flex: 1;
+  }
+  .flow-content h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .flow-content p { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+  .flow-content code {
+    background: var(--gray-100); padding: 1px 6px; border-radius: 4px;
+    font-size: 12px; font-family: monospace; color: var(--purple-dark);
+  }
+
+  /* ARCHITECTURE */
+  .arch-layers { display: flex; flex-direction: column; gap: 10px; }
+  .arch-layer {
+    background: white; border: 1.5px solid var(--border);
+    border-radius: 12px; overflow: hidden;
+  }
+  .arch-layer-head {
+    padding: 12px 16px; font-size: 13px; font-weight: 700;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .arch-layer-body { padding: 12px 16px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .arch-item {
+    padding: 5px 12px; border-radius: 6px; font-size: 12px;
+    font-weight: 500; border: 1px solid transparent;
+  }
+  .arch-status { font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 600; }
+
+  /* STACK */
+  .stack-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  @media (max-width: 600px) { .stack-grid { grid-template-columns: 1fr; } }
+  .stack-card {
+    background: white; border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px;
+  }
+  .stack-card h4 { font-size: 13px; font-weight: 700; margin-bottom: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; }
+  .stack-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--gray-100); font-size: 13px; }
+  .stack-row:last-child { border-bottom: none; }
+  .stack-tech { font-weight: 500; }
+  .stack-note { color: var(--text-muted); font-size: 12px; }
+
+  /* ROADMAP */
+  .roadmap { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  @media (max-width: 640px) { .roadmap { grid-template-columns: repeat(2, 1fr); } }
+  .month-card { border-radius: 12px; padding: 16px; border: 1.5px solid transparent; }
+  .month-card h4 { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
+  .month-card .month-sub { font-size: 11px; margin-bottom: 12px; opacity: .7; }
+  .month-item { font-size: 12px; padding: 3px 0; display: flex; gap: 6px; align-items: flex-start; }
+  .month-dot { width: 5px; height: 5px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; background: currentColor; }
+
+  /* MULTI-TENANT */
+  .mt-diagram {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px; margin-bottom: 20px; align-items: center;
+  }
+  .mt-card {
+    background: white; border: 1.5px solid var(--border);
+    border-radius: 10px; padding: 14px; text-align: center;
+  }
+  .mt-card h4 { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+  .mt-card p { font-size: 11px; color: var(--text-muted); }
+  .mt-arrow { text-align: center; font-size: 24px; color: var(--gray-400); }
+  .mt-db {
+    background: var(--gray-800); color: white;
+    border-radius: 10px; padding: 16px; text-align: center;
+    grid-column: span 3; margin-top: 4px;
+  }
+  .mt-db h4 { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+  .mt-db p { font-size: 12px; color: var(--gray-400); }
+
+  /* DURABLE FUNCTIONS */
+  .df-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 600px) { .df-grid { grid-template-columns: 1fr; } }
+  .df-card {
+    background: white; border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px;
+  }
+  .df-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+  .df-card p { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
+  .df-steps { display: flex; flex-direction: column; gap: 4px; }
+  .df-step { font-size: 12px; padding: 4px 8px; background: var(--gray-100); border-radius: 5px; display: flex; gap: 6px; }
+  .df-step span { color: var(--text-muted); }
+
+  /* FOOTER */
+  .footer {
+    background: var(--gray-800); color: var(--gray-400);
+    text-align: center; padding: 24px;
+    font-size: 12px; margin-top: 48px;
+  }
+  .footer strong { color: white; }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">📋 System Design Document</div>
+    <h1>MasterTrackAgenda</h1>
+    <div class="hero-sub">Smart Business Management Platform · Salones · Talleres · Eventos</div>
+    <div class="hero-tags">
+      <span class="hero-tag">ASP.NET Core 8</span>
+      <span class="hero-tag">PostgreSQL</span>
+      <span class="hero-tag">Entity Framework Core</span>
+      <span class="hero-tag">React</span>
+      <span class="hero-tag">Azure Durable Functions</span>
+      <span class="hero-tag">Stripe</span>
+      <span class="hero-tag">Multi-Tenant SaaS</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- NAV -->
+  <nav class="nav">
+    <button class="nav-btn active" onclick="showTab('overview')">📊 Resumen</button>
+    <button class="nav-btn" onclick="showTab('database')">🗄️ Base de Datos</button>
+    <button class="nav-btn" onclick="showTab('flows')">🔄 Flujos</button>
+    <button class="nav-btn" onclick="showTab('architecture')">🏗️ Arquitectura</button>
+    <button class="nav-btn" onclick="showTab('durable')">⚡ Durable Functions</button>
+    <button class="nav-btn" onclick="showTab('roadmap')">🗓️ Roadmap</button>
+  </nav>
+
+  <!-- ==================== OVERVIEW ==================== -->
+  <div class="tab-panel active" id="tab-overview">
+
+    <div class="section">
+      <div class="section-title">¿Qué es MTA?</div>
+      <div class="section-heading">Una plataforma que se adapta a tu negocio</div>
+      <div class="section-desc">
+        MasterTrackAgenda es un sistema de gestión inteligente multi-tenant. Un solo backend sirve a distintos tipos de negocio —
+        salón de uñas, taller mecánico, salón de fiestas — con agenda, trabajadores, inventario, ventas, POS y reportes integrados.
+        Cada negocio ve únicamente sus propios datos.
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Progreso actual</div>
+      <div class="progress-card">
+        <div class="progress-header">
+          <span class="progress-title">Mes 1 — Backend Core</span>
+          <span class="progress-pct">40% completado</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:40%"></div></div>
+        <div class="progress-items">
+          <div class="p-item"><div class="p-dot" style="background:#22c55e"></div>Estructura solución .NET</div>
+          <div class="p-item"><div class="p-dot" style="background:#22c55e"></div>Entidades de dominio (13 tablas)</div>
+          <div class="p-item"><div class="p-dot" style="background:#22c55e"></div>DbContext + Fluent API</div>
+          <div class="p-item"><div class="p-dot" style="background:#22c55e"></div>Multi-tenant + JWT Auth</div>
+          <div class="p-item"><div class="p-dot" style="background:#22c55e"></div>PostgreSQL en Docker</div>
+          <div class="p-item"><div class="p-dot" style="background:#f59e0b"></div>Migración inicial (pendiente)</div>
+          <div class="p-item"><div class="p-dot" style="background:#f59e0b"></div>CRUD Empleados / Agenda</div>
+          <div class="p-item"><div class="p-dot" style="background:#94a3b8"></div>Deploy Azure App Service</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Tipos de negocio soportados</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+        <div style="background:white;border:1.5px solid var(--border);border-radius:12px;padding:20px;text-align:center;">
+          <div style="font-size:32px;margin-bottom:8px;">💅</div>
+          <div style="font-weight:700;margin-bottom:6px;">Salón de Uñas</div>
+          <div style="font-size:12px;color:var(--text-muted)">Citas por servicio · Estilistas · Manicure, Gel, Pedicure · Productos</div>
+        </div>
+        <div style="background:white;border:1.5px solid var(--border);border-radius:12px;padding:20px;text-align:center;">
+          <div style="font-size:32px;margin-bottom:8px;">🔧</div>
+          <div style="font-weight:700;margin-bottom:6px;">Taller Mecánico</div>
+          <div style="font-size:12px;color:var(--text-muted)">Citas por vehículo · Mecánicos · Diagnóstico, Reparación · Refacciones</div>
+        </div>
+        <div style="background:white;border:1.5px solid var(--border);border-radius:12px;padding:20px;text-align:center;">
+          <div style="font-size:32px;margin-bottom:8px;">🎉</div>
+          <div style="font-weight:700;margin-bottom:6px;">Salón de Fiestas</div>
+          <div style="font-size:12px;color:var(--text-muted)">Eventos por fecha · Animadores · Paquetes · Decoraciones</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Módulos del sistema</div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
+        <div style="background:var(--blue-light);border:1px solid var(--blue-mid);border-radius:10px;padding:14px;">
+          <div style="font-weight:700;margin-bottom:4px;">📅 Agenda Inteligente</div>
+          <div style="font-size:13px;color:#1e3a5f;">Citas con clientes y actividades internas. Vista por empleado, día y semana. Estados automáticos.</div>
+        </div>
+        <div style="background:var(--green-light);border:1px solid #86efac;border-radius:10px;padding:14px;">
+          <div style="font-weight:700;margin-bottom:4px;">👷 Gestión de Personal</div>
+          <div style="font-size:13px;color:#14532d;">Registro de empleados, horarios semanales, comisiones y acceso por roles.</div>
+        </div>
+        <div style="background:var(--yellow-light);border:1px solid #fde047;border-radius:10px;padding:14px;">
+          <div style="font-weight:700;margin-bottom:4px;">💳 POS y Ventas</div>
+          <div style="font-size:13px;color:#78350f;">Cobro por efectivo, tarjeta (Stripe Terminal) o transferencia. Tickets y recibos PDF.</div>
+        </div>
+        <div style="background:var(--pink-light);border:1px solid #f9a8d4;border-radius:10px;padding:14px;">
+          <div style="font-weight:700;margin-bottom:4px;">📦 Inventario</div>
+          <div style="font-size:13px;color:#831843;">Control de stock, alertas automáticas de mínimo, compras a proveedores.</div>
+        </div>
+        <div style="background:var(--purple-light);border:1px solid #d8b4fe;border-radius:10px;padding:14px;">
+          <div style="font-weight:700;margin-bottom:4px;">💰 Cortes y Reportes</div>
+          <div style="font-size:13px;color:#4c1d95;">Corte de caja diario automático, ventas por período, comisiones, dashboard financiero.</div>
+        </div>
+        <div style="background:var(--gray-100);border:1px solid var(--border);border-radius:10px;padding:14px;">
+          <div style="font-weight:700;margin-bottom:4px;">🧾 Recibos Digitales</div>
+          <div style="font-size:13px;color:var(--text-muted);">PDF generado por cada venta, numeración consecutiva, envío automático por email.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== DATABASE ==================== -->
+  <div class="tab-panel" id="tab-database">
+    <div class="section">
+      <div class="section-title">Modelo de Datos</div>
+      <div class="section-heading">13 tablas · 1 base de datos · N negocios</div>
+      <div class="section-desc">Haz click en cualquier tabla para ver su propósito y relaciones.</div>
+
+      <div class="er-grid">
+        <div class="er-card" onclick="showErDetail('tenant')">
+          <div class="er-head" style="background:#dbeafe;color:#1d4ed8;">🏢 Tenants</div>
+          <div class="er-body">
+            <div class="er-field"><span class="tag-pk">PK</span><span class="fn">Id</span><span>uuid</span></div>
+            <div class="er-field"><span class="fn">Name</span><span>varchar(100)</span></div>
+            <div class="er-field"><span class="fn">Slug</span><span>varchar unique</span></div>
+            <div class="er-field"><span class="fn">BusinessType</span><span>int enum</span></div>
+            <div class="er-field"><span class="fn">OpenTime/CloseTime</span><span>time</span></div>
+          </div>
+        </div>
+
+        <div class="er-card" onclick="showErDetail('user')">
+          <div class="er-head" style="background:#dbeafe;color:#1d4ed8;">👤 Users (Identity)</div>
+          <div class="er-body">
+            <div class="er-field"><span class="tag-pk">PK</span><span class="fn">Id</span><span>uuid</span></div>
+            <div class="er-field"><span class="tag-fk">FK</span><span class="fn">TenantId</span></div>
+            <div class="er-field"><span class="fn">FullName</span><span>varchar</span></div>
+            <div class="er-field"><span class="fn">Email</span><span>unique</span></div>
+            <div class="er-field"><span class="fn">PasswordHash</span><span>varchar</span></div>
+          </div>
+        </div>
+
+        <div class="er-card" onclick="showErDetail('employee')">
+          <div class="er-head" style="background:#dbeafe;color:#1d4ed8;">👷 Employees</div>
+          <div class="er-body">
+            <div class="er-field"><span class="tag-pk">PK</span><span class="fn">Id</span><span>uuid</span></div>
+            <div class="er-field"><span class="tag-fk">FK</span><span class="fn">TenantId</span></div>
+            <div class="er-field"><span class="tag-fk">FK?</span><span class="fn">UserId</span><span>nullable</span></div>
+            <div class="er-field"><span class="fn">Position</span><span>varchar</span></div>
+            <div class="er-field"><span class="fn">CommissionRate</span><span>decimal</span></div>
+          </div>
+        </div>
+
+        <div class="er-card" onclick="showErDetail('workschedule')">
+          <div class="er-head" style="background:#dcfce7;color:#15803d;">📅 WorkSchedules</div>
+          <div class="er-body">
+            <div class="er-field"><span class="tag-pk">PK</span><span class="fn">Id</span><span>uuid</span></div>
+            <div class="er-field"><span class="tag-fk">FK</span><span class="fn">EmployeeId</span></div>
+            <div class="er-field"><span class="fn">DayOfWeek</span><span>int (0-6)</span></div>
+            <div class="er-field"><span class="fn">StartTime/EndTime</span><span>time</span></div>
+            <div class="er-field"><span class="fn">IsWorkDay</span><span>bool</span></div>
+          </div>
+        </div>
+
+        <div class="er-card" onclick="showErDetail('scheduletask')">
+          <div class="er-head" style="background:#dcfce7;color:#15803d;">📋 ScheduleTasks</div>
+          <div class="er-body">
+            <div class="er-field"><span class="tag-pk">PK</span><span class="fn">Id</span><span>uuid</span></div>
+            <div class="er-field"><span class="tag-fk">FK</span><span class="fn">TenantId, EmployeeId</span></div>
+            <div class="er-field"><span class="fn">Type</span><span>Appointment/Activity</span></div>
+            <div class="er-field"><span class="fn">Status</span><span>6 estados</span></div>
+            <div class="er-field"><span class="fn">StartTime/EndTime</span><span>datetime</span></div>
+          </div>
+        </div>
+
+        <div class="er-card" onclick="showErDetail('service')">
+          <div class="er-head" style="background:#dcfce7;color:#15803d;">💅 Services</div>
+          <div class="er-body">
+            <div class="er-field"><span class="tag-pk">PK</span><span class="fn">Id</span><span>uuid</span></div>
+            <div class="er-field"><span class="tag-fk">FK</span><span class="fn">TenantId</span></div>
+            <div class="er-field"><span class="fn">Name, Category</span><span>varchar</span></div>
+            <div class="er-field"><span class="fn">DurationMinutes</span><span>int</span></div>
+            <div class="er-field"><span class="fn">Price</span><span>decimal</span></div>
+          </div>
+        </div>
+
+        <div class="er-card" onclick="showErDetail('product')">
+          <div class="er-head" style="background:#fce7f3;color:#be185d;">📦 Products</div>
+          <div class="er-body">
+            <div class="er-field"><span class="tag-pk">PK</span><span class="fn">Id</span><span>uuid</span></div>
+            <div class="er-field"><span class="tag-fk">FK</span><span class="fn">TenantId</span></div>
+            <div class="er-field"><span class="fn">SKU, Name</span><span>varchar</span></div>
+            <div class="er-field"><span class="fn">Stock / MinStock</span><span>int</span></div>
+            <div class="er-field"><span class="fn">CostPrice / SalePrice</span><span>decimal</span></div>
+          </div>
+        </div>
+
+        <div class="er-card" onclick="showErDetail('sale')">
+          <div class="er-head" style="background:#fef9c3;color:#a16207;">💳 Sales + SaleItems</div>
+          <div class="er-body">
+            <div class="er-field"><span class="tag-pk">PK</span><span class="fn">Id</span><span>uuid</span></div>
+            <div class="er-field"><span class="tag-fk">FK</span><span class="fn">TenantId, EmployeeId</span></div>
+            <div class="er-field"><span class="fn">Total, Discount</span><span>decimal</span></div>
+            <div class="er-field"><span class="fn">PaymentMethod</span><span>enum</span></div>
+            <div class="er-field"><span class="fn">→ SaleItems (1:N)</span></div>
+          </div>
+        </div>
+
+        <div class="er-card" onclick="showErDetail('receipt')">
+          <div class="er-head" style="background:#fef9c3;color:#a16207;">🧾 Receipts</div>
+          <div class="er-body">
+            <div class="er-field"><span class="tag-pk">PK</span><span class="fn">Id</span><span>uuid</span></div>
+            <div class="er-field"><span class="tag-fk">FK</span><span class="fn">SaleId (1:1)</span></div>
+            <div class="er-field"><span class="fn">ReceiptNumber</span><span>MTA-2026-00001</span></div>
+            <div class="er-field"><span class="fn">PdfUrl</span><span>Azure Blob</span></div>
+            <div class="er-field"><span class="fn">EmailSent</span><span>bool</span></div>
+          </div>
+        </div>
+
+        <div class="er-card" onclick="showErDetail('supplier')">
+          <div class="er-head" style="background:#fce7f3;color:#be185d;">🏭 Suppliers</div>
+          <div class="er-body">
+            <div class="er-field"><span class="tag-pk">PK</span><span class="fn">Id</span><span>uuid</span></div>
+            <div class="er-field"><span class="tag-fk">FK</span><span class="fn">TenantId</span></div>
+            <div class="er-field"><span class="fn">Name, ContactName</span><span>varchar</span></div>
+            <div class="er-field"><span class="fn">Phone, Email</span><span>varchar</span></div>
+          </div>
+        </div>
+
+        <div class="er-card" onclick="showErDetail('purchase')">
+          <div class="er-head" style="background:#fce7f3;color:#be185d;">🛒 PurchaseOrders</div>
+          <div class="er-body">
+            <div class="er-field"><span class="tag-pk">PK</span><span class="fn">Id</span><span>uuid</span></div>
+            <div class="er-field"><span class="tag-fk">FK</span><span class="fn">TenantId, SupplierId</span></div>
+            <div class="er-field"><span class="fn">OrderDate, Status</span></div>
+            <div class="er-field"><span class="fn">Total</span><span>decimal</span></div>
+            <div class="er-field"><span class="fn">→ PurchaseItems (1:N)</span></div>
+          </div>
+        </div>
+
+        <div class="er-card" onclick="showErDetail('cashcut')">
+          <div class="er-head" style="background:#f3e8ff;color:#7c3aed;">💰 CashRegisterCuts</div>
+          <div class="er-body">
+            <div class="er-field"><span class="tag-pk">PK</span><span class="fn">Id</span><span>uuid</span></div>
+            <div class="er-field"><span class="tag-fk">FK</span><span class="fn">TenantId</span></div>
+            <div class="er-field"><span class="fn">CutDate</span><span>date</span></div>
+            <div class="er-field"><span class="fn">TotalSales / TotalExpenses</span></div>
+            <div class="er-field"><span class="fn">PdfReportUrl</span><span>Azure Blob</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="er-detail" style="display:none" class="detail-card">
+        <h3 id="er-detail-title"></h3>
+        <p id="er-detail-body"></p>
+        <ul id="er-detail-list"></ul>
+      </div>
+    </div>
+
+    <!-- MULTI-TENANCY -->
+    <div class="section">
+      <div class="section-title">Multi-Tenancy — Cómo funciona</div>
+      <div class="mt-diagram">
+        <div class="mt-card" style="border-color:#86efac;">
+          <div style="font-size:24px;margin-bottom:6px;">💅</div>
+          <h4>Salón Glamour</h4>
+          <p>TenantId: abc-111<br>Login → JWT con tenantId</p>
+        </div>
+        <div class="mt-card" style="border-color:#fde047;">
+          <div style="font-size:24px;margin-bottom:6px;">🔧</div>
+          <h4>Taller El Güero</h4>
+          <p>TenantId: def-222<br>Login → JWT con tenantId</p>
+        </div>
+        <div class="mt-card" style="border-color:#d8b4fe;">
+          <div style="font-size:24px;margin-bottom:6px;">🎉</div>
+          <h4>Salon Alegría</h4>
+          <p>TenantId: ghi-333<br>Login → JWT con tenantId</p>
+        </div>
+        <div class="mt-db">
+          <h4>🗄️ Una sola base de datos PostgreSQL</h4>
+          <p>EF Core aplica <strong>WHERE TenantId = '...'</strong> automáticamente en cada query via Global Query Filters.<br>
+          Cada negocio solo ve sus propios datos. Sin código extra en cada controller.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== FLOWS ==================== -->
+  <div class="tab-panel" id="tab-flows">
+
+    <div class="flow-group">
+      <div class="flow-group-title">📅 Flujo 1: Agendar y atender una cita</div>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-circle" style="background:#dbeafe;color:#1d4ed8;">1</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="flow-content">
+            <h4>Cliente solicita cita</h4>
+            <p>Se crea en <code>ScheduleTasks</code> con <code>Type=Appointment</code>, <code>Status=Scheduled</code>. Se asigna al empleado disponible según su <code>WorkSchedule</code>.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-circle" style="background:#dbeafe;color:#1d4ed8;">2</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="flow-content">
+            <h4>Recordatorio automático (Durable Function)</h4>
+            <p>24h antes → SMS/email al cliente → <code>Status=Confirmed</code>. Si no confirma 15 min después → alerta al empleado.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-circle" style="background:#dcfce7;color:#15803d;">3</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="flow-content">
+            <h4>Se atiende la cita</h4>
+            <p>Empleado cambia a <code>Status=InProgress</code> → termina → <code>Status=Completed</code>.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-circle" style="background:#fef9c3;color:#a16207;">4</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="flow-content">
+            <h4>Cobro en POS</h4>
+            <p>Se crea un <code>Sale</code> vinculado al ScheduleTask, con <code>SaleItems</code> (servicio + productos adicionales). Se elige método de pago: efectivo, tarjeta (Stripe Terminal) o transferencia.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-circle" style="background:#f3e8ff;color:#7c3aed;">5</div>
+          </div>
+          <div class="flow-content">
+            <h4>Recibo generado automáticamente</h4>
+            <p>Se crea un <code>Receipt</code> con número consecutivo <strong>MTA-2026-00001</strong>, PDF en Azure Blob Storage, y se envía por email al cliente.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-group">
+      <div class="flow-group-title">📦 Flujo 2: Control de inventario</div>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-circle" style="background:#fce7f3;color:#be185d;">1</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="flow-content">
+            <h4>Compra a proveedor</h4>
+            <p>Se crea una <code>PurchaseOrder</code>. Al marcarla <code>Status=Received</code>, el sistema suma automáticamente el stock en cada <code>Product</code>.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-circle" style="background:#fce7f3;color:#be185d;">2</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="flow-content">
+            <h4>Venta descuenta stock</h4>
+            <p>Al procesar una <code>Sale</code> con productos, el sistema resta el <code>Stock</code>. Si <code>Stock &lt;= MinStock</code> → Durable Function envía alerta al admin.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-circle" style="background:#fce7f3;color:#be185d;">3</div>
+          </div>
+          <div class="flow-content">
+            <h4>Re-order automático</h4>
+            <p>Si tras 24h no se ha creado una orden de compra, Durable Function re-notifica. Máximo 3 veces.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-group">
+      <div class="flow-group-title">💰 Flujo 3: Corte de caja automático</div>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-circle" style="background:#f3e8ff;color:#7c3aed;">1</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="flow-content">
+            <h4>Trigger automático (11:55pm)</h4>
+            <p>Durable Function se activa cada noche por tenant.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-circle" style="background:#f3e8ff;color:#7c3aed;">2</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="flow-content">
+            <h4>Agrega ventas del día</h4>
+            <p>Suma todas las <code>Sales</code> del día por método de pago. Resta gastos y compras.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-circle" style="background:#f3e8ff;color:#7c3aed;">3</div>
+          </div>
+          <div class="flow-content">
+            <h4>Genera PDF y notifica al Owner</h4>
+            <p>Crea el registro en <code>CashRegisterCuts</code>, genera PDF en Azure Blob Storage y lo envía por email al dueño del negocio.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-group">
+      <div class="flow-group-title">🏢 Flujo 4: Onboarding de nuevo negocio</div>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-circle" style="background:#dbeafe;color:#1d4ed8;">1</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="flow-content">
+            <h4>Registro del negocio</h4>
+            <p>Se crea el <code>Tenant</code> con tipo de negocio, nombre y slug único.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-circle" style="background:#dbeafe;color:#1d4ed8;">2</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="flow-content">
+            <h4>Carga catálogo default</h4>
+            <p>Según el <code>BusinessType</code>, Durable Function carga servicios predefinidos, categorías de productos y configuración base.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-circle" style="background:#dbeafe;color:#1d4ed8;">3</div>
+          </div>
+          <div class="flow-content">
+            <h4>Bienvenida + seguimiento</h4>
+            <p>Crea el usuario Owner, envía email de bienvenida. Si no inicia sesión en 3 días → recordatorio automático.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== ARCHITECTURE ==================== -->
+  <div class="tab-panel" id="tab-architecture">
+    <div class="section">
+      <div class="section-title">Estructura de la solución .NET</div>
+      <div class="arch-layers">
+        <div class="arch-layer">
+          <div class="arch-layer-head" style="background:#dcfce7;">
+            <span>✅ MTA.Domain — Entidades y reglas de negocio</span>
+            <span class="arch-status" style="background:#bbf7d0;color:#15803d;">Hecho</span>
+          </div>
+          <div class="arch-layer-body">
+            <span class="arch-item" style="background:#dcfce7;color:#15803d;border-color:#86efac;">BaseEntity</span>
+            <span class="arch-item" style="background:#dcfce7;color:#15803d;border-color:#86efac;">Enums</span>
+            <span class="arch-item" style="background:#dcfce7;color:#15803d;border-color:#86efac;">Tenant</span>
+            <span class="arch-item" style="background:#dcfce7;color:#15803d;border-color:#86efac;">AppUser</span>
+            <span class="arch-item" style="background:#dcfce7;color:#15803d;border-color:#86efac;">Employee</span>
+            <span class="arch-item" style="background:#dcfce7;color:#15803d;border-color:#86efac;">WorkSchedule</span>
+            <span class="arch-item" style="background:#dcfce7;color:#15803d;border-color:#86efac;">ScheduleTask</span>
+            <span class="arch-item" style="background:#dcfce7;color:#15803d;border-color:#86efac;">Service / Product</span>
+            <span class="arch-item" style="background:#dcfce7;color:#15803d;border-color:#86efac;">Sale / SaleItem</span>
+            <span class="arch-item" style="background:#dcfce7;color:#15803d;border-color:#86efac;">Receipt</span>
+            <span class="arch-item" style="background:#dcfce7;color:#15803d;border-color:#86efac;">Supplier / PurchaseOrder</span>
+            <span class="arch-item" style="background:#dcfce7;color:#15803d;border-color:#86efac;">CashRegisterCut</span>
+          </div>
+        </div>
+
+        <div class="arch-layer">
+          <div class="arch-layer-head" style="background:#dcfce7;">
+            <span>✅ MTA.Infrastructure — Base de datos y servicios externos</span>
+            <span class="arch-status" style="background:#bbf7d0;color:#15803d;">Hecho</span>
+          </div>
+          <div class="arch-layer-body">
+            <span class="arch-item" style="background:#dcfce7;color:#15803d;border-color:#86efac;">AppDbContext (EF Core)</span>
+            <span class="arch-item" style="background:#dcfce7;color:#15803d;border-color:#86efac;">Fluent API Configurations</span>
+            <span class="arch-item" style="background:#dcfce7;color:#15803d;border-color:#86efac;">Global Query Filters</span>
+            <span class="arch-item" style="background:#dcfce7;color:#15803d;border-color:#86efac;">ITenantProvider</span>
+            <span class="arch-item" style="background:#dcfce7;color:#15803d;border-color:#86efac;">HttpTenantProvider</span>
+            <span class="arch-item" style="background:#fef9c3;color:#a16207;border-color:#fde047;">Migrations (pendiente)</span>
+            <span class="arch-item" style="background:#f1f5f9;color:#64748b;border-color:#e2e8f0;">Azure Blob Service</span>
+            <span class="arch-item" style="background:#f1f5f9;color:#64748b;border-color:#e2e8f0;">Stripe Service</span>
+          </div>
+        </div>
+
+        <div class="arch-layer">
+          <div class="arch-layer-head" style="background:#fef9c3;">
+            <span>🔄 MTA.Application — Casos de uso (CQRS + MediatR)</span>
+            <span class="arch-status" style="background:#fef08a;color:#a16207;">En progreso</span>
+          </div>
+          <div class="arch-layer-body">
+            <span class="arch-item" style="background:#fef9c3;color:#a16207;border-color:#fde047;">Commands/Employees</span>
+            <span class="arch-item" style="background:#fef9c3;color:#a16207;border-color:#fde047;">Queries/ScheduleTasks</span>
+            <span class="arch-item" style="background:#f1f5f9;color:#64748b;border-color:#e2e8f0;">Commands/Sales</span>
+            <span class="arch-item" style="background:#f1f5f9;color:#64748b;border-color:#e2e8f0;">Commands/Inventory</span>
+            <span class="arch-item" style="background:#f1f5f9;color:#64748b;border-color:#e2e8f0;">Queries/Reports</span>
+          </div>
+        </div>
+
+        <div class="arch-layer">
+          <div class="arch-layer-head" style="background:#dcfce7;">
+            <span>✅ MTA.API — Web API + Auth</span>
+            <span class="arch-status" style="background:#bbf7d0;color:#15803d;">Parcial</span>
+          </div>
+          <div class="arch-layer-body">
+            <span class="arch-item" style="background:#dcfce7;color:#15803d;border-color:#86efac;">Program.cs</span>
+            <span class="arch-item" style="background:#dcfce7;color:#15803d;border-color:#86efac;">JWT Auth</span>
+            <span class="arch-item" style="background:#dcfce7;color:#15803d;border-color:#86efac;">Swagger</span>
+            <span class="arch-item" style="background:#dcfce7;color:#15803d;border-color:#86efac;">AuthController</span>
+            <span class="arch-item" style="background:#fef9c3;color:#a16207;border-color:#fde047;">EmployeesController</span>
+            <span class="arch-item" style="background:#f1f5f9;color:#64748b;border-color:#e2e8f0;">ScheduleController</span>
+            <span class="arch-item" style="background:#f1f5f9;color:#64748b;border-color:#e2e8f0;">SalesController</span>
+            <span class="arch-item" style="background:#f1f5f9;color:#64748b;border-color:#e2e8f0;">InventoryController</span>
+          </div>
+        </div>
+
+        <div class="arch-layer">
+          <div class="arch-layer-head" style="background:#f1f5f9;">
+            <span>⚡ MTA.Functions — Azure Durable Functions</span>
+            <span class="arch-status" style="background:#e2e8f0;color:#64748b;">Mes 3</span>
+          </div>
+          <div class="arch-layer-body">
+            <span class="arch-item" style="background:#f1f5f9;color:#64748b;border-color:#e2e8f0;">DF-01 Recordatorios de cita</span>
+            <span class="arch-item" style="background:#f1f5f9;color:#64748b;border-color:#e2e8f0;">DF-02 Alerta stock mínimo</span>
+            <span class="arch-item" style="background:#f1f5f9;color:#64748b;border-color:#e2e8f0;">DF-03 Corte de caja</span>
+            <span class="arch-item" style="background:#f1f5f9;color:#64748b;border-color:#e2e8f0;">DF-04 Onboarding</span>
+            <span class="arch-item" style="background:#f1f5f9;color:#64748b;border-color:#e2e8f0;">DF-05 Pagos con retry</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Stack Técnico</div>
+      <div class="stack-grid">
+        <div class="stack-card">
+          <h4>Backend</h4>
+          <div class="stack-row"><span class="stack-tech">ASP.NET Core 8</span><span class="stack-note">Web API</span></div>
+          <div class="stack-row"><span class="stack-tech">Entity Framework Core 8</span><span class="stack-note">ORM</span></div>
+          <div class="stack-row"><span class="stack-tech">ASP.NET Identity</span><span class="stack-note">Auth + Roles</span></div>
+          <div class="stack-row"><span class="stack-tech">MediatR</span><span class="stack-note">CQRS</span></div>
+          <div class="stack-row"><span class="stack-tech">JWT Bearer</span><span class="stack-note">Tokens</span></div>
+        </div>
+        <div class="stack-card">
+          <h4>Base de Datos</h4>
+          <div class="stack-row"><span class="stack-tech">PostgreSQL</span><span class="stack-note">Principal</span></div>
+          <div class="stack-row"><span class="stack-tech">Docker</span><span class="stack-note">Local dev</span></div>
+          <div class="stack-row"><span class="stack-tech">Azure Database for PostgreSQL</span><span class="stack-note">Producción</span></div>
+          <div class="stack-row"><span class="stack-tech">EF Core Migrations</span><span class="stack-note">Schema</span></div>
+        </div>
+        <div class="stack-card">
+          <h4>Frontend</h4>
+          <div class="stack-row"><span class="stack-tech">React</span><span class="stack-note">UI</span></div>
+          <div class="stack-row"><span class="stack-tech">TailwindCSS</span><span class="stack-note">Estilos</span></div>
+          <div class="stack-row"><span class="stack-tech">Vite</span><span class="stack-note">Build tool</span></div>
+        </div>
+        <div class="stack-card">
+          <h4>Azure / Cloud</h4>
+          <div class="stack-row"><span class="stack-tech">Azure App Service</span><span class="stack-note">API deploy</span></div>
+          <div class="stack-row"><span class="stack-tech">Azure Durable Functions</span><span class="stack-note">Workflows</span></div>
+          <div class="stack-row"><span class="stack-tech">Azure Blob Storage</span><span class="stack-note">PDFs / logos</span></div>
+          <div class="stack-row"><span class="stack-tech">Azure Communication</span><span class="stack-note">Email / SMS</span></div>
+          <div class="stack-row"><span class="stack-tech">Stripe Terminal</span><span class="stack-note">POS</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== DURABLE FUNCTIONS ==================== -->
+  <div class="tab-panel" id="tab-durable">
+    <div class="section">
+      <div class="section-title">Azure Durable Functions</div>
+      <div class="section-heading">Workflows automáticos del sistema</div>
+      <div class="section-desc">Los Durable Functions manejan procesos largos o multi-paso que no pueden vivir en una simple llamada HTTP. Son stateful — sobreviven reinicios del servidor.</div>
+
+      <div class="df-grid">
+        <div class="df-card">
+          <h4>🔔 DF-01 — Recordatorio de Cita</h4>
+          <p>Se activa cuando se agenda una cita. Maneja toda la comunicación pre-cita.</p>
+          <div class="df-steps">
+            <div class="df-step">→ <span>Cita agendada (trigger)</span></div>
+            <div class="df-step">→ <span>Espera T-24h → SMS/email cliente</span></div>
+            <div class="df-step">→ <span>Espera T-2h → 2do recordatorio</span></div>
+            <div class="df-step">→ <span>T+15min sin atender → alerta empleado</span></div>
+            <div class="df-step">→ <span>Sin confirmar → Status=NoShow</span></div>
+          </div>
+        </div>
+
+        <div class="df-card">
+          <h4>📦 DF-02 — Alerta de Stock Mínimo</h4>
+          <p>Se activa cuando una venta descuenta inventario.</p>
+          <div class="df-steps">
+            <div class="df-step">→ <span>Venta procesada (trigger)</span></div>
+            <div class="df-step">→ <span>Verifica Stock vs MinStock</span></div>
+            <div class="df-step">→ <span>Si bajo → notifica al admin</span></div>
+            <div class="df-step">→ <span>Espera 24h → si sigue bajo, re-notifica</span></div>
+            <div class="df-step">→ <span>Máximo 3 notificaciones</span></div>
+          </div>
+        </div>
+
+        <div class="df-card">
+          <h4>💰 DF-03 — Corte de Caja Automático</h4>
+          <p>Timer diario. Genera el resumen financiero del día.</p>
+          <div class="df-steps">
+            <div class="df-step">→ <span>Timer 11:55pm por tenant</span></div>
+            <div class="df-step">→ <span>Agrega ventas del día</span></div>
+            <div class="df-step">→ <span>Calcula gastos y compras</span></div>
+            <div class="df-step">→ <span>Genera PDF del corte</span></div>
+            <div class="df-step">→ <span>Email al Owner</span></div>
+          </div>
+        </div>
+
+        <div class="df-card">
+          <h4>🏢 DF-04 — Onboarding de Negocio</h4>
+          <p>Se activa al registrar un nuevo tenant en el sistema.</p>
+          <div class="df-steps">
+            <div class="df-step">→ <span>Registro nuevo tenant</span></div>
+            <div class="df-step">→ <span>Crea datos base del tenant</span></div>
+            <div class="df-step">→ <span>Carga catálogo default por tipo</span></div>
+            <div class="df-step">→ <span>Crea usuario Owner</span></div>
+            <div class="df-step">→ <span>Email bienvenida + si no inicia sesión en 3 días → recordatorio</span></div>
+          </div>
+        </div>
+
+        <div class="df-card">
+          <h4>💳 DF-05 — Pago con Retry</h4>
+          <p>Maneja el cobro con Stripe con reintentos automáticos.</p>
+          <div class="df-steps">
+            <div class="df-step">→ <span>Intento de cobro Stripe</span></div>
+            <div class="df-step">→ <span>Si falla → espera 30s → reintento</span></div>
+            <div class="df-step">→ <span>Máximo 3 intentos</span></div>
+            <div class="df-step">→ <span>Si sigue fallando → alerta al cajero</span></div>
+            <div class="df-step">→ <span>Si éxito → genera recibo → email</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== ROADMAP ==================== -->
+  <div class="tab-panel" id="tab-roadmap">
+    <div class="section">
+      <div class="section-title">Plan de desarrollo — 4 meses</div>
+      <div class="roadmap">
+        <div class="month-card" style="background:#dcfce7;border-color:#86efac;">
+          <h4 style="color:#15803d;">Mes 1</h4>
+          <div class="month-sub" style="color:#15803d;">Backend Core · Ahora</div>
+          <div class="month-item" style="color:#15803d;"><span class="month-dot"></span>Solución + estructura .NET</div>
+          <div class="month-item" style="color:#15803d;"><span class="month-dot"></span>Entidades de dominio</div>
+          <div class="month-item" style="color:#15803d;"><span class="month-dot"></span>DbContext + Auth JWT</div>
+          <div class="month-item" style="color:#15803d;"><span class="month-dot"></span>PostgreSQL en Docker</div>
+          <div class="month-item" style="color:#d97706;"><span class="month-dot" style="background:#d97706"></span>Migración inicial</div>
+          <div class="month-item" style="color:#d97706;"><span class="month-dot" style="background:#d97706"></span>CRUD Empleados</div>
+          <div class="month-item" style="color:#d97706;"><span class="month-dot" style="background:#d97706"></span>CRUD Agenda</div>
+          <div class="month-item" style="color:#d97706;"><span class="month-dot" style="background:#d97706"></span>Deploy Azure App Service</div>
+        </div>
+
+        <div class="month-card" style="background:#fef9c3;border-color:#fde047;">
+          <h4 style="color:#a16207;">Mes 2</h4>
+          <div class="month-sub" style="color:#a16207;">Frontend React</div>
+          <div class="month-item" style="color:#78350f;"><span class="month-dot"></span>Login + dashboard</div>
+          <div class="month-item" style="color:#78350f;"><span class="month-dot"></span>Vista de agenda (calendario)</div>
+          <div class="month-item" style="color:#78350f;"><span class="month-dot"></span>Gestión de empleados</div>
+          <div class="month-item" style="color:#78350f;"><span class="month-dot"></span>Inventario básico</div>
+          <div class="month-item" style="color:#78350f;"><span class="month-dot"></span>Conectar React → API</div>
+        </div>
+
+        <div class="month-card" style="background:#eff6ff;border-color:#bfdbfe;">
+          <h4 style="color:#1d4ed8;">Mes 3</h4>
+          <div class="month-sub" style="color:#1d4ed8;">POS + Azure</div>
+          <div class="month-item" style="color:#1e40af;"><span class="month-dot"></span>Módulo ventas POS</div>
+          <div class="month-item" style="color:#1e40af;"><span class="month-dot"></span>Stripe Terminal</div>
+          <div class="month-item" style="color:#1e40af;"><span class="month-dot"></span>Recibos PDF</div>
+          <div class="month-item" style="color:#1e40af;"><span class="month-dot"></span>DF-01 Recordatorios</div>
+          <div class="month-item" style="color:#1e40af;"><span class="month-dot"></span>DF-03 Corte de caja</div>
+          <div class="month-item" style="color:#1e40af;"><span class="month-dot"></span>DF-04 Onboarding</div>
+          <div class="month-item" style="color:#1e40af;"><span class="month-dot"></span>AZ-204 prep</div>
+        </div>
+
+        <div class="month-card" style="background:#f8fafc;border-color:#e2e8f0;">
+          <h4 style="color:#475569;">Mes 4</h4>
+          <div class="month-sub" style="color:#475569;">Reportes + Polish</div>
+          <div class="month-item" style="color:#475569;"><span class="month-dot"></span>Reportes financieros</div>
+          <div class="month-item" style="color:#475569;"><span class="month-dot"></span>Módulo proveedores</div>
+          <div class="month-item" style="color:#475569;"><span class="month-dot"></span>DF-02 Stock alerts</div>
+          <div class="month-item" style="color:#475569;"><span class="month-dot"></span>DF-05 Pago retry</div>
+          <div class="month-item" style="color:#475569;"><span class="month-dot"></span>Multi-tenant UI</div>
+          <div class="month-item" style="color:#475569;"><span class="month-dot"></span>Testing e2e</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <strong>MasterTrackAgenda (MTA)</strong> · System Design Document · v1.0 · 2026
+</div>
+
+<script>
+function showTab(name) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+  document.getElementById('er-detail').style.display = 'none';
+}
+
+const erDetails = {
+  tenant: {
+    title: '🏢 Tenants — El negocio raíz',
+    body: 'Es el punto de partida de todo. Cada registro representa un negocio completo.',
+    items: [
+      'Slug: identificador URL-friendly único, ej: "salon-glamour"',
+      'BusinessType: define qué tipo de negocio es (1=NailSalon, 2=MechanicShop, 3=PartyVenue)',
+      'OpenTime/CloseTime: horario del negocio, para validar que las citas caigan en horario válido',
+      'TODAS las demás tablas tienen un TenantId que apunta aquí'
+    ]
+  },
+  user: {
+    title: '👤 Users — Acceso al sistema',
+    body: 'Extiende ASP.NET Identity. Solo personas que necesitan LOGIN tienen registro aquí.',
+    items: [
+      'TenantId: a qué negocio pertenece este usuario',
+      'Un User puede ser también un Employee (vinculados por UserId en Employees)',
+      'Los roles (Owner, Admin, Employee) se guardan en la tabla UserRoles de Identity',
+      'El Owner puede ver y administrar todo. El Employee solo ve su agenda'
+    ]
+  },
+  employee: {
+    title: '👷 Employees — El equipo de trabajo',
+    body: 'Representa a cada trabajador del negocio. Puede o no tener acceso al sistema.',
+    items: [
+      'UserId nullable: si el empleado tiene cuenta de acceso, se vincula aquí',
+      'Position: su rol en el negocio (Estilista, Mecánico, Animador)',
+      'CommissionRate: porcentaje de comisión sobre sus ventas/servicios',
+      'Tiene WorkSchedules (horarios) y ScheduleTasks (agenda asignada)'
+    ]
+  },
+  workschedule: {
+    title: '📅 WorkSchedules — Horario semanal',
+    body: 'Define el horario de trabajo de cada empleado por día de la semana.',
+    items: [
+      'Un Employee tiene hasta 7 registros (uno por día de la semana)',
+      'IsWorkDay=false: día de descanso (no se le pueden agendar citas)',
+      'Se usa para validar disponibilidad: no puedes agendar fuera del horario del empleado',
+      'Ejemplo: Ana trabaja Lun-Vie 9am-6pm, descansa Sáb-Dom'
+    ]
+  },
+  scheduletask: {
+    title: '📋 ScheduleTasks — El corazón de la agenda',
+    body: 'La tabla más importante del sistema. Todo lo que ocupa un slot en la agenda de un empleado.',
+    items: [
+      'Type=Appointment: cita con cliente → usa ClientName, ClientPhone, ServiceId',
+      'Type=Activity: tarea interna → usa ActivityTitle, ActivityDescription',
+      'Status fluye: Scheduled → Confirmed → InProgress → Completed (o Cancelled/NoShow)',
+      'SaleId: cuando la cita se cobra, se vincula a la venta aquí'
+    ]
+  },
+  service: {
+    title: '💅 Services — Catálogo de servicios',
+    body: 'Los servicios que ofrece el negocio, configurados por tipo.',
+    items: [
+      'Salón de uñas: Manicure básica (45min, $150), Gel (90min, $280)',
+      'Taller: Diagnóstico (30min, $200), Cambio de aceite (45min, $350)',
+      'DurationMinutes: calcula automáticamente el EndTime de una cita',
+      'Cada tenant tiene su propio catálogo de servicios'
+    ]
+  },
+  product: {
+    title: '📦 Products — Inventario',
+    body: 'Productos físicos que el negocio vende o consume.',
+    items: [
+      'Stock vs MinStock: cuando Stock <= MinStock, Durable Function envía alerta',
+      'CostPrice: lo que pagaste al proveedor',
+      'SalePrice: lo que le cobras al cliente (la diferencia es tu margen)',
+      'Stock se descuenta automáticamente al registrar una venta'
+    ]
+  },
+  sale: {
+    title: '💳 Sales + SaleItems — Punto de Venta',
+    body: 'Una Sale es un ticket completo. SaleItems son las líneas del ticket.',
+    items: [
+      'Una Sale puede tener múltiples SaleItems (servicios + productos mezclados)',
+      'SaleItem guarda snapshot del precio al momento de venta (no el precio actual)',
+      'PaymentMethod: Cash, Card (Stripe), Transfer, Mixed',
+      'Una Sale puede originarse desde una cita o ser una venta directa'
+    ]
+  },
+  receipt: {
+    title: '🧾 Receipts — Recibos digitales',
+    body: 'Relación 1:1 con Sale. Cada venta pagada genera exactamente un recibo.',
+    items: [
+      'ReceiptNumber: consecutivo por tenant (MTA-2026-00001)',
+      'PdfUrl: link al PDF en Azure Blob Storage',
+      'Se envía por email automáticamente después de cada pago exitoso'
+    ]
+  },
+  supplier: {
+    title: '🏭 Suppliers — Proveedores',
+    body: 'Catálogo de proveedores del negocio para rastrear compras.',
+    items: [
+      'Vinculado a PurchaseOrders para historial de compras por proveedor',
+      'Permite comparar precios y frecuencia de compra',
+      'Cada tenant tiene sus propios proveedores'
+    ]
+  },
+  purchase: {
+    title: '🛒 PurchaseOrders — Compras a proveedor',
+    body: 'Registra cuando el negocio compra mercancía o insumos.',
+    items: [
+      'Al marcar Status=Received → suma stock automáticamente a cada Product',
+      'PurchaseOrderItems contiene el detalle (qué producto, cuánto, a qué costo)',
+      'Los gastos de compras se incluyen en el corte de caja'
+    ]
+  },
+  cashcut: {
+    title: '💰 CashRegisterCuts — Corte de caja',
+    body: 'Resumen financiero diario. Generado automáticamente cada noche.',
+    items: [
+      'Desglose de ventas por método de pago (efectivo, tarjeta, transferencia)',
+      'OpeningAmount: fondo con que abrió la caja del día',
+      'ClosingAmount: efectivo físico al cerrar',
+      'Diferencia entre TotalSalesCash + Opening vs Closing detecta descuadres',
+      'PDF enviado al Owner por email cada noche'
+    ]
+  }
+};
+
+function showErDetail(key) {
+  document.querySelectorAll('.er-card').forEach(c => c.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+  const d = erDetails[key];
+  document.getElementById('er-detail-title').textContent = d.title;
+  document.getElementById('er-detail-body').textContent = d.body;
+  const ul = document.getElementById('er-detail-list');
+  ul.innerHTML = d.items.map(i => `<li>${i}</li>`).join('');
+  const box = document.getElementById('er-detail');
+  box.style.display = 'block';
+  box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+</script>
+</body>
+</html>
