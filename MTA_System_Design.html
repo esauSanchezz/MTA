@@ -280,7 +280,7 @@
 <!-- HERO -->
 <div class="hero">
   <div class="hero-inner">
-    <div class="hero-badge">📋 System Design Document · v1.2</div>
+    <div class="hero-badge">📋 System Design Document · v1.3</div>
     <h1>MasterTrackAgenda</h1>
     <div class="hero-sub">Smart Business Management Platform · 4 sectores: Belleza &amp; Bienestar, Eventos Sociales, Distribución (mostrador y reparto), Talleres y Servicios Técnicos</div>
     <div class="hero-tags">
@@ -345,9 +345,10 @@
           <div class="sector-like">Similar a un sistema de gestión de eventos</div>
           <div class="sector-tags">
             <span class="sector-tag">Salones de fiesta</span>
-            <span class="sector-tag">Salones de eventos sociales</span>
+            <span class="sector-tag">Fiestas infantiles</span>
+            <span class="sector-tag">Eventos sociales (bodas, XV años, corporativos)</span>
           </div>
-          <div class="sector-diff"><strong>Diferenciador:</strong> Dos modalidades — reservación rápida con paquete, o contrato con anticipo y coordinación de proveedores externos (DJ, banquete, etc.).</div>
+          <div class="sector-diff"><strong>Diferenciador:</strong> Dos modalidades — reservación rápida con paquete, o contrato con anticipo, depósito de garantía y coordinación de proveedores externos (DJ, banquete, etc.). Soporta múltiples salones/espacios con disponibilidad independiente.</div>
         </div>
         <div class="sector-card">
           <div class="sector-icon">🚚</div>
@@ -447,7 +448,7 @@
   <div class="tab-panel" id="tab-database">
     <div class="section">
       <div class="section-title">Modelo de Datos</div>
-      <div class="section-heading">23 tablas · 1 base de datos · N negocios · 4 sectores</div>
+      <div class="section-heading">24 tablas · 1 base de datos · N negocios · 4 sectores</div>
       <div class="section-desc">Haz click en cualquier tabla para ver su propósito y relaciones. Color = a qué sector pertenece (azul/verde/amarillo/rosa/morado = core compartido, ver leyenda).</div>
 
       <div class="legend">
@@ -521,6 +522,7 @@
             <div class="er-field"><span class="tag-fk">FK</span><span class="fn">TenantId, EmployeeId</span></div>
             <div class="er-field"><span class="tag-fk">FK?</span><span class="fn">CustomerId</span><span>nullable</span></div>
             <div class="er-field"><span class="tag-fk">FK?</span><span class="fn">AssetId</span><span>nullable</span></div>
+            <div class="er-field"><span class="tag-fk">FK?</span><span class="fn">VenueId</span><span>nullable</span></div>
             <div class="er-field"><span class="fn">Type</span><span>Appt/Activity/Event/Service</span></div>
             <div class="er-field"><span class="fn">Status</span><span>6 estados</span></div>
           </div>
@@ -619,9 +621,11 @@
           <div class="er-body">
             <div class="er-field"><span class="tag-pk">PK</span><span class="fn">Id</span><span>uuid</span></div>
             <div class="er-field"><span class="tag-fk">FK</span><span class="fn">ScheduleTaskId, PackageId</span></div>
+            <div class="er-field"><span class="fn">EventType</span><span>Infantil/Boda/XV/Corp</span></div>
             <div class="er-field"><span class="fn">GuestCount</span><span>int</span></div>
             <div class="er-field"><span class="fn">Mode</span><span>Simple/Contract</span></div>
             <div class="er-field"><span class="fn">DepositAmount</span><span>decimal, nullable</span></div>
+            <div class="er-field"><span class="fn">SecurityDeposit</span><span>decimal, nullable</span></div>
           </div>
         </div>
 
@@ -644,6 +648,17 @@
             <div class="er-field"><span class="fn">Role</span><span>DJ/Banquete/etc</span></div>
             <div class="er-field"><span class="fn">Cost</span><span>decimal</span></div>
             <div class="er-field"><span class="fn">Status</span><span>enum</span></div>
+          </div>
+        </div>
+
+        <div class="er-card" onclick="showErDetail('venue')">
+          <div class="er-head" style="background:var(--orange-light);color:var(--orange-dark);">🏛️ Venues</div>
+          <div class="er-body">
+            <div class="er-field"><span class="tag-pk">PK</span><span class="fn">Id</span><span>uuid</span></div>
+            <div class="er-field"><span class="tag-fk">FK</span><span class="fn">TenantId</span></div>
+            <div class="er-field"><span class="fn">Name</span><span>Salón A, Jardín...</span></div>
+            <div class="er-field"><span class="fn">Capacity</span><span>int</span></div>
+            <div class="er-field"><span class="fn">Status</span><span>Active/Maintenance</span></div>
           </div>
         </div>
 
@@ -921,7 +936,7 @@
           </div>
           <div class="flow-content">
             <h4>Solicitud de cotización</h4>
-            <p>Se crea un <code>ScheduleTask</code> con <code>Type=Event</code> y su <code>EventDetails</code> (GuestCount, fecha, tipo de evento).</p>
+            <p>Se crea un <code>ScheduleTask</code> con <code>Type=Event</code>, vinculado a un <code>Venue</code> disponible (se valida que no haya traslape con otro evento en ese mismo espacio), y su <code>EventDetails</code> (EventType, GuestCount, fecha).</p>
           </div>
         </div>
         <div class="flow-step">
@@ -950,17 +965,27 @@
             <div class="step-line"></div>
           </div>
           <div class="flow-content">
-            <h4>Cobro de anticipo</h4>
-            <p>Se registra un <code>Sale</code> parcial por el <code>DepositAmount</code> (efectivo, tarjeta o transferencia).</p>
+            <h4>Cobro de anticipo y depósito de garantía</h4>
+            <p>Se registra un <code>Sale</code> parcial por el <code>DepositAmount</code> (no reembolsable) y, si aplica, el <code>SecurityDeposit</code> (garantía por daños, sí reembolsable) — efectivo, tarjeta o transferencia.</p>
           </div>
         </div>
         <div class="flow-step">
           <div class="flow-left">
             <div class="step-circle" style="background:#f3e8ff;color:#7c3aed;">5</div>
+            <div class="step-line"></div>
           </div>
           <div class="flow-content">
             <h4>Día del evento y cobro final</h4>
             <p>Checklist de proveedores/paquete, luego se genera el <code>Sale</code> final y el <code>Receipt</code> correspondiente.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-circle" style="background:var(--orange-light);color:var(--orange-dark);">6</div>
+          </div>
+          <div class="flow-content">
+            <h4>Cierre y devolución de garantía</h4>
+            <p>Tras el evento, si no hay daños se marca el <code>SecurityDeposit</code> como reembolsado; si hay daños, se retiene total o parcialmente y se documenta el motivo.</p>
           </div>
         </div>
       </div>
@@ -1197,7 +1222,7 @@
             <span class="arch-item" style="background:#dcfce7;color:#15803d;border-color:#86efac;">Supplier / PurchaseOrder</span>
             <span class="arch-item" style="background:#dcfce7;color:#15803d;border-color:#86efac;">CashRegisterCut</span>
             <span class="arch-item" style="background:var(--teal-light);color:var(--teal-dark);border-color:#5eead4;">ClinicalRecord</span>
-            <span class="arch-item" style="background:var(--orange-light);color:var(--orange-dark);border-color:#fdba74;">EventDetails / EventPackage / EventVendor</span>
+            <span class="arch-item" style="background:var(--orange-light);color:var(--orange-dark);border-color:#fdba74;">EventDetails / EventPackage / EventVendor / Venue</span>
             <span class="arch-item" style="background:var(--indigo-light);color:var(--indigo-dark);border-color:#a5b4fc;">Vehicle / DeliveryRoute / DeliveryStop / VehicleInventory</span>
             <span class="arch-item" style="background:var(--lime-light);color:var(--lime-dark);border-color:#bef264;">Asset / AssetRecord</span>
           </div>
@@ -1460,7 +1485,7 @@
           <div class="month-item" style="color:#1e40af;"><span class="month-dot"></span>Módulo ventas POS</div>
           <div class="month-item" style="color:#1e40af;"><span class="month-dot"></span>Stripe Terminal</div>
           <div class="month-item" style="color:#1e40af;"><span class="month-dot"></span>Recibos PDF</div>
-          <div class="month-item" style="color:#1e40af;"><span class="month-dot"></span>EventDetails / EventPackages / EventVendors</div>
+          <div class="month-item" style="color:#1e40af;"><span class="month-dot"></span>EventDetails / EventPackages / EventVendors / Venues</div>
           <div class="month-item" style="color:#1e40af;"><span class="month-dot"></span>DF-01 Recordatorios, DF-03 Corte de caja</div>
           <div class="month-item" style="color:#1e40af;"><span class="month-dot"></span>DF-04 Onboarding, DF-06 Anticipos</div>
           <div class="month-item" style="color:#1e40af;"><span class="month-dot"></span>AZ-204 prep</div>
@@ -1491,7 +1516,7 @@
 
 <!-- FOOTER -->
 <div class="footer">
-  <strong>MasterTrackAgenda (MTA)</strong> · System Design Document · v1.2 (4 sectores: Belleza, Eventos, Bodega, Talleres) · 2026
+  <strong>MasterTrackAgenda (MTA)</strong> · System Design Document · v1.3 (4 sectores + Venues/EventType/Depósito de garantía en Eventos) · 2026
 </div>
 
 <script>
@@ -1560,7 +1585,7 @@ const erDetails = {
     items: [
       'Type=Appointment: cita de belleza → vinculada a un Customer y a un Service',
       'Type=Service: visita de taller → vinculada a un Asset (vehículo/equipo) en vez de solo al Customer',
-      'Type=Event: evento social → tiene un EventDetails asociado',
+      'Type=Event: evento social → tiene un EventDetails asociado y, si aplica, un VenueId (espacio físico reservado)',
       'Type=Activity: tarea interna → usa ActivityTitle, ActivityDescription',
       'Status fluye: Scheduled → Confirmed → InProgress → Completed (o Cancelled/NoShow)'
     ]
@@ -1648,9 +1673,11 @@ const erDetails = {
     title: '🎪 EventDetails — Detalle del evento (Eventos)',
     body: 'Extiende un ScheduleTask de Type=Event con la información específica de la contratación.',
     items: [
+      'EventType: Cumpleaños infantil, XV años, Boda, Corporativo, Baby shower, Otro — permite reportar por tipo de evento',
       'Mode=Simple: reservación rápida con un EventPackage, sin contrato formal',
-      'Mode=Contract: requiere DepositAmount (anticipo) y puede tener EventVendors coordinados',
-      'GuestCount: número de invitados, usado para validar capacidad del salón',
+      'Mode=Contract: requiere DepositAmount (anticipo, no reembolsable) y puede tener EventVendors coordinados',
+      'SecurityDeposit: depósito de garantía por daños, aparte del anticipo — se reembolsa si el evento termina sin incidentes',
+      'GuestCount: número de invitados, se valida contra la Capacity del Venue asignado',
       'PackageId: paquete de servicios elegido, si aplica'
     ]
   },
@@ -1670,6 +1697,17 @@ const erDetails = {
       'Role: qué función cumple (DJ, banquete, decoración, fotografía, etc.)',
       'Cost: costo acordado con ese proveedor para el evento',
       'Status: Pending/Confirmed/Paid — para dar seguimiento antes del evento'
+    ]
+  },
+  venue: {
+    title: '🏛️ Venues — Espacios rentables (Eventos)',
+    body: 'Cada salón o espacio físico que el negocio puede rentar de forma independiente. Resuelve el problema de doble-reservación cuando hay más de un espacio.',
+    items: [
+      'Capacity: aforo máximo, se valida contra el GuestCount del EventDetails',
+      'Un Tenant puede tener uno o varios Venues (ej. Salón A, Jardín, Terraza)',
+      'ScheduleTask.VenueId liga la cita/evento a un espacio específico',
+      'La validación de disponibilidad revisa traslapes de horario por Venue, no solo por Employee',
+      'Status=Maintenance permite bloquear un espacio temporalmente sin borrarlo'
     ]
   },
   vehicle: {
