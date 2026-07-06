@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MasterTrackAgenda (MTA) — Documentación Técnica y de Producto</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue: #3b82f6; --blue-light: #eff6ff; --blue-mid: #bfdbfe; --blue-dark:#1d4ed8;
+    --green: #22c55e; --green-light: #dcfce7; --green-dark: #15803d;
+    --yellow-light: #fef9c3; --yellow-dark: #a16207;
+    --pink-light: #fce7f3; --pink-dark: #be185d;
+    --purple-light: #f3e8ff; --purple-dark: #7c3aed;
+    --teal-light: #ccfbf1; --teal-dark: #0f766e;
+    --orange-light: #ffedd5; --orange-dark: #c2410c;
+    --indigo-light: #e0e7ff; --indigo-dark: #4338ca;
+    --lime-light: #ecfccb; --lime-dark: #4d7c0f;
+    --red-light:#fee2e2; --red-dark:#b91c1c;
+    --gray-50: #f8fafc; --gray-100: #f1f5f9; --gray-200: #e2e8f0;
+    --gray-400: #94a3b8; --gray-600: #475569; --gray-800: #1e293b;
+    --text: #1a1a1a; --text-muted: #64748b; --border: #e5e7eb;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f8fafc;
+    color: var(--text);
+    line-height: 1.65;
+  }
+
+  .layout { display: flex; min-height: 100vh; }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 260px; flex-shrink: 0;
+    background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+    color: #cbd5e1; padding: 28px 18px; position: sticky; top: 0; height: 100vh;
+    overflow-y: auto;
+  }
+  .sidebar .brand { color: white; font-weight: 800; font-size: 17px; margin-bottom: 2px; }
+  .sidebar .brand-sub { font-size: 11px; color: #93c5fd; margin-bottom: 24px; text-transform: uppercase; letter-spacing: .06em; }
+  .sidebar nav a {
+    display: block; color: #cbd5e1; text-decoration: none; font-size: 13px;
+    padding: 8px 10px; border-radius: 7px; margin-bottom: 2px; transition: background .15s;
+  }
+  .sidebar nav a:hover { background: rgba(255,255,255,.08); color: white; }
+  .sidebar nav a.active { background: rgba(59,130,246,.25); color: #93c5fd; font-weight: 600; }
+  .sidebar .nav-group-label {
+    font-size: 10px; text-transform: uppercase; letter-spacing: .08em; color: #64748b;
+    margin: 16px 0 6px 10px;
+  }
+  .sidebar .nav-group-label:first-of-type { margin-top: 0; }
+
+  /* CONTENT */
+  .content { flex: 1; min-width: 0; padding: 0; }
+  .doc-hero {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white;
+    padding: 44px 48px; position: relative; overflow: hidden;
+  }
+  .doc-hero::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(circle at 75% 30%, rgba(59,130,246,.18) 0%, transparent 60%);
+  }
+  .doc-hero-inner { position: relative; max-width: 880px; }
+  .doc-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(59,130,246,.2); border: 1px solid rgba(59,130,246,.4);
+    color: #93c5fd; padding: 4px 12px; border-radius: 999px;
+    font-size: 12px; font-weight: 600; letter-spacing: .05em;
+    text-transform: uppercase; margin-bottom: 14px;
+  }
+  .doc-hero h1 { font-size: 32px; font-weight: 800; margin-bottom: 8px; letter-spacing: -.02em; }
+  .doc-hero p { font-size: 15px; color: #94a3b8; max-width: 640px; }
+
+  .container { max-width: 880px; margin: 0 auto; padding: 8px 48px 80px; }
+  section { padding-top: 48px; scroll-margin-top: 20px; }
+  section:first-of-type { padding-top: 40px; }
+  .sec-eyebrow {
+    font-size: 11px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .08em; color: var(--text-muted); margin-bottom: 8px;
+  }
+  h2.sec-title { font-size: 25px; font-weight: 800; margin-bottom: 6px; letter-spacing: -.01em; }
+  .sec-sub { font-size: 14.5px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.75; max-width: 720px; }
+  h3.sub-title { font-size: 16px; font-weight: 700; margin: 28px 0 10px; }
+  p.body-text { font-size: 14.5px; color: #334155; margin-bottom: 14px; line-height: 1.8; max-width: 720px; }
+  ul.body-list { margin: 0 0 16px 20px; font-size: 14.5px; color: #334155; line-height: 1.85; }
+  ul.body-list li { margin-bottom: 4px; }
+
+  /* CARDS */
+  .card { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; margin-bottom: 14px; }
+  .card-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .card-grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
+  @media (max-width: 900px) { .card-grid-2, .card-grid-4 { grid-template-columns: 1fr; } }
+
+  .sector-pill { display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:700; padding:4px 12px; border-radius:999px; margin-bottom:10px; }
+
+  /* SCOPE OUT-OF-SCOPE LIST */
+  .scope-card { border-left: 4px solid var(--green); }
+  .outscope-card { border-left: 4px solid var(--red-dark); }
+  .outscope-card ul.body-list li::marker { color: var(--red-dark); }
+
+  /* FEATURE MATRIX TABLE */
+  table.matrix { width: 100%; border-collapse: collapse; font-size: 13px; background: white; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+  table.matrix th, table.matrix td { padding: 10px 12px; border-bottom: 1px solid var(--gray-100); text-align: center; }
+  table.matrix th { background: var(--gray-800); color: white; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; }
+  table.matrix td:first-child, table.matrix th:first-child { text-align: left; font-weight: 600; }
+  table.matrix tr:last-child td { border-bottom: none; }
+  .yes { color: var(--green-dark); font-weight: 700; }
+  .partial { color: var(--yellow-dark); font-weight: 700; }
+  .no { color: var(--red-dark); font-weight: 700; }
+  .legend-row { display:flex; gap:18px; font-size:12px; color:var(--text-muted); margin: 10px 0 24px; flex-wrap:wrap; }
+  .legend-row span { display:flex; align-items:center; gap:5px; }
+
+  /* DIAGRAM WRAPPER */
+  .diagram-wrap { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px; overflow-x: auto; }
+  .diagram-wrap svg { width: 100%; height: auto; min-width: 640px; }
+
+  /* USE CASES */
+  .uc-card { background: white; border: 1px solid var(--border); border-radius: 12px; margin-bottom: 14px; overflow: hidden; }
+  .uc-head { padding: 12px 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  .uc-id { font-size: 11px; font-weight: 700; color: var(--text-muted); }
+  .uc-title { font-size: 15px; font-weight: 700; }
+  .uc-actor { font-size: 11px; padding: 3px 10px; border-radius: 999px; background: var(--gray-100); color: var(--text-muted); font-weight: 600; }
+  .uc-body { padding: 4px 18px 18px; }
+  .uc-field { margin-bottom: 10px; }
+  .uc-field .lbl { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); margin-bottom: 4px; }
+  .uc-field ol, .uc-field ul { margin-left: 18px; font-size: 13.5px; color: #334155; line-height: 1.75; }
+  .uc-field p { font-size: 13.5px; color: #334155; }
+
+  /* SCALABILITY TABLE */
+  table.scale-table { width: 100%; border-collapse: collapse; font-size: 13.5px; background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  table.scale-table th { background: var(--gray-100); text-align: left; padding: 10px 14px; font-size: 11px; text-transform: uppercase; color: var(--text-muted); letter-spacing: .04em; }
+  table.scale-table td { padding: 12px 14px; border-top: 1px solid var(--gray-100); vertical-align: top; }
+  .risk-high { color: var(--red-dark); font-weight: 700; font-size: 12px; }
+  .risk-med { color: var(--yellow-dark); font-weight: 700; font-size: 12px; }
+  .risk-low { color: var(--green-dark); font-weight: 700; font-size: 12px; }
+
+  /* ROADMAP TIMELINE */
+  .timeline { border-left: 3px solid var(--gray-200); margin-left: 8px; padding-left: 22px; }
+  .tl-item { position: relative; margin-bottom: 22px; }
+  .tl-item::before { content:''; position:absolute; left:-28px; top:4px; width:12px; height:12px; border-radius:50%; background: var(--blue); border: 3px solid var(--blue-light); }
+  .tl-item.future::before { background: var(--indigo-dark); border-color: var(--indigo-light); }
+  .tl-item h4 { font-size: 14.5px; font-weight: 700; margin-bottom: 4px; }
+  .tl-item .tl-when { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing:.04em; margin-bottom:4px; }
+  .tl-item p { font-size: 13.5px; color: #334155; }
+
+  /* GLOSSARY */
+  dl.glossary { display: grid; grid-template-columns: 200px 1fr; gap: 8px 16px; font-size: 13.5px; }
+  dl.glossary dt { font-weight: 700; color: var(--text); }
+  dl.glossary dd { color: #334155; margin-bottom: 10px; }
+
+  table.stack-table { width:100%; border-collapse:collapse; font-size:13.5px; background:white; border:1px solid var(--border); border-radius:12px; overflow:hidden;}
+  table.stack-table th{background:var(--gray-100);text-align:left;padding:9px 12px;font-size:11px;text-transform:uppercase;color:var(--text-muted);}
+  table.stack-table td{padding:9px 12px;border-top:1px solid var(--gray-100);}
+
+  .footer-doc { text-align:center; padding: 30px; color: var(--text-muted); font-size: 12px; border-top: 1px solid var(--border); margin-top: 40px; }
+
+  @media (max-width: 860px) {
+    .layout { flex-direction: column; }
+    .sidebar { position: relative; width: 100%; height: auto; }
+    .container { padding: 8px 20px 60px; }
+    .doc-hero { padding: 32px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="brand">MasterTrackAgenda</div>
+    <div class="brand-sub">Documentación v1.0</div>
+    <nav id="sidenav">
+      <div class="nav-group-label">Producto</div>
+      <a href="#resumen">Resumen ejecutivo</a>
+      <a href="#alcance">Alcance del sistema</a>
+      <a href="#funcionalidad">Matriz de funcionalidad</a>
+      <div class="nav-group-label">Ingeniería</div>
+      <a href="#arquitectura">Arquitectura y diseño</a>
+      <a href="#datos">Modelo de datos</a>
+      <a href="#casos-uso">Casos de uso</a>
+      <div class="nav-group-label">Negocio</div>
+      <a href="#escalabilidad">Escalabilidad</a>
+      <a href="#roadmap">Roadmap</a>
+      <a href="#glosario">Glosario y stack</a>
+    </nav>
+  </aside>
+
+  <main class="content">
+    <div class="doc-hero">
+      <div class="doc-hero-inner">
+        <div class="doc-badge">📄 Documentación Técnica y de Producto · v1.0</div>
+        <h1>MasterTrackAgenda (MTA)</h1>
+        <p>Base documental del sistema: alcance, arquitectura, modelo de datos, casos de uso y análisis de escalabilidad — pensada como referencia de desarrollo y como base de due-diligence si el producto se licencia o se vende a futuro.</p>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <!-- ============ RESUMEN EJECUTIVO ============ -->
+      <section id="resumen">
+        <div class="sec-eyebrow">01 · Producto</div>
+        <h2 class="sec-title">Resumen ejecutivo</h2>
+        <div class="sec-sub">Qué es MTA, a quién sirve y en qué punto está el desarrollo hoy.</div>
+
+        <p class="body-text">MasterTrackAgenda (MTA) es una plataforma SaaS multi-tenant de gestión de negocios. Un solo backend y una sola base de código sirven a cuatro sectores verticales distintos — <strong>Belleza &amp; Bienestar</strong>, <strong>Eventos Sociales</strong>, <strong>Distribución &amp; Logística</strong> y <strong>Talleres &amp; Servicios Técnicos</strong> — mediante un núcleo compartido (agenda, personal, ventas, inventario, reportes) más un módulo especializado por sector.</p>
+
+        <p class="body-text">La propuesta de valor central es que <strong>agregar un sector nuevo no implica reescribir el sistema</strong>: se demostró al incorporar el sector Talleres reutilizando ~90% de las tablas ya existentes y añadiendo solo dos tablas nuevas (<code>Assets</code>, <code>AssetRecords</code>). Esto es lo que hace al producto atractivo como negocio — el costo marginal de atender un sector nuevo es bajo comparado con construir un sistema vertical desde cero.</p>
+
+        <div class="card-grid-4">
+          <div class="card" style="text-align:center;">
+            <div style="font-size:26px;font-weight:800;color:var(--blue-dark);">4</div>
+            <div style="font-size:12px;color:var(--text-muted);">Sectores atendidos</div>
+          </div>
+          <div class="card" style="text-align:center;">
+            <div style="font-size:26px;font-weight:800;color:var(--blue-dark);">24</div>
+            <div style="font-size:12px;color:var(--text-muted);">Tablas en el modelo</div>
+          </div>
+          <div class="card" style="text-align:center;">
+            <div style="font-size:26px;font-weight:800;color:var(--blue-dark);">9</div>
+            <div style="font-size:12px;color:var(--text-muted);">Flujos documentados</div>
+          </div>
+          <div class="card" style="text-align:center;">
+            <div style="font-size:26px;font-weight:800;color:var(--yellow-dark);">Mes 1 / 4</div>
+            <div style="font-size:12px;color:var(--text-muted);">Backend core ~40%</div>
+          </div>
+        </div>
+
+        <p class="body-text">Este documento existe para dar una base sólida y honesta del sistema: qué resuelve hoy, qué no resuelve todavía, cómo está construido, qué tan lejos puede escalar sin cambios estructurales grandes, y qué haría falta para llevarlo más allá de su alcance actual. Se complementa con el <em>System Design Document</em> (v1.3), que detalla tabla por tabla y flujo por flujo.</p>
+      </section>
+
+      <!-- ============ ALCANCE ============ -->
+      <section id="alcance">
+        <div class="sec-eyebrow">02 · Producto</div>
+        <h2 class="sec-title">Alcance del sistema</h2>
+        <div class="sec-sub">Los cuatro sectores que cubre hoy, y los límites explícitos de la versión actual.</div>
+
+        <div class="card-grid-2">
+          <div class="card">
+            <span class="sector-pill" style="background:var(--teal-light);color:var(--teal-dark);">💆 Belleza &amp; Bienestar</span>
+            <p class="body-text" style="margin-bottom:6px;">Consultorios clínicos de belleza, salones de belleza, barberías, salones de uñas. Agenda por servicio y empleado, expediente clínico del cliente (alergias, historial, fotos antes/después), POS y recibos.</p>
+          </div>
+          <div class="card">
+            <span class="sector-pill" style="background:var(--orange-light);color:var(--orange-dark);">🎉 Eventos Sociales</span>
+            <p class="body-text" style="margin-bottom:6px;">Salones de fiesta (incluye fiestas infantiles), bodas, XV años, eventos corporativos. Reservación simple con paquete, o contrato con anticipo, depósito de garantía y proveedores externos coordinados. Múltiples salones/espacios con disponibilidad independiente.</p>
+          </div>
+          <div class="card">
+            <span class="sector-pill" style="background:var(--indigo-light);color:var(--indigo-dark);">🚚 Distribución &amp; Logística</span>
+            <p class="body-text" style="margin-bottom:6px;">Bodegas y mayoristas. Venta de mostrador sin reparto, o rutas de entrega (una o varias paradas) con vehículos e inventario en tránsito. GPS en tiempo real queda para Fase 2.</p>
+          </div>
+          <div class="card">
+            <span class="sector-pill" style="background:var(--lime-light);color:var(--lime-dark);">🔧 Talleres &amp; Servicios Técnicos</span>
+            <p class="body-text" style="margin-bottom:6px;">Talleres mecánicos, de equipos y electrodomésticos. Ficha técnica del vehículo/equipo con historial de reparaciones, refacciones usadas y kilometraje/uso, en vez de expediente de persona.</p>
+          </div>
+        </div>
+
+        <h3 class="sub-title">Fuera de alcance en la versión actual</h3>
+        <div class="card outscope-card">
+          <p class="body-text" style="margin-bottom:10px;">Ser honesto sobre esto ahora evita sorpresas después — sobre todo si el sistema se va a mostrar a un comprador o inversionista. Lo siguiente <strong>no</strong> está construido ni planeado dentro del roadmap de 4 meses:</p>
+          <ul class="body-list">
+            <li><strong>Facturación fiscal electrónica</strong> (CFDI en México u otros esquemas fiscales por país) — hoy solo hay recibos internos en PDF, no comprobantes fiscales válidos ante autoridad.</li>
+            <li><strong>Nómina y RRHH completo</strong> — se registra empleado, horario y comisión, pero no hay cálculo de nómina, prestaciones, IMSS/seguridad social, ni control de asistencia biométrico.</li>
+            <li><strong>Contabilidad completa o integración contable</strong> (QuickBooks, Contpaqi, SAP, etc.) — el corte de caja da un resumen financiero, no un libro contable.</li>
+            <li><strong>App móvil nativa</strong> — el frontend es una SPA web responsive (React), no hay app iOS/Android nativa todavía.</li>
+            <li><strong>Multi-idioma y multi-moneda</strong> — el sistema está en español y opera en una sola moneda por instalación.</li>
+            <li><strong>GPS en tiempo real</strong> — reservado como Fase 2 explícita para el sector Bodega; no está en el alcance de los 4 meses iniciales.</li>
+            <li><strong>Franquicias o cadenas con reportes consolidados</strong> — cada Tenant es un negocio independiente; no hay una capa de "organización" que agrupe varios Tenants bajo un mismo dueño con reportes combinados.</li>
+            <li><strong>E-commerce / tienda en línea de cara al cliente final</strong> — no hay un sitio de autoservicio donde el cliente compre o agende sin intervención de un empleado.</li>
+            <li><strong>Transferencias de inventario entre bodegas</strong> — el modelo actual solo mueve inventario de la bodega al vehículo (manifiesto de ruta), no bodega-a-bodega.</li>
+            <li><strong>API pública / marketplace de integraciones</strong> — no hay portal de desarrollador ni documentación de API abierta a terceros todavía.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ============ FUNCIONALIDAD ============ -->
+      <section id="funcionalidad">
+        <div class="sec-eyebrow">03 · Producto</div>
+        <h2 class="sec-title">Matriz de funcionalidad</h2>
+        <div class="sec-sub">Qué ofrece el sistema hoy, por sector, de un vistazo.</div>
+
+        <div class="legend-row">
+          <span><strong class="yes">✔ Incluido</strong></span>
+          <span><strong class="partial">◐ Parcial / en desarrollo</strong></span>
+          <span><strong class="no">✕ No incluido (fuera de alcance actual)</strong></span>
+        </div>
+
+        <div class="diagram-wrap" style="padding:0;">
+          <table class="matrix">
+            <tr>
+              <th>Funcionalidad</th><th>Belleza</th><th>Eventos</th><th>Bodega</th><th>Talleres</th>
+            </tr>
+            <tr><td>Agenda por empleado / recurso</td><td class="yes">✔</td><td class="yes">✔</td><td class="yes">✔</td><td class="yes">✔</td></tr>
+            <tr><td>Expediente / historial especializado</td><td class="yes">✔ Clínico</td><td class="no">✕</td><td class="no">✕</td><td class="yes">✔ Ficha técnica</td></tr>
+            <tr><td>POS multi-método (efectivo/tarjeta)</td><td class="yes">✔</td><td class="yes">✔</td><td class="yes">✔</td><td class="yes">✔</td></tr>
+            <tr><td>Inventario / control de stock</td><td class="partial">◐</td><td class="no">✕</td><td class="yes">✔</td><td class="partial">◐ Refacciones</td></tr>
+            <tr><td>Reservación de espacio/recurso múltiple</td><td class="no">✕</td><td class="yes">✔ Venues</td><td class="no">✕</td><td class="no">✕</td></tr>
+            <tr><td>Contrato + anticipo + garantía</td><td class="no">✕</td><td class="yes">✔</td><td class="no">✕</td><td class="no">✕</td></tr>
+            <tr><td>Rutas / entregas multi-parada</td><td class="no">✕</td><td class="no">✕</td><td class="yes">✔</td><td class="no">✕</td></tr>
+            <tr><td>GPS en tiempo real</td><td class="no">✕</td><td class="no">✕</td><td class="partial">◐ Fase 2</td><td class="no">✕</td></tr>
+            <tr><td>Notificaciones automáticas (Durable Functions)</td><td class="yes">✔</td><td class="yes">✔</td><td class="yes">✔</td><td class="yes">✔</td></tr>
+            <tr><td>Recibos digitales (PDF + email)</td><td class="yes">✔</td><td class="yes">✔</td><td class="yes">✔</td><td class="yes">✔</td></tr>
+            <tr><td>Corte de caja automático</td><td class="yes">✔</td><td class="yes">✔</td><td class="yes">✔</td><td class="yes">✔</td></tr>
+            <tr><td>Facturación fiscal (CFDI/equivalente)</td><td class="no">✕</td><td class="no">✕</td><td class="no">✕</td><td class="no">✕</td></tr>
+            <tr><td>App móvil nativa</td><td class="no">✕</td><td class="no">✕</td><td class="no">✕</td><td class="no">✕</td></tr>
+            <tr><td>Multi-tenant (aislamiento de datos por negocio)</td><td class="yes">✔</td><td class="yes">✔</td><td class="yes">✔</td><td class="yes">✔</td></tr>
+          </table>
+        </div>
+      </section>
+
+      <!-- ============ ARQUITECTURA ============ -->
+      <section id="arquitectura">
+        <div class="sec-eyebrow">04 · Ingeniería</div>
+        <h2 class="sec-title">Arquitectura y diseño técnico</h2>
+        <div class="sec-sub">El principio de diseño detrás de todo: núcleo compartido + módulo por sector.</div>
+
+        <p class="body-text">MTA sigue una arquitectura en capas (Domain → Application → Infrastructure → API), con Azure Durable Functions como capa adicional para procesos asíncronos de larga duración. La multi-tenencia se resuelve con una <strong>única base de datos PostgreSQL</strong> y <em>Global Query Filters</em> de Entity Framework Core que agregan automáticamente <code>WHERE TenantId = '...'</code> a cada consulta — ningún controller necesita lógica extra para aislar los datos de cada negocio.</p>
+
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 820 400" xmlns="http://www.w3.org/2000/svg">
+            <rect x="20" y="20" width="560" height="55" rx="10" fill="#eff6ff" stroke="#bfdbfe"/>
+            <text x="40" y="43" font-size="13" font-weight="700" fill="#1d4ed8">Cliente — React SPA</text>
+            <text x="40" y="61" font-size="11" fill="#64748b">Vite + TailwindCSS · Web responsive</text>
+
+            <rect x="20" y="95" width="560" height="55" rx="10" fill="#dcfce7" stroke="#86efac"/>
+            <text x="40" y="118" font-size="13" font-weight="700" fill="#15803d">API — ASP.NET Core 8 Web API</text>
+            <text x="40" y="136" font-size="11" fill="#64748b">JWT Auth · Swagger · Controllers por módulo</text>
+
+            <rect x="20" y="170" width="560" height="55" rx="10" fill="#fef9c3" stroke="#fde047"/>
+            <text x="40" y="193" font-size="13" font-weight="700" fill="#a16207">Application — CQRS + MediatR</text>
+            <text x="40" y="211" font-size="11" fill="#64748b">Commands / Queries independientes por sector</text>
+
+            <rect x="20" y="245" width="560" height="55" rx="10" fill="#f3e8ff" stroke="#d8b4fe"/>
+            <text x="40" y="268" font-size="13" font-weight="700" fill="#7c3aed">Domain — Entidades de negocio</text>
+            <text x="40" y="286" font-size="11" fill="#64748b">Core compartido + 4 módulos sectoriales (24 tablas)</text>
+
+            <rect x="20" y="320" width="560" height="55" rx="10" fill="#e2e8f0" stroke="#94a3b8"/>
+            <text x="40" y="343" font-size="13" font-weight="700" fill="#334155">Infrastructure — EF Core + PostgreSQL</text>
+            <text x="40" y="361" font-size="11" fill="#64748b">Global Query Filters · ITenantProvider (aislamiento multi-tenant)</text>
+
+            <g stroke="#94a3b8" stroke-width="2" fill="none" marker-end="url(#arrow)">
+              <line x1="300" y1="75" x2="300" y2="93"/>
+              <line x1="300" y1="150" x2="300" y2="168"/>
+              <line x1="300" y1="225" x2="300" y2="243"/>
+              <line x1="300" y1="300" x2="300" y2="318"/>
+            </g>
+            <defs>
+              <marker id="arrow" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+                <path d="M0,0 L8,4 L0,8 z" fill="#94a3b8"/>
+              </marker>
+            </defs>
+
+            <rect x="615" y="20" width="185" height="355" rx="10" fill="#1e293b"/>
+            <text x="630" y="42" font-size="12" font-weight="700" fill="white">Servicios Azure</text>
+            <rect x="628" y="55" width="160" height="40" rx="6" fill="#334155"/>
+            <text x="638" y="79" font-size="11" fill="#cbd5e1">Blob Storage (PDFs/fotos)</text>
+            <rect x="628" y="103" width="160" height="40" rx="6" fill="#334155"/>
+            <text x="638" y="127" font-size="11" fill="#cbd5e1">Durable Functions</text>
+            <rect x="628" y="151" width="160" height="40" rx="6" fill="#334155"/>
+            <text x="638" y="175" font-size="11" fill="#cbd5e1">Communication (Email/SMS)</text>
+            <rect x="628" y="199" width="160" height="40" rx="6" fill="#334155"/>
+            <text x="638" y="223" font-size="11" fill="#cbd5e1">Stripe (POS/pagos)</text>
+            <rect x="628" y="247" width="160" height="40" rx="6" fill="#334155" stroke="#4338ca" stroke-dasharray="4,3"/>
+            <text x="638" y="271" font-size="11" fill="#a5b4fc">Azure Maps/SignalR · Fase 2</text>
+            <line x1="580" y1="290" x2="615" y2="290" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)"/>
+          </svg>
+        </div>
+
+        <h3 class="sub-title">Decisiones de diseño clave y por qué</h3>
+        <ul class="body-list">
+          <li><strong>CQRS + MediatR:</strong> separa comandos (escritura) de consultas (lectura) por módulo. Esto es lo que permitió agregar el sector Talleres sin tocar el código de Belleza o Eventos — cada módulo vive en su propio conjunto de Commands/Queries.</li>
+          <li><strong>PostgreSQL:</strong> costo bajo, buen soporte de tipos avanzados (JSON, arrays) útil si algún sector futuro necesita campos flexibles sin migrar todo el esquema.</li>
+          <li><strong>Azure Durable Functions:</strong> los procesos largos o multi-paso (recordatorios de cita, corte de caja nocturno, reintentos de pago, onboarding) necesitan sobrevivir reinicios del servidor — una función normal con timeout no alcanza para esto.</li>
+          <li><strong>JWT con TenantId embebido:</strong> el token de autenticación ya trae el TenantId, así que el Global Query Filter puede aplicarse sin una consulta extra a base de datos en cada request.</li>
+          <li><strong>Patrón "núcleo + módulo por sector":</strong> el 90% de las tablas (Tenant, User, Employee, Customer, ScheduleTask, Service, Product, Sale, Receipt, Supplier, PurchaseOrder, CashRegisterCut) son compartidas; cada sector solo agrega 1-4 tablas propias. Esto es la base de la tesis de negocio: escalar a sectores nuevos es barato.</li>
+        </ul>
+      </section>
+
+      <!-- ============ MODELO DE DATOS ============ -->
+      <section id="datos">
+        <div class="sec-eyebrow">05 · Ingeniería</div>
+        <h2 class="sec-title">Modelo de datos</h2>
+        <div class="sec-sub">Vista conceptual: un núcleo compartido y cuatro módulos satélite por sector.</div>
+
+        <p class="body-text">El detalle campo por campo de las 24 tablas (llaves primarias, foráneas, tipos) vive en el <em>System Design Document</em> — aquí el objetivo es mostrar la forma del modelo: qué es compartido y qué es específico de cada sector, para razonar sobre qué tan fácil es extenderlo.</p>
+
+        <div class="diagram-wrap">
+          <svg viewBox="0 0 820 600" xmlns="http://www.w3.org/2000/svg">
+            <rect x="270" y="235" width="280" height="130" rx="12" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+            <text x="410" y="260" font-size="13" font-weight="800" fill="#1d4ed8" text-anchor="middle">Núcleo Compartido</text>
+            <text x="410" y="277" font-size="10" fill="#1e3a5f" text-anchor="middle">13 tablas</text>
+            <text x="410" y="296" font-size="10.5" fill="#334155" text-anchor="middle">Tenant · User · Employee · Customer</text>
+            <text x="410" y="311" font-size="10.5" fill="#334155" text-anchor="middle">ScheduleTask · Service · Product</text>
+            <text x="410" y="326" font-size="10.5" fill="#334155" text-anchor="middle">Sale · Receipt · Supplier</text>
+            <text x="410" y="341" font-size="10.5" fill="#334155" text-anchor="middle">PurchaseOrder · CashRegisterCut</text>
+            <text x="410" y="356" font-size="10.5" fill="#334155" text-anchor="middle">WorkSchedule</text>
+
+            <!-- Belleza top-left -->
+            <rect x="30" y="30" width="250" height="95" rx="12" fill="#ccfbf1" stroke="#0f766e" stroke-width="1.5"/>
+            <text x="155" y="53" font-size="12.5" font-weight="800" fill="#0f766e" text-anchor="middle">💆 Belleza — 1 tabla</text>
+            <text x="155" y="73" font-size="10.5" fill="#134e4a" text-anchor="middle">ClinicalRecords</text>
+            <text x="155" y="90" font-size="9.5" fill="#134e4a" text-anchor="middle">(historial, alergias, fotos)</text>
+            <line x1="220" y1="125" x2="330" y2="235" stroke="#0f766e" stroke-width="1.5" stroke-dasharray="4,3"/>
+
+            <!-- Eventos top-right -->
+            <rect x="540" y="30" width="250" height="115" rx="12" fill="#ffedd5" stroke="#c2410c" stroke-width="1.5"/>
+            <text x="665" y="53" font-size="12.5" font-weight="800" fill="#c2410c" text-anchor="middle">🎉 Eventos — 4 tablas</text>
+            <text x="665" y="73" font-size="10.5" fill="#7c2d12" text-anchor="middle">EventDetails · EventPackage</text>
+            <text x="665" y="88" font-size="10.5" fill="#7c2d12" text-anchor="middle">EventVendor · Venue</text>
+            <line x1="600" y1="145" x2="490" y2="235" stroke="#c2410c" stroke-width="1.5" stroke-dasharray="4,3"/>
+
+            <!-- Bodega bottom-right -->
+            <rect x="540" y="450" width="250" height="115" rx="12" fill="#e0e7ff" stroke="#4338ca" stroke-width="1.5"/>
+            <text x="665" y="473" font-size="12.5" font-weight="800" fill="#4338ca" text-anchor="middle">🚚 Bodega — 4 tablas</text>
+            <text x="665" y="493" font-size="10.5" fill="#312e81" text-anchor="middle">Vehicle · DeliveryRoute</text>
+            <text x="665" y="508" font-size="10.5" fill="#312e81" text-anchor="middle">DeliveryStop · VehicleInventory</text>
+            <line x1="600" y1="450" x2="490" y2="365" stroke="#4338ca" stroke-width="1.5" stroke-dasharray="4,3"/>
+
+            <!-- Talleres bottom-left -->
+            <rect x="30" y="470" width="250" height="95" rx="12" fill="#ecfccb" stroke="#4d7c0f" stroke-width="1.5"/>
+            <text x="155" y="493" font-size="12.5" font-weight="800" fill="#4d7c0f" text-anchor="middle">🔧 Talleres — 2 tablas</text>
+            <text x="155" y="513" font-size="10.5" fill="#365314" text-anchor="middle">Asset · AssetRecord</text>
+            <text x="155" y="530" font-size="9.5" fill="#365314" text-anchor="middle">(ficha técnica, refacciones)</text>
+            <line x1="220" y1="470" x2="330" y2="365" stroke="#4d7c0f" stroke-width="1.5" stroke-dasharray="4,3"/>
+
+            <text x="410" y="410" font-size="9.5" fill="#94a3b8" text-anchor="middle" font-style="italic">Todas las conexiones pasan por ScheduleTask y/o Customer del núcleo</text>
+          </svg>
+        </div>
+
+        <p class="body-text"><strong>Lectura clave para escalabilidad de producto:</strong> agregar un quinto sector significaría, en principio, sumar otra tabla satélite conectada al núcleo — no reescribir Tenant, User, Employee, ScheduleTask, Sale, ni ningún otro componente compartido. Ese aislamiento es intencional y es la razón por la que el patrón se pudo validar dos veces (Eventos y Talleres) sin fricción mayor.</p>
+      </section>
+
+      <!-- ============ CASOS DE USO ============ -->
+      <section id="casos-uso">
+        <div class="sec-eyebrow">06 · Ingeniería</div>
+        <h2 class="sec-title">Casos de uso</h2>
+        <div class="sec-sub">Los flujos principales, documentados como actor → objetivo → flujo → resultado.</div>
+
+        <div class="uc-card">
+          <div class="uc-head" style="background:var(--teal-light);">
+            <div><span class="uc-id">UC-01</span><br><span class="uc-title">Agendar y cobrar una cita</span></div>
+            <span class="uc-actor">Actor: Empleado</span>
+          </div>
+          <div class="uc-body">
+            <div class="uc-field"><div class="lbl">Precondición</div><p>El Customer existe o se crea en el momento; el empleado tiene un WorkSchedule vigente para el horario solicitado.</p></div>
+            <div class="uc-field"><div class="lbl">Flujo principal</div><ol>
+              <li>Se crea un ScheduleTask (Type=Appointment) vinculado a Customer y Service.</li>
+              <li>Durable Function programa recordatorio 24h y 2h antes.</li>
+              <li>El empleado marca InProgress → Completed.</li>
+              <li>Se genera un Sale con SaleItems y se cobra (efectivo/tarjeta/transferencia).</li>
+              <li>Se genera el Receipt en PDF y se envía por email.</li>
+            </ol></div>
+            <div class="uc-field"><div class="lbl">Postcondición</div><p>Cita marcada como Completed, venta registrada, stock de productos usados descontado si aplica.</p></div>
+          </div>
+        </div>
+
+        <div class="uc-card">
+          <div class="uc-head" style="background:var(--teal-light);">
+            <div><span class="uc-id">UC-02</span><br><span class="uc-title">Consultar expediente clínico antes de atender</span></div>
+            <span class="uc-actor">Actor: Empleado</span>
+          </div>
+          <div class="uc-body">
+            <div class="uc-field"><div class="lbl">Precondición</div><p>El Customer ya tiene un ClinicalRecord de visitas anteriores.</p></div>
+            <div class="uc-field"><div class="lbl">Flujo principal</div><ol>
+              <li>Al abrir la cita agendada, el empleado consulta el ClinicalRecord del Customer.</li>
+              <li>Revisa alergias y notas de tratamientos previos antes de atender.</li>
+              <li>Al terminar, agrega nuevas notas y fotos antes/después al mismo ClinicalRecord.</li>
+            </ol></div>
+            <div class="uc-field"><div class="lbl">Postcondición</div><p>Historial del cliente actualizado y disponible para su próxima visita.</p></div>
+          </div>
+        </div>
+
+        <div class="uc-card">
+          <div class="uc-head" style="background:var(--orange-light);">
+            <div><span class="uc-id">UC-03</span><br><span class="uc-title">Contratar un evento con anticipo, garantía y proveedores</span></div>
+            <span class="uc-actor">Actor: Owner / Cliente</span>
+          </div>
+          <div class="uc-body">
+            <div class="uc-field"><div class="lbl">Precondición</div><p>Existe al menos un Venue disponible para la fecha y aforo solicitado.</p></div>
+            <div class="uc-field"><div class="lbl">Flujo principal</div><ol>
+              <li>Se crea EventDetails (EventType, GuestCount) vinculado a un Venue sin traslape de horario.</li>
+              <li>Se elige Mode=Contract: se define DepositAmount y SecurityDeposit.</li>
+              <li>Se registran EventVendors (DJ, banquete, decoración) contra Suppliers existentes.</li>
+              <li>Se cobra el anticipo (Sale parcial); más adelante, el saldo final el día del evento.</li>
+              <li>Tras el evento, se revisa el espacio y se libera o retiene el SecurityDeposit.</li>
+            </ol></div>
+            <div class="uc-field"><div class="lbl">Flujo alternativo</div><p>Mode=Simple: se salta contrato/garantía/proveedores y se reserva directo con un EventPackage.</p></div>
+            <div class="uc-field"><div class="lbl">Postcondición</div><p>Evento confirmado, Venue bloqueado para esa fecha/hora, pagos y garantía documentados.</p></div>
+          </div>
+        </div>
+
+        <div class="uc-card">
+          <div class="uc-head" style="background:var(--indigo-light);">
+            <div><span class="uc-id">UC-04</span><br><span class="uc-title">Planear y ejecutar una ruta de entrega</span></div>
+            <span class="uc-actor">Actor: Chofer / Repartidor</span>
+          </div>
+          <div class="uc-body">
+            <div class="uc-field"><div class="lbl">Precondición</div><p>Hay un Vehicle disponible y Products con stock suficiente para cargar.</p></div>
+            <div class="uc-field"><div class="lbl">Flujo principal</div><ol>
+              <li>Se crea una DeliveryRoute con Employee, Vehicle y una o varias DeliveryStops.</li>
+              <li>Se carga el manifiesto en VehicleInventory (QuantityLoaded por producto).</li>
+              <li>Status=InProgress; en cada parada se descuenta QuantityDelivered y se genera un Sale.</li>
+              <li>Se captura firma/foto como comprobante de entrega por parada.</li>
+              <li>Al cerrar la ruta, se concilia QuantityLoaded vs. QuantityDelivered.</li>
+            </ol></div>
+            <div class="uc-field"><div class="lbl">Postcondición</div><p>Ruta completada, ventas de cada parada registradas, inventario en tránsito reconciliado.</p></div>
+          </div>
+        </div>
+
+        <div class="uc-card">
+          <div class="uc-head" style="background:var(--indigo-light);">
+            <div><span class="uc-id">UC-05</span><br><span class="uc-title">Vender de mostrador, sin reparto</span></div>
+            <span class="uc-actor">Actor: Empleado de mostrador</span>
+          </div>
+          <div class="uc-body">
+            <div class="uc-field"><div class="lbl">Flujo principal</div><ol>
+              <li>Cliente llega a la bodega; no se crea DeliveryRoute ni DeliveryStop.</li>
+              <li>Se arma el Sale directo con SaleItems del catálogo de Products, Channel=Counter.</li>
+              <li>Se cobra y se genera Receipt; el Stock general se descuenta igual que cualquier venta.</li>
+            </ol></div>
+            <div class="uc-field"><div class="lbl">Postcondición</div><p>Venta registrada sin tocar ningún módulo de logística.</p></div>
+          </div>
+        </div>
+
+        <div class="uc-card">
+          <div class="uc-head" style="background:var(--lime-light);">
+            <div><span class="uc-id">UC-06</span><br><span class="uc-title">Dar servicio a un vehículo/equipo con ficha técnica</span></div>
+            <span class="uc-actor">Actor: Mecánico / Técnico</span>
+          </div>
+          <div class="uc-body">
+            <div class="uc-field"><div class="lbl">Flujo principal</div><ol>
+              <li>Se crea o reutiliza un Asset (vehículo/equipo) vinculado al Customer dueño.</li>
+              <li>Se agenda un ScheduleTask Type=Service vinculado al Asset; el técnico revisa el AssetRecord previo.</li>
+              <li>Se atiende el servicio y se registra un nuevo AssetRecord (diagnóstico, refacciones, kilometraje).</li>
+              <li>Se cobra en POS (mano de obra + refacciones) y se genera el recibo.</li>
+              <li>DF-08 programa un recordatorio de mantenimiento preventivo según kilometraje/tiempo.</li>
+            </ol></div>
+            <div class="uc-field"><div class="lbl">Postcondición</div><p>Historial del activo actualizado; próximo mantenimiento programado automáticamente.</p></div>
+          </div>
+        </div>
+
+        <div class="uc-card">
+          <div class="uc-head" style="background:var(--gray-100);">
+            <div><span class="uc-id">UC-07</span><br><span class="uc-title">Onboarding de un negocio nuevo (cualquier sector)</span></div>
+            <span class="uc-actor">Actor: Owner nuevo</span>
+          </div>
+          <div class="uc-body">
+            <div class="uc-field"><div class="lbl">Flujo principal</div><ol>
+              <li>Se registra el Tenant con Sector, BusinessType, nombre y slug único.</li>
+              <li>DF-04 carga catálogo default (servicios/paquetes, categorías de producto) según el Sector.</li>
+              <li>Se crea el usuario Owner y se envía email de bienvenida.</li>
+              <li>Si no inicia sesión en 3 días, se envía un recordatorio automático.</li>
+            </ol></div>
+            <div class="uc-field"><div class="lbl">Postcondición</div><p>Negocio operativo sin intervención manual del equipo de MTA — el onboarding es 100% automático.</p></div>
+          </div>
+        </div>
+
+        <div class="uc-card">
+          <div class="uc-head" style="background:var(--purple-light);">
+            <div><span class="uc-id">UC-08</span><br><span class="uc-title">Corte de caja diario automático</span></div>
+            <span class="uc-actor">Actor: Sistema (Durable Function) → Owner</span>
+          </div>
+          <div class="uc-body">
+            <div class="uc-field"><div class="lbl">Flujo principal</div><ol>
+              <li>Timer diario (11:55pm) por Tenant activa DF-03.</li>
+              <li>Se agregan todas las Sales del día (de cualquier sector/módulo) por método de pago.</li>
+              <li>Se generan CashRegisterCuts con PDF y se envía por email al Owner.</li>
+            </ol></div>
+            <div class="uc-field"><div class="lbl">Postcondición</div><p>El dueño recibe el cierre financiero del día sin pedirlo — cero trabajo manual de reporteo.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ ESCALABILIDAD ============ -->
+      <section id="escalabilidad">
+        <div class="sec-eyebrow">07 · Negocio</div>
+        <h2 class="sec-title">Escalabilidad</h2>
+        <div class="sec-sub">Qué tan lejos llega la arquitectura actual, qué se rompe primero, y qué tan escalable es como negocio.</div>
+
+        <h3 class="sub-title">Escalabilidad técnica</h3>
+        <p class="body-text">Hoy el sistema corre sobre <strong>una sola instancia de PostgreSQL</strong> compartida por todos los tenants, con aislamiento lógico vía Global Query Filters. Este diseño es simple, barato y funciona bien para un volumen inicial — pero tiene límites conocidos:</p>
+
+        <table class="scale-table">
+          <tr><th>Componente</th><th>Riesgo si crece sin cambios</th><th>Mitigación</th></tr>
+          <tr>
+            <td>Base de datos única (PostgreSQL)</td>
+            <td><span class="risk-high">Alto</span> — un tenant con mucho volumen puede saturar la instancia y afectar a los demás ("noisy neighbor")</td>
+            <td>Índices compuestos por TenantId, luego read replicas para reportes, y particionamiento/sharding por TenantId si se llega a miles de negocios</td>
+          </tr>
+          <tr>
+            <td>Consultas de reportes/dashboards</td>
+            <td><span class="risk-med">Medio</span> — sin caché, cada consulta pesada golpea la base directamente</td>
+            <td>Capa de caché (Redis) para reportes y dashboards que no necesitan datos al segundo</td>
+          </tr>
+          <tr>
+            <td>API (ASP.NET Core en Azure App Service)</td>
+            <td><span class="risk-low">Bajo</span> — es stateless por diseño</td>
+            <td>Escala horizontalmente agregando instancias; no requiere rediseño</td>
+          </tr>
+          <tr>
+            <td>Azure Durable Functions</td>
+            <td><span class="risk-low">Bajo</span> — autoescalable nativamente en Azure</td>
+            <td>Monitorear si un sector (ej. Bodega con GPS en Fase 2) genera mucho más volumen de eventos que los demás, y aislar en un plan de consumo separado si es necesario</td>
+          </tr>
+          <tr>
+            <td>Azure Blob Storage (PDFs, fotos)</td>
+            <td><span class="risk-low">Bajo</span> — escala nativamente, costo lineal por uso</td>
+            <td>Sin acción requerida a corto/mediano plazo</td>
+          </tr>
+          <tr>
+            <td>Conexiones a base de datos</td>
+            <td><span class="risk-med">Medio</span> — cada instancia de API abre su propio pool de conexiones</td>
+            <td>Introducir PgBouncer (connection pooling) antes de escalar el número de instancias de API</td>
+          </tr>
+        </table>
+
+        <p class="body-text" style="margin-top:14px;">En números aproximados: la arquitectura actual debería sostener sin cambios estructurales <strong>cientos de tenants pequeños/medianos</strong> con carga transaccional típica (agenda, POS, reportes diarios). El primer cuello de botella real aparece cuando (a) un solo tenant tiene un volumen de datos/transacciones desproporcionado, o (b) el número total de tenants concurrentes empieza a generar contención de conexiones en la base de datos. Ambos son resolubles sin rediseñar el modelo de datos — son cambios de infraestructura, no de arquitectura.</p>
+
+        <h3 class="sub-title">Escalabilidad de negocio (producto vendible)</h3>
+        <ul class="body-list">
+          <li><strong>Agregar un sector nuevo es barato:</strong> ya demostrado dos veces (Eventos, Talleres) sin tocar el núcleo. Un quinto sector es, en principio, 1-4 tablas nuevas más su módulo de Application/API.</li>
+          <li><strong>Onboarding ya es automático</strong> (UC-07) — vender más tenants no implica más trabajo operativo de implementación por cliente.</li>
+          <li><strong>Falta para vender como producto self-service:</strong> medición de uso por tenant (para planes de precio basados en volumen), un portal de facturación/suscripción, y documentación de API pública si se quiere permitir integraciones de terceros.</li>
+          <li><strong>Modelo de precio sugerido:</strong> suscripción mensual por tenant, con el módulo de sector incluido según el tipo de negocio, y features como GPS en tiempo real (Fase 2) como add-on de pago una vez desarrollado.</li>
+          <li><strong>Para una venta/adquisición del producto completo:</strong> lo que más valor agrega antes de esa conversación es (1) esta documentación misma, (2) métricas reales de uso/carga si ya hay tenants activos, y (3) un plan claro de qué falta para las brechas listadas en "Fuera de alcance."</li>
+        </ul>
+      </section>
+
+      <!-- ============ ROADMAP ============ -->
+      <section id="roadmap">
+        <div class="sec-eyebrow">08 · Negocio</div>
+        <h2 class="sec-title">Roadmap</h2>
+        <div class="sec-sub">Lo planeado a 4 meses, más lo que vendría después si el producto avanza hacia venderse.</div>
+
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-when">Mes 1 — En curso (40%)</div>
+            <h4>Backend Core</h4>
+            <p>Estructura .NET, entidades de dominio, DbContext + JWT Auth, PostgreSQL en Docker, migración inicial, CRUD Empleados/Agenda.</p>
+          </div>
+          <div class="tl-item">
+            <div class="tl-when">Mes 2</div>
+            <h4>Frontend React + Customers</h4>
+            <p>Login/dashboard, calendario, gestión de empleados, inventario básico, Customers + ClinicalRecords + Assets/AssetRecords.</p>
+          </div>
+          <div class="tl-item">
+            <div class="tl-when">Mes 3</div>
+            <h4>POS + Eventos + Azure</h4>
+            <p>Ventas POS, Stripe Terminal, recibos PDF, EventDetails/EventPackages/EventVendors/Venues, Durable Functions principales.</p>
+          </div>
+          <div class="tl-item">
+            <div class="tl-when">Mes 4</div>
+            <h4>Logística + Reportes + Polish</h4>
+            <p>Vehicles/DeliveryRoutes/DeliveryStops/VehicleInventory, modo mostrador vs. ruta, reportes financieros, testing e2e.</p>
+          </div>
+          <div class="tl-item future">
+            <div class="tl-when">Fase 2 — Post-lanzamiento</div>
+            <h4>GPS en tiempo real</h4>
+            <p>Tracking de vehículos en ruta, mapa en vivo, historial de recorrido. Requiere app móvil o dispositivo GPS — fuera del alcance inicial.</p>
+          </div>
+          <div class="tl-item future">
+            <div class="tl-when">Fase 3 — Sugerida (no planeada aún)</div>
+            <h4>Preparación para venta/escala como producto</h4>
+            <p>Facturación fiscal electrónica por país, app móvil nativa, multi-idioma/multi-moneda, API pública, medición de uso por tenant, portal de auto-onboarding y facturación de suscripción.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ GLOSARIO ============ -->
+      <section id="glosario">
+        <div class="sec-eyebrow">09 · Referencia</div>
+        <h2 class="sec-title">Glosario y stack técnico</h2>
+        <div class="sec-sub">Términos clave y el stack completo, en un solo lugar.</div>
+
+        <h3 class="sub-title">Glosario</h3>
+        <dl class="glossary">
+          <dt>Tenant</dt><dd>Un negocio individual dentro del sistema multi-tenant. Todas las tablas cuelgan de un TenantId.</dd>
+          <dt>Multi-tenancy</dt><dd>Una sola instalación/base de datos sirve a muchos negocios distintos, con sus datos aislados entre sí.</dd>
+          <dt>Global Query Filter</dt><dd>Regla de Entity Framework Core que agrega automáticamente el filtro por TenantId a cada consulta, sin necesidad de repetirlo en cada controller.</dd>
+          <dt>CQRS</dt><dd>Command Query Responsibility Segregation — separar las operaciones de escritura (Commands) de las de lectura (Queries) en clases distintas.</dd>
+          <dt>MediatR</dt><dd>Librería de .NET que implementa el patrón mediador, usada para desacoplar Commands/Queries de los controllers.</dd>
+          <dt>Durable Function</dt><dd>Azure Function con estado, capaz de sobrevivir reinicios y coordinar procesos largos o multi-paso (ej. recordatorios, reintentos de pago).</dd>
+          <dt>Sector / BusinessType</dt><dd>Sector = una de las 4 verticales (Belleza, Eventos, Bodega, Talleres). BusinessType = el subtipo específico dentro del sector.</dd>
+          <dt>Núcleo compartido</dt><dd>Las 13 tablas y la lógica común a todos los sectores (agenda, personal, ventas, inventario, reportes).</dd>
+        </dl>
+
+        <h3 class="sub-title">Stack técnico</h3>
+        <table class="stack-table">
+          <tr><th>Capa</th><th>Tecnología</th><th>Rol</th></tr>
+          <tr><td>Backend</td><td>ASP.NET Core 8, EF Core 8, ASP.NET Identity, MediatR, JWT Bearer</td><td>API, ORM, auth, CQRS, tokens</td></tr>
+          <tr><td>Base de datos</td><td>PostgreSQL (Docker en dev, Azure DB en producción)</td><td>Almacenamiento principal, multi-tenant</td></tr>
+          <tr><td>Frontend</td><td>React, TailwindCSS, Vite</td><td>SPA web responsive</td></tr>
+          <tr><td>Cloud / Azure</td><td>App Service, Durable Functions, Blob Storage, Communication Services</td><td>Hosting, workflows, archivos, email/SMS</td></tr>
+          <tr><td>Pagos</td><td>Stripe Terminal</td><td>POS con tarjeta</td></tr>
+          <tr><td>Futuro (Fase 2)</td><td>Azure Maps / SignalR</td><td>GPS en tiempo real</td></tr>
+        </table>
+      </section>
+
+      <div class="footer-doc">
+        <strong>MasterTrackAgenda (MTA)</strong> · Documentación Técnica y de Producto · v1.0 · 2026 · Complementa al System Design Document v1.3
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+  const links = Array.from(document.querySelectorAll('#sidenav a'));
+  const sections = links.map(a => document.querySelector(a.getAttribute('href')));
+
+  function onScroll() {
+    let current = sections[0];
+    const scrollPos = window.scrollY + 120;
+    sections.forEach(sec => { if (sec && sec.offsetTop <= scrollPos) current = sec; });
+    links.forEach(a => a.classList.remove('active'));
+    const idx = sections.indexOf(current);
+    if (idx >= 0) links[idx].classList.add('active');
+  }
+  window.addEventListener('scroll', onScroll);
+  onScroll();
+
+  links.forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+</script>
+</body>
+</html>
