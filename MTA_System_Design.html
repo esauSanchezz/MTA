@@ -13,6 +13,10 @@
     --yellow-light: #fef9c3; --yellow-dark: #a16207;
     --pink-light: #fce7f3; --pink-dark: #be185d;
     --purple-light: #f3e8ff; --purple-dark: #7c3aed;
+    --teal-light: #ccfbf1; --teal-dark: #0f766e;
+    --orange-light: #ffedd5; --orange-dark: #c2410c;
+    --indigo-light: #e0e7ff; --indigo-dark: #4338ca;
+    --lime-light: #ecfccb; --lime-dark: #4d7c0f;
     --gray-50: #f8fafc; --gray-100: #f1f5f9; --gray-200: #e2e8f0;
     --gray-400: #94a3b8; --gray-600: #475569; --gray-800: #1e293b;
     --text: #1a1a1a; --text-muted: #64748b; --border: #e5e7eb;
@@ -53,6 +57,7 @@
     background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15);
     color: #cbd5e1; padding: 4px 12px; border-radius: 6px; font-size: 12px;
   }
+  .hero-tag.future { border-style: dashed; color: #93c5fd; }
 
   /* LAYOUT */
   .container { max-width: 960px; margin: 0 auto; padding: 40px 24px; }
@@ -95,6 +100,22 @@
   .progress-items { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .p-item { display: flex; align-items: center; gap: 8px; font-size: 13px; }
   .p-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .progress-note { font-size: 12px; color: var(--text-muted); font-style: italic; margin-top: 4px; }
+
+  /* SECTOR CARDS */
+  .sector-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  @media (max-width: 700px) { .sector-grid { grid-template-columns: 1fr; } }
+  .sector-card {
+    background: white; border: 1.5px solid var(--border);
+    border-radius: 14px; padding: 20px; display: flex; flex-direction: column;
+  }
+  .sector-card .sector-icon { font-size: 30px; margin-bottom: 8px; }
+  .sector-card h4 { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
+  .sector-card .sector-like { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; font-style: italic; }
+  .sector-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .sector-tag { font-size: 11px; padding: 3px 10px; border-radius: 999px; background: var(--gray-100); color: var(--text-muted); }
+  .sector-diff { font-size: 12px; color: var(--text-muted); border-top: 1px solid var(--gray-100); padding-top: 10px; margin-top: auto; line-height: 1.6; }
+  .sector-diff strong { color: var(--text); }
 
   /* ER DIAGRAM */
   .er-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
@@ -130,6 +151,11 @@
   .detail-card p { font-size: 13px; color: #1e3a5f; line-height: 1.7; }
   .detail-card ul { font-size: 13px; color: #1e3a5f; line-height: 1.8; margin: 8px 0 0 18px; }
 
+  /* SECTOR LEGEND */
+  .legend { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+
   /* FLOWS */
   .flow-group { margin-bottom: 32px; }
   .flow-group-title {
@@ -137,6 +163,10 @@
     padding: 10px 16px; background: white;
     border: 1px solid var(--border); border-radius: 10px;
     display: flex; align-items: center; gap: 8px;
+  }
+  .flow-group-title .badge {
+    font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px;
+    text-transform: uppercase; letter-spacing: .03em; margin-left: auto;
   }
   .flow-steps { display: flex; flex-direction: column; gap: 0; }
   .flow-step { display: flex; gap: 16px; }
@@ -196,10 +226,15 @@
   .month-card .month-sub { font-size: 11px; margin-bottom: 12px; opacity: .7; }
   .month-item { font-size: 12px; padding: 3px 0; display: flex; gap: 6px; align-items: flex-start; }
   .month-dot { width: 5px; height: 5px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; background: currentColor; }
+  .phase2-note {
+    margin-top: 14px; background: var(--indigo-light); border: 1px dashed var(--indigo-dark);
+    border-radius: 10px; padding: 14px 16px; font-size: 13px; color: var(--indigo-dark);
+  }
+  .phase2-note strong { display: block; margin-bottom: 4px; font-size: 13px; }
 
   /* MULTI-TENANT */
   .mt-diagram {
-    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    display: grid; grid-template-columns: 1fr 1fr 1fr 1fr;
     gap: 12px; margin-bottom: 20px; align-items: center;
   }
   .mt-card {
@@ -212,7 +247,7 @@
   .mt-db {
     background: var(--gray-800); color: white;
     border-radius: 10px; padding: 16px; text-align: center;
-    grid-column: span 3; margin-top: 4px;
+    grid-column: span 4; margin-top: 4px;
   }
   .mt-db h4 { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
   .mt-db p { font-size: 12px; color: var(--gray-400); }
@@ -229,6 +264,7 @@
   .df-steps { display: flex; flex-direction: column; gap: 4px; }
   .df-step { font-size: 12px; padding: 4px 8px; background: var(--gray-100); border-radius: 5px; display: flex; gap: 6px; }
   .df-step span { color: var(--text-muted); }
+  .df-card.future { border: 1.5px dashed var(--indigo-dark); background: var(--indigo-light); }
 
   /* FOOTER */
   .footer {
@@ -244,9 +280,9 @@
 <!-- HERO -->
 <div class="hero">
   <div class="hero-inner">
-    <div class="hero-badge">📋 System Design Document</div>
+    <div class="hero-badge">📋 System Design Document · v1.2</div>
     <h1>MasterTrackAgenda</h1>
-    <div class="hero-sub">Smart Business Management Platform · Salones · Talleres · Eventos</div>
+    <div class="hero-sub">Smart Business Management Platform · 4 sectores: Belleza &amp; Bienestar, Eventos Sociales, Distribución (mostrador y reparto), Talleres y Servicios Técnicos</div>
     <div class="hero-tags">
       <span class="hero-tag">ASP.NET Core 8</span>
       <span class="hero-tag">PostgreSQL</span>
@@ -255,6 +291,7 @@
       <span class="hero-tag">Azure Durable Functions</span>
       <span class="hero-tag">Stripe</span>
       <span class="hero-tag">Multi-Tenant SaaS</span>
+      <span class="hero-tag future">GPS Tracking · Fase 2</span>
     </div>
   </div>
 </div>
@@ -276,11 +313,64 @@
 
     <div class="section">
       <div class="section-title">¿Qué es MTA?</div>
-      <div class="section-heading">Una plataforma que se adapta a tu negocio</div>
+      <div class="section-heading">Una plataforma para cuatro sectores, no un negocio genérico</div>
       <div class="section-desc">
-        MasterTrackAgenda es un sistema de gestión inteligente multi-tenant. Un solo backend sirve a distintos tipos de negocio —
-        salón de uñas, taller mecánico, salón de fiestas — con agenda, trabajadores, inventario, ventas, POS y reportes integrados.
-        Cada negocio ve únicamente sus propios datos.
+        MasterTrackAgenda es un sistema de gestión inteligente multi-tenant enfocado en cuatro sectores concretos:
+        negocios de belleza y bienestar (con expediente clínico del cliente), salones de eventos sociales (con
+        reservación simple o contrato + anticipo y proveedores externos), bodegas de distribución (venta de mostrador
+        o rutas de entrega con vehículos e inventario en tránsito), y talleres y servicios técnicos (con ficha técnica
+        del vehículo/equipo en vez de expediente de cliente). Un solo backend sirve a cada sector con módulos
+        especializados — cada negocio ve únicamente sus propios datos.
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Sectores y Tipos de Negocio</div>
+      <div class="sector-grid">
+        <div class="sector-card">
+          <div class="sector-icon">💆</div>
+          <h4>Belleza &amp; Bienestar</h4>
+          <div class="sector-like">Similar a Agenda Pro</div>
+          <div class="sector-tags">
+            <span class="sector-tag">Consultorios clínicos de belleza</span>
+            <span class="sector-tag">Salones de belleza</span>
+            <span class="sector-tag">Barberías</span>
+            <span class="sector-tag">Salones de uñas</span>
+          </div>
+          <div class="sector-diff"><strong>Diferenciador:</strong> Expediente clínico por cliente — historial de tratamientos, alergias, notas y fotos antes/después.</div>
+        </div>
+        <div class="sector-card">
+          <div class="sector-icon">🎉</div>
+          <h4>Eventos Sociales</h4>
+          <div class="sector-like">Similar a un sistema de gestión de eventos</div>
+          <div class="sector-tags">
+            <span class="sector-tag">Salones de fiesta</span>
+            <span class="sector-tag">Salones de eventos sociales</span>
+          </div>
+          <div class="sector-diff"><strong>Diferenciador:</strong> Dos modalidades — reservación rápida con paquete, o contrato con anticipo y coordinación de proveedores externos (DJ, banquete, etc.).</div>
+        </div>
+        <div class="sector-card">
+          <div class="sector-icon">🚚</div>
+          <h4>Distribución &amp; Logística</h4>
+          <div class="sector-like">Bodegas con venta de mostrador y/o entrega de producto</div>
+          <div class="sector-tags">
+            <span class="sector-tag">Bodegas / mayoristas</span>
+            <span class="sector-tag">Venta de mostrador</span>
+            <span class="sector-tag">Venta con entrega a domicilio</span>
+          </div>
+          <div class="sector-diff"><strong>Diferenciador:</strong> Maneja ambas modalidades con el mismo motor de ventas e inventario — venta directa de mostrador, o rutas de entrega (una o varias paradas) con vehículos e inventario en tránsito. GPS en tiempo real llega en Fase 2.</div>
+        </div>
+        <div class="sector-card">
+          <div class="sector-icon">🔧</div>
+          <h4>Talleres &amp; Servicios Técnicos</h4>
+          <div class="sector-like">Talleres mecánicos, de equipos y electrodomésticos</div>
+          <div class="sector-tags">
+            <span class="sector-tag">Talleres mecánicos</span>
+            <span class="sector-tag">Talleres de equipos/electrodomésticos</span>
+            <span class="sector-tag">Talleres en general</span>
+          </div>
+          <div class="sector-diff"><strong>Diferenciador:</strong> Ficha técnica del vehículo/equipo (historial de reparaciones, refacciones usadas, kilometraje/uso) en vez de expediente de cliente.</div>
+        </div>
       </div>
     </div>
 
@@ -302,27 +392,7 @@
           <div class="p-item"><div class="p-dot" style="background:#f59e0b"></div>CRUD Empleados / Agenda</div>
           <div class="p-item"><div class="p-dot" style="background:#94a3b8"></div>Deploy Azure App Service</div>
         </div>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-title">Tipos de negocio soportados</div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
-        <div style="background:white;border:1.5px solid var(--border);border-radius:12px;padding:20px;text-align:center;">
-          <div style="font-size:32px;margin-bottom:8px;">💅</div>
-          <div style="font-weight:700;margin-bottom:6px;">Salón de Uñas</div>
-          <div style="font-size:12px;color:var(--text-muted)">Citas por servicio · Estilistas · Manicure, Gel, Pedicure · Productos</div>
-        </div>
-        <div style="background:white;border:1.5px solid var(--border);border-radius:12px;padding:20px;text-align:center;">
-          <div style="font-size:32px;margin-bottom:8px;">🔧</div>
-          <div style="font-weight:700;margin-bottom:6px;">Taller Mecánico</div>
-          <div style="font-size:12px;color:var(--text-muted)">Citas por vehículo · Mecánicos · Diagnóstico, Reparación · Refacciones</div>
-        </div>
-        <div style="background:white;border:1.5px solid var(--border);border-radius:12px;padding:20px;text-align:center;">
-          <div style="font-size:32px;margin-bottom:8px;">🎉</div>
-          <div style="font-weight:700;margin-bottom:6px;">Salón de Fiestas</div>
-          <div style="font-size:12px;color:var(--text-muted)">Eventos por fecha · Animadores · Paquetes · Decoraciones</div>
-        </div>
+        <div class="progress-note">Nota: este progreso corresponde al backend core compartido (Tenants, Users, Employees, Agenda). Las 9 tablas nuevas del alcance de 3 sectores (ver pestaña Base de Datos) aún no están reflejadas en el % — se suman en Mes 2-4.</div>
       </div>
     </div>
 
@@ -353,6 +423,22 @@
           <div style="font-weight:700;margin-bottom:4px;">🧾 Recibos Digitales</div>
           <div style="font-size:13px;color:var(--text-muted);">PDF generado por cada venta, numeración consecutiva, envío automático por email.</div>
         </div>
+        <div style="background:var(--teal-light);border:1px solid #5eead4;border-radius:10px;padding:14px;">
+          <div style="font-weight:700;margin-bottom:4px;">📋 Expediente Clínico <span style="font-size:10px;font-weight:600;opacity:.7;">· Belleza</span></div>
+          <div style="font-size:13px;color:#134e4a;">Historial de tratamientos, alergias, notas y fotos antes/después por cliente.</div>
+        </div>
+        <div style="background:var(--orange-light);border:1px solid #fdba74;border-radius:10px;padding:14px;">
+          <div style="font-weight:700;margin-bottom:4px;">🎪 Gestión de Eventos <span style="font-size:10px;font-weight:600;opacity:.7;">· Eventos</span></div>
+          <div style="font-size:13px;color:#7c2d12;">Paquetes, invitados, anticipos/contratos y coordinación de proveedores externos por evento.</div>
+        </div>
+        <div style="background:var(--indigo-light);border:1px solid #a5b4fc;border-radius:10px;padding:14px;">
+          <div style="font-weight:700;margin-bottom:4px;">🚚 Rutas y Entregas <span style="font-size:10px;font-weight:600;opacity:.7;">· Bodega</span></div>
+          <div style="font-size:13px;color:#312e81;">Modo mostrador (venta directa) o modo reparto: rutas de una o varias paradas, vehículos, manifiesto de inventario en tránsito y confirmación de entrega.</div>
+        </div>
+        <div style="background:var(--lime-light);border:1px solid #bef264;border-radius:10px;padding:14px;">
+          <div style="font-weight:700;margin-bottom:4px;">🔧 Ficha Técnica de Activos <span style="font-size:10px;font-weight:600;opacity:.7;">· Talleres</span></div>
+          <div style="font-size:13px;color:#365314;">Historial de reparaciones, refacciones usadas y kilometraje/uso por vehículo o equipo, antes de cada nueva visita.</div>
+        </div>
       </div>
     </div>
   </div>
@@ -361,8 +447,16 @@
   <div class="tab-panel" id="tab-database">
     <div class="section">
       <div class="section-title">Modelo de Datos</div>
-      <div class="section-heading">13 tablas · 1 base de datos · N negocios</div>
-      <div class="section-desc">Haz click en cualquier tabla para ver su propósito y relaciones.</div>
+      <div class="section-heading">23 tablas · 1 base de datos · N negocios · 4 sectores</div>
+      <div class="section-desc">Haz click en cualquier tabla para ver su propósito y relaciones. Color = a qué sector pertenece (azul/verde/amarillo/rosa/morado = core compartido, ver leyenda).</div>
+
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#dbeafe;"></div>Core compartido</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--teal-light);"></div>Sector Belleza</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--orange-light);"></div>Sector Eventos</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--indigo-light);"></div>Sector Bodega/Logística</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--lime-light);"></div>Sector Talleres</div>
+      </div>
 
       <div class="er-grid">
         <div class="er-card" onclick="showErDetail('tenant')">
@@ -371,8 +465,8 @@
             <div class="er-field"><span class="tag-pk">PK</span><span class="fn">Id</span><span>uuid</span></div>
             <div class="er-field"><span class="fn">Name</span><span>varchar(100)</span></div>
             <div class="er-field"><span class="fn">Slug</span><span>varchar unique</span></div>
+            <div class="er-field"><span class="fn">Sector</span><span>int enum</span></div>
             <div class="er-field"><span class="fn">BusinessType</span><span>int enum</span></div>
-            <div class="er-field"><span class="fn">OpenTime/CloseTime</span><span>time</span></div>
           </div>
         </div>
 
@@ -398,6 +492,17 @@
           </div>
         </div>
 
+        <div class="er-card" onclick="showErDetail('customer')">
+          <div class="er-head" style="background:#dbeafe;color:#1d4ed8;">👥 Customers</div>
+          <div class="er-body">
+            <div class="er-field"><span class="tag-pk">PK</span><span class="fn">Id</span><span>uuid</span></div>
+            <div class="er-field"><span class="tag-fk">FK</span><span class="fn">TenantId</span></div>
+            <div class="er-field"><span class="fn">FullName, Phone</span><span>varchar</span></div>
+            <div class="er-field"><span class="fn">Email</span><span>nullable</span></div>
+            <div class="er-field"><span class="fn">Notes</span><span>text</span></div>
+          </div>
+        </div>
+
         <div class="er-card" onclick="showErDetail('workschedule')">
           <div class="er-head" style="background:#dcfce7;color:#15803d;">📅 WorkSchedules</div>
           <div class="er-body">
@@ -414,9 +519,10 @@
           <div class="er-body">
             <div class="er-field"><span class="tag-pk">PK</span><span class="fn">Id</span><span>uuid</span></div>
             <div class="er-field"><span class="tag-fk">FK</span><span class="fn">TenantId, EmployeeId</span></div>
-            <div class="er-field"><span class="fn">Type</span><span>Appointment/Activity</span></div>
+            <div class="er-field"><span class="tag-fk">FK?</span><span class="fn">CustomerId</span><span>nullable</span></div>
+            <div class="er-field"><span class="tag-fk">FK?</span><span class="fn">AssetId</span><span>nullable</span></div>
+            <div class="er-field"><span class="fn">Type</span><span>Appt/Activity/Event/Service</span></div>
             <div class="er-field"><span class="fn">Status</span><span>6 estados</span></div>
-            <div class="er-field"><span class="fn">StartTime/EndTime</span><span>datetime</span></div>
           </div>
         </div>
 
@@ -449,6 +555,7 @@
             <div class="er-field"><span class="tag-fk">FK</span><span class="fn">TenantId, EmployeeId</span></div>
             <div class="er-field"><span class="fn">Total, Discount</span><span>decimal</span></div>
             <div class="er-field"><span class="fn">PaymentMethod</span><span>enum</span></div>
+            <div class="er-field"><span class="fn">Channel</span><span>Counter/Delivery</span></div>
             <div class="er-field"><span class="fn">→ SaleItems (1:N)</span></div>
           </div>
         </div>
@@ -495,6 +602,115 @@
             <div class="er-field"><span class="fn">PdfReportUrl</span><span>Azure Blob</span></div>
           </div>
         </div>
+
+        <div class="er-card" onclick="showErDetail('clinicalrecord')">
+          <div class="er-head" style="background:var(--teal-light);color:var(--teal-dark);">🩺 ClinicalRecords</div>
+          <div class="er-body">
+            <div class="er-field"><span class="tag-pk">PK</span><span class="fn">Id</span><span>uuid</span></div>
+            <div class="er-field"><span class="tag-fk">FK</span><span class="fn">CustomerId, TenantId</span></div>
+            <div class="er-field"><span class="fn">Allergies</span><span>text</span></div>
+            <div class="er-field"><span class="fn">TreatmentNotes</span><span>text</span></div>
+            <div class="er-field"><span class="fn">PhotoUrls</span><span>Azure Blob[]</span></div>
+          </div>
+        </div>
+
+        <div class="er-card" onclick="showErDetail('eventdetails')">
+          <div class="er-head" style="background:var(--orange-light);color:var(--orange-dark);">🎪 EventDetails</div>
+          <div class="er-body">
+            <div class="er-field"><span class="tag-pk">PK</span><span class="fn">Id</span><span>uuid</span></div>
+            <div class="er-field"><span class="tag-fk">FK</span><span class="fn">ScheduleTaskId, PackageId</span></div>
+            <div class="er-field"><span class="fn">GuestCount</span><span>int</span></div>
+            <div class="er-field"><span class="fn">Mode</span><span>Simple/Contract</span></div>
+            <div class="er-field"><span class="fn">DepositAmount</span><span>decimal, nullable</span></div>
+          </div>
+        </div>
+
+        <div class="er-card" onclick="showErDetail('eventpackage')">
+          <div class="er-head" style="background:var(--orange-light);color:var(--orange-dark);">🧩 EventPackages</div>
+          <div class="er-body">
+            <div class="er-field"><span class="tag-pk">PK</span><span class="fn">Id</span><span>uuid</span></div>
+            <div class="er-field"><span class="tag-fk">FK</span><span class="fn">TenantId</span></div>
+            <div class="er-field"><span class="fn">Name</span><span>varchar</span></div>
+            <div class="er-field"><span class="fn">BasePrice</span><span>decimal</span></div>
+            <div class="er-field"><span class="fn">→ IncludedServices (N:N)</span></div>
+          </div>
+        </div>
+
+        <div class="er-card" onclick="showErDetail('eventvendor')">
+          <div class="er-head" style="background:var(--orange-light);color:var(--orange-dark);">🤝 EventVendors</div>
+          <div class="er-body">
+            <div class="er-field"><span class="tag-pk">PK</span><span class="fn">Id</span><span>uuid</span></div>
+            <div class="er-field"><span class="tag-fk">FK</span><span class="fn">EventDetailsId, SupplierId</span></div>
+            <div class="er-field"><span class="fn">Role</span><span>DJ/Banquete/etc</span></div>
+            <div class="er-field"><span class="fn">Cost</span><span>decimal</span></div>
+            <div class="er-field"><span class="fn">Status</span><span>enum</span></div>
+          </div>
+        </div>
+
+        <div class="er-card" onclick="showErDetail('vehicle')">
+          <div class="er-head" style="background:var(--indigo-light);color:var(--indigo-dark);">🚚 Vehicles</div>
+          <div class="er-body">
+            <div class="er-field"><span class="tag-pk">PK</span><span class="fn">Id</span><span>uuid</span></div>
+            <div class="er-field"><span class="tag-fk">FK</span><span class="fn">TenantId</span></div>
+            <div class="er-field"><span class="fn">Plate, Type</span><span>varchar</span></div>
+            <div class="er-field"><span class="fn">Capacity</span><span>decimal</span></div>
+            <div class="er-field"><span class="fn">CurrentLat/Lng</span><span>Fase 2</span></div>
+          </div>
+        </div>
+
+        <div class="er-card" onclick="showErDetail('deliveryroute')">
+          <div class="er-head" style="background:var(--indigo-light);color:var(--indigo-dark);">🗺️ DeliveryRoutes</div>
+          <div class="er-body">
+            <div class="er-field"><span class="tag-pk">PK</span><span class="fn">Id</span><span>uuid</span></div>
+            <div class="er-field"><span class="tag-fk">FK</span><span class="fn">TenantId, EmployeeId, VehicleId</span></div>
+            <div class="er-field"><span class="fn">Date, Status</span></div>
+            <div class="er-field"><span class="fn">StartTime/EndTime</span><span>datetime</span></div>
+            <div class="er-field"><span class="fn">→ DeliveryStops (1:N)</span></div>
+          </div>
+        </div>
+
+        <div class="er-card" onclick="showErDetail('deliverystop')">
+          <div class="er-head" style="background:var(--indigo-light);color:var(--indigo-dark);">📍 DeliveryStops</div>
+          <div class="er-body">
+            <div class="er-field"><span class="tag-pk">PK</span><span class="fn">Id</span><span>uuid</span></div>
+            <div class="er-field"><span class="tag-fk">FK</span><span class="fn">DeliveryRouteId, CustomerId</span></div>
+            <div class="er-field"><span class="fn">Sequence</span><span>int</span></div>
+            <div class="er-field"><span class="fn">Status</span><span>Pending/Delivered/Failed</span></div>
+            <div class="er-field"><span class="tag-fk">FK?</span><span class="fn">SaleId</span><span>nullable</span></div>
+          </div>
+        </div>
+
+        <div class="er-card" onclick="showErDetail('vehicleinventory')">
+          <div class="er-head" style="background:var(--indigo-light);color:var(--indigo-dark);">📦 VehicleInventory</div>
+          <div class="er-body">
+            <div class="er-field"><span class="tag-pk">PK</span><span class="fn">Id</span><span>uuid</span></div>
+            <div class="er-field"><span class="tag-fk">FK</span><span class="fn">DeliveryRouteId, ProductId</span></div>
+            <div class="er-field"><span class="fn">QuantityLoaded</span><span>int</span></div>
+            <div class="er-field"><span class="fn">QuantityDelivered</span><span>int</span></div>
+          </div>
+        </div>
+
+        <div class="er-card" onclick="showErDetail('asset')">
+          <div class="er-head" style="background:var(--lime-light);color:var(--lime-dark);">🔧 Assets</div>
+          <div class="er-body">
+            <div class="er-field"><span class="tag-pk">PK</span><span class="fn">Id</span><span>uuid</span></div>
+            <div class="er-field"><span class="tag-fk">FK</span><span class="fn">TenantId, CustomerId</span></div>
+            <div class="er-field"><span class="fn">Type</span><span>Vehicle/Equipment</span></div>
+            <div class="er-field"><span class="fn">Identifier</span><span>placa / serie</span></div>
+            <div class="er-field"><span class="fn">Mileage/UsageHours</span><span>int</span></div>
+          </div>
+        </div>
+
+        <div class="er-card" onclick="showErDetail('assetrecord')">
+          <div class="er-head" style="background:var(--lime-light);color:var(--lime-dark);">🩹 AssetRecords</div>
+          <div class="er-body">
+            <div class="er-field"><span class="tag-pk">PK</span><span class="fn">Id</span><span>uuid</span></div>
+            <div class="er-field"><span class="tag-fk">FK</span><span class="fn">AssetId, TenantId</span></div>
+            <div class="er-field"><span class="fn">RepairNotes</span><span>text</span></div>
+            <div class="er-field"><span class="fn">PartsUsed</span><span>text</span></div>
+            <div class="er-field"><span class="fn">MileageAtService</span><span>int</span></div>
+          </div>
+        </div>
       </div>
 
       <div id="er-detail" style="display:none" class="detail-card">
@@ -509,24 +725,29 @@
       <div class="section-title">Multi-Tenancy — Cómo funciona</div>
       <div class="mt-diagram">
         <div class="mt-card" style="border-color:#86efac;">
-          <div style="font-size:24px;margin-bottom:6px;">💅</div>
+          <div style="font-size:24px;margin-bottom:6px;">💆</div>
           <h4>Salón Glamour</h4>
-          <p>TenantId: abc-111<br>Login → JWT con tenantId</p>
+          <p>Sector: Belleza · TenantId: abc-111<br>Login → JWT con tenantId</p>
         </div>
-        <div class="mt-card" style="border-color:#fde047;">
+        <div class="mt-card" style="border-color:#fdba74;">
+          <div style="font-size:24px;margin-bottom:6px;">🎉</div>
+          <h4>Salón Alegría</h4>
+          <p>Sector: Eventos · TenantId: ghi-333<br>Login → JWT con tenantId</p>
+        </div>
+        <div class="mt-card" style="border-color:#a5b4fc;">
+          <div style="font-size:24px;margin-bottom:6px;">🚚</div>
+          <h4>Distribuidora La Económica</h4>
+          <p>Sector: Bodega · TenantId: jkl-444<br>Login → JWT con tenantId</p>
+        </div>
+        <div class="mt-card" style="border-color:#bef264;">
           <div style="font-size:24px;margin-bottom:6px;">🔧</div>
           <h4>Taller El Güero</h4>
-          <p>TenantId: def-222<br>Login → JWT con tenantId</p>
-        </div>
-        <div class="mt-card" style="border-color:#d8b4fe;">
-          <div style="font-size:24px;margin-bottom:6px;">🎉</div>
-          <h4>Salon Alegría</h4>
-          <p>TenantId: ghi-333<br>Login → JWT con tenantId</p>
+          <p>Sector: Talleres · TenantId: mno-555<br>Login → JWT con tenantId</p>
         </div>
         <div class="mt-db">
           <h4>🗄️ Una sola base de datos PostgreSQL</h4>
           <p>EF Core aplica <strong>WHERE TenantId = '...'</strong> automáticamente en cada query via Global Query Filters.<br>
-          Cada negocio solo ve sus propios datos. Sin código extra en cada controller.</p>
+          Cada negocio solo ve sus propios datos, sin importar su sector. Sin código extra en cada controller.</p>
         </div>
       </div>
     </div>
@@ -536,7 +757,7 @@
   <div class="tab-panel" id="tab-flows">
 
     <div class="flow-group">
-      <div class="flow-group-title">📅 Flujo 1: Agendar y atender una cita</div>
+      <div class="flow-group-title">📅 Flujo 1: Agendar y atender una cita <span class="badge" style="background:var(--teal-light);color:var(--teal-dark);">Belleza</span></div>
       <div class="flow-steps">
         <div class="flow-step">
           <div class="flow-left">
@@ -545,7 +766,7 @@
           </div>
           <div class="flow-content">
             <h4>Cliente solicita cita</h4>
-            <p>Se crea en <code>ScheduleTasks</code> con <code>Type=Appointment</code>, <code>Status=Scheduled</code>. Se asigna al empleado disponible según su <code>WorkSchedule</code>.</p>
+            <p>Se crea en <code>ScheduleTasks</code> con <code>Type=Appointment</code>, <code>Status=Scheduled</code>, vinculada a un <code>Customer</code>. Se asigna al empleado disponible según su <code>WorkSchedule</code>.</p>
           </div>
         </div>
         <div class="flow-step">
@@ -591,7 +812,262 @@
     </div>
 
     <div class="flow-group">
-      <div class="flow-group-title">📦 Flujo 2: Control de inventario</div>
+      <div class="flow-group-title">🩺 Flujo 2: Cita con expediente clínico <span class="badge" style="background:var(--teal-light);color:var(--teal-dark);">Belleza</span></div>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-circle" style="background:var(--teal-light);color:var(--teal-dark);">1</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="flow-content">
+            <h4>Cliente registrado con expediente</h4>
+            <p>Se crea o reutiliza un <code>Customer</code>; si aplica, tiene un <code>ClinicalRecord</code> con alergias e historial previo.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-circle" style="background:var(--teal-light);color:var(--teal-dark);">2</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="flow-content">
+            <h4>Se agenda la cita vinculada al expediente</h4>
+            <p>El empleado consulta el historial antes de atender (alergias, tratamientos anteriores, notas).</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-circle" style="background:var(--teal-light);color:var(--teal-dark);">3</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="flow-content">
+            <h4>Registro de nueva evidencia</h4>
+            <p>Durante o después de la cita, el empleado agrega notas de tratamiento y fotos antes/después al <code>ClinicalRecord</code>.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-circle" style="background:#f3e8ff;color:#7c3aed;">4</div>
+          </div>
+          <div class="flow-content">
+            <h4>Cobro y recibo</h4>
+            <p>Sigue el flujo normal de POS y recibo digital (Flujo 1, pasos 4-5).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-group">
+      <div class="flow-group-title">🔧 Flujo 3: Servicio de taller con ficha técnica <span class="badge" style="background:var(--lime-light);color:var(--lime-dark);">Talleres</span></div>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-circle" style="background:var(--lime-light);color:var(--lime-dark);">1</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="flow-content">
+            <h4>Cliente registra su vehículo/equipo</h4>
+            <p>Se crea o reutiliza un <code>Asset</code> vinculado al <code>Customer</code> (placa/serie, tipo, kilometraje actual).</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-circle" style="background:var(--lime-light);color:var(--lime-dark);">2</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="flow-content">
+            <h4>Se agenda el servicio</h4>
+            <p><code>ScheduleTask</code> con <code>Type=Service</code>, vinculado al <code>Asset</code> y al empleado (mecánico/técnico) asignado. El empleado consulta el <code>AssetRecord</code> antes de atender.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-circle" style="background:#dcfce7;color:#15803d;">3</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="flow-content">
+            <h4>Diagnóstico y reparación</h4>
+            <p>Empleado avanza <code>Status</code> (InProgress → Completed) y registra un nuevo <code>AssetRecord</code>: diagnóstico, refacciones usadas y kilometraje al momento del servicio.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-circle" style="background:#fef9c3;color:#a16207;">4</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="flow-content">
+            <h4>Cobro en POS</h4>
+            <p>Se crea un <code>Sale</code> vinculado al ScheduleTask, con <code>SaleItems</code> (mano de obra + refacciones). Pago en efectivo, tarjeta o transferencia.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-circle" style="background:#f3e8ff;color:#7c3aed;">5</div>
+          </div>
+          <div class="flow-content">
+            <h4>Recibo y recordatorio de próximo servicio</h4>
+            <p>Se genera el <code>Receipt</code>; según kilometraje/tiempo estimado, <strong>DF-08</strong> programa un recordatorio de mantenimiento preventivo.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-group">
+      <div class="flow-group-title">🎉 Flujo 4: Contratación de un evento <span class="badge" style="background:var(--orange-light);color:var(--orange-dark);">Eventos</span></div>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-circle" style="background:var(--orange-light);color:var(--orange-dark);">1</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="flow-content">
+            <h4>Solicitud de cotización</h4>
+            <p>Se crea un <code>ScheduleTask</code> con <code>Type=Event</code> y su <code>EventDetails</code> (GuestCount, fecha, tipo de evento).</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-circle" style="background:var(--orange-light);color:var(--orange-dark);">2</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="flow-content">
+            <h4>Elección de modalidad</h4>
+            <p><code>Mode=Simple</code>: se elige un <code>EventPackage</code> y se reserva directo. <code>Mode=Contract</code>: se genera contrato + <code>DepositAmount</code> (anticipo) antes de confirmar.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-circle" style="background:var(--orange-light);color:var(--orange-dark);">3</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="flow-content">
+            <h4>Coordinación de proveedores externos (si aplica)</h4>
+            <p>En modalidad contrato, se registran <code>EventVendors</code> (DJ, banquete, decoración) vinculados a <code>Suppliers</code> existentes, con costo y estado de confirmación.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-circle" style="background:#fef9c3;color:#a16207;">4</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="flow-content">
+            <h4>Cobro de anticipo</h4>
+            <p>Se registra un <code>Sale</code> parcial por el <code>DepositAmount</code> (efectivo, tarjeta o transferencia).</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-circle" style="background:#f3e8ff;color:#7c3aed;">5</div>
+          </div>
+          <div class="flow-content">
+            <h4>Día del evento y cobro final</h4>
+            <p>Checklist de proveedores/paquete, luego se genera el <code>Sale</code> final y el <code>Receipt</code> correspondiente.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-group">
+      <div class="flow-group-title">🚚 Flujo 5: Ruta de entrega (modo reparto) <span class="badge" style="background:var(--indigo-light);color:var(--indigo-dark);">Bodega</span></div>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-circle" style="background:var(--indigo-light);color:var(--indigo-dark);">1</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="flow-content">
+            <h4>Planeación de la ruta</h4>
+            <p>Se crea una <code>DeliveryRoute</code> con <code>Employee</code> (chofer/repartidor), <code>Vehicle</code> y una o varias <code>DeliveryStops</code> (una parada = entrega directa, varias = ruta).</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-circle" style="background:var(--indigo-light);color:var(--indigo-dark);">2</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="flow-content">
+            <h4>Carga del vehículo</h4>
+            <p>Se registra el manifiesto en <code>VehicleInventory</code>: qué productos y cuánta cantidad sale en el vehículo para esa ruta.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-circle" style="background:var(--indigo-light);color:var(--indigo-dark);">3</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="flow-content">
+            <h4>Salida a ruta</h4>
+            <p><code>DeliveryRoute.Status=InProgress</code>. <em>Fase 2:</em> el vehículo reporta <code>CurrentLat/Lng</code> periódicamente para ubicación en tiempo real.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-circle" style="background:var(--indigo-light);color:var(--indigo-dark);">4</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="flow-content">
+            <h4>Entrega en cada parada</h4>
+            <p>Se descuenta <code>QuantityDelivered</code> de <code>VehicleInventory</code>, se genera un <code>Sale</code> (efectivo o tarjeta) vinculado a la <code>DeliveryStop</code>, y se captura firma/foto como comprobante.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-circle" style="background:#f3e8ff;color:#7c3aed;">5</div>
+          </div>
+          <div class="flow-content">
+            <h4>Cierre de ruta</h4>
+            <p><code>DeliveryRoute.Status=Completed</code>. Se concilia inventario cargado vs. entregado vs. devuelto, y se genera el recibo por cada venta de la ruta.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-group">
+      <div class="flow-group-title">🏬 Flujo 6: Venta de mostrador (modo sin reparto) <span class="badge" style="background:var(--indigo-light);color:var(--indigo-dark);">Bodega</span></div>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-circle" style="background:var(--indigo-light);color:var(--indigo-dark);">1</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="flow-content">
+            <h4>Cliente llega a la bodega</h4>
+            <p>No se crea ninguna <code>DeliveryRoute</code> ni <code>DeliveryStop</code> — es venta directa en el mostrador.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-circle" style="background:var(--indigo-light);color:var(--indigo-dark);">2</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="flow-content">
+            <h4>Selección de productos</h4>
+            <p>Se arma el <code>Sale</code> directamente con <code>SaleItems</code> del catálogo de <code>Products</code>, igual que cualquier venta de mostrador.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-circle" style="background:#fef9c3;color:#a16207;">3</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="flow-content">
+            <h4>Cobro</h4>
+            <p>Efectivo o tarjeta (Stripe Terminal), <code>Channel=Counter</code> — mismo motor de POS que el resto del sistema.</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-left">
+            <div class="step-circle" style="background:#f3e8ff;color:#7c3aed;">4</div>
+          </div>
+          <div class="flow-content">
+            <h4>Recibo y descuento de stock</h4>
+            <p>Se genera el <code>Receipt</code> y se descuenta <code>Stock</code> igual que en el flujo de control de inventario. Sin manifiesto de vehículo porque no hay reparto.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-group">
+      <div class="flow-group-title">📦 Flujo 7: Control de inventario</div>
       <div class="flow-steps">
         <div class="flow-step">
           <div class="flow-left">
@@ -626,7 +1102,7 @@
     </div>
 
     <div class="flow-group">
-      <div class="flow-group-title">💰 Flujo 3: Corte de caja automático</div>
+      <div class="flow-group-title">💰 Flujo 8: Corte de caja automático</div>
       <div class="flow-steps">
         <div class="flow-step">
           <div class="flow-left">
@@ -645,7 +1121,7 @@
           </div>
           <div class="flow-content">
             <h4>Agrega ventas del día</h4>
-            <p>Suma todas las <code>Sales</code> del día por método de pago. Resta gastos y compras.</p>
+            <p>Suma todas las <code>Sales</code> del día por método de pago (agenda, eventos o rutas de entrega). Resta gastos y compras.</p>
           </div>
         </div>
         <div class="flow-step">
@@ -661,7 +1137,7 @@
     </div>
 
     <div class="flow-group">
-      <div class="flow-group-title">🏢 Flujo 4: Onboarding de nuevo negocio</div>
+      <div class="flow-group-title">🏢 Flujo 9: Onboarding de nuevo negocio</div>
       <div class="flow-steps">
         <div class="flow-step">
           <div class="flow-left">
@@ -670,7 +1146,7 @@
           </div>
           <div class="flow-content">
             <h4>Registro del negocio</h4>
-            <p>Se crea el <code>Tenant</code> con tipo de negocio, nombre y slug único.</p>
+            <p>Se crea el <code>Tenant</code> con Sector, BusinessType, nombre y slug único.</p>
           </div>
         </div>
         <div class="flow-step">
@@ -680,7 +1156,7 @@
           </div>
           <div class="flow-content">
             <h4>Carga catálogo default</h4>
-            <p>Según el <code>BusinessType</code>, Durable Function carga servicios predefinidos, categorías de productos y configuración base.</p>
+            <p>Según el <code>Sector</code>, Durable Function carga servicios/paquetes predefinidos, categorías de productos y configuración base.</p>
           </div>
         </div>
         <div class="flow-step">
@@ -704,7 +1180,7 @@
         <div class="arch-layer">
           <div class="arch-layer-head" style="background:#dcfce7;">
             <span>✅ MTA.Domain — Entidades y reglas de negocio</span>
-            <span class="arch-status" style="background:#bbf7d0;color:#15803d;">Hecho</span>
+            <span class="arch-status" style="background:#bbf7d0;color:#15803d;">Hecho (core)</span>
           </div>
           <div class="arch-layer-body">
             <span class="arch-item" style="background:#dcfce7;color:#15803d;border-color:#86efac;">BaseEntity</span>
@@ -714,11 +1190,16 @@
             <span class="arch-item" style="background:#dcfce7;color:#15803d;border-color:#86efac;">Employee</span>
             <span class="arch-item" style="background:#dcfce7;color:#15803d;border-color:#86efac;">WorkSchedule</span>
             <span class="arch-item" style="background:#dcfce7;color:#15803d;border-color:#86efac;">ScheduleTask</span>
+            <span class="arch-item" style="background:#dcfce7;color:#15803d;border-color:#86efac;">Customer</span>
             <span class="arch-item" style="background:#dcfce7;color:#15803d;border-color:#86efac;">Service / Product</span>
             <span class="arch-item" style="background:#dcfce7;color:#15803d;border-color:#86efac;">Sale / SaleItem</span>
             <span class="arch-item" style="background:#dcfce7;color:#15803d;border-color:#86efac;">Receipt</span>
             <span class="arch-item" style="background:#dcfce7;color:#15803d;border-color:#86efac;">Supplier / PurchaseOrder</span>
             <span class="arch-item" style="background:#dcfce7;color:#15803d;border-color:#86efac;">CashRegisterCut</span>
+            <span class="arch-item" style="background:var(--teal-light);color:var(--teal-dark);border-color:#5eead4;">ClinicalRecord</span>
+            <span class="arch-item" style="background:var(--orange-light);color:var(--orange-dark);border-color:#fdba74;">EventDetails / EventPackage / EventVendor</span>
+            <span class="arch-item" style="background:var(--indigo-light);color:var(--indigo-dark);border-color:#a5b4fc;">Vehicle / DeliveryRoute / DeliveryStop / VehicleInventory</span>
+            <span class="arch-item" style="background:var(--lime-light);color:var(--lime-dark);border-color:#bef264;">Asset / AssetRecord</span>
           </div>
         </div>
 
@@ -750,11 +1231,14 @@
             <span class="arch-item" style="background:#f1f5f9;color:#64748b;border-color:#e2e8f0;">Commands/Sales</span>
             <span class="arch-item" style="background:#f1f5f9;color:#64748b;border-color:#e2e8f0;">Commands/Inventory</span>
             <span class="arch-item" style="background:#f1f5f9;color:#64748b;border-color:#e2e8f0;">Queries/Reports</span>
+            <span class="arch-item" style="background:#f1f5f9;color:#64748b;border-color:#e2e8f0;">Commands/Events</span>
+            <span class="arch-item" style="background:#f1f5f9;color:#64748b;border-color:#e2e8f0;">Commands/DeliveryRoutes</span>
+            <span class="arch-item" style="background:#f1f5f9;color:#64748b;border-color:#e2e8f0;">Commands/AssetRecords</span>
           </div>
         </div>
 
         <div class="arch-layer">
-          <div class="arch-layer-head" style="background:#dcfce7;">
+          <div class="arch-layer-head" style="background:#f1f5f9;">
             <span>✅ MTA.API — Web API + Auth</span>
             <span class="arch-status" style="background:#bbf7d0;color:#15803d;">Parcial</span>
           </div>
@@ -767,6 +1251,9 @@
             <span class="arch-item" style="background:#f1f5f9;color:#64748b;border-color:#e2e8f0;">ScheduleController</span>
             <span class="arch-item" style="background:#f1f5f9;color:#64748b;border-color:#e2e8f0;">SalesController</span>
             <span class="arch-item" style="background:#f1f5f9;color:#64748b;border-color:#e2e8f0;">InventoryController</span>
+            <span class="arch-item" style="background:#f1f5f9;color:#64748b;border-color:#e2e8f0;">EventsController</span>
+            <span class="arch-item" style="background:#f1f5f9;color:#64748b;border-color:#e2e8f0;">DeliveryRoutesController</span>
+            <span class="arch-item" style="background:#f1f5f9;color:#64748b;border-color:#e2e8f0;">AssetsController</span>
           </div>
         </div>
 
@@ -781,6 +1268,18 @@
             <span class="arch-item" style="background:#f1f5f9;color:#64748b;border-color:#e2e8f0;">DF-03 Corte de caja</span>
             <span class="arch-item" style="background:#f1f5f9;color:#64748b;border-color:#e2e8f0;">DF-04 Onboarding</span>
             <span class="arch-item" style="background:#f1f5f9;color:#64748b;border-color:#e2e8f0;">DF-05 Pagos con retry</span>
+          </div>
+        </div>
+
+        <div class="arch-layer">
+          <div class="arch-layer-head" style="background:var(--indigo-light);">
+            <span>📍 MTA.Tracking — GPS en tiempo real</span>
+            <span class="arch-status" style="background:#e0e7ff;color:var(--indigo-dark);">Fase 2 · Futuro</span>
+          </div>
+          <div class="arch-layer-body">
+            <span class="arch-item" style="background:#f1f5f9;color:#64748b;border-color:#e2e8f0;">Ingesta de ubicación (ping periódico del móvil del repartidor)</span>
+            <span class="arch-item" style="background:#f1f5f9;color:#64748b;border-color:#e2e8f0;">Mapa en vivo de vehículos activos</span>
+            <span class="arch-item" style="background:#f1f5f9;color:#64748b;border-color:#e2e8f0;">Historial de recorrido por ruta</span>
           </div>
         </div>
       </div>
@@ -814,9 +1313,10 @@
           <h4>Azure / Cloud</h4>
           <div class="stack-row"><span class="stack-tech">Azure App Service</span><span class="stack-note">API deploy</span></div>
           <div class="stack-row"><span class="stack-tech">Azure Durable Functions</span><span class="stack-note">Workflows</span></div>
-          <div class="stack-row"><span class="stack-tech">Azure Blob Storage</span><span class="stack-note">PDFs / logos</span></div>
+          <div class="stack-row"><span class="stack-tech">Azure Blob Storage</span><span class="stack-note">PDFs / logos / fotos</span></div>
           <div class="stack-row"><span class="stack-tech">Azure Communication</span><span class="stack-note">Email / SMS</span></div>
           <div class="stack-row"><span class="stack-tech">Stripe Terminal</span><span class="stack-note">POS</span></div>
+          <div class="stack-row"><span class="stack-tech">Azure Maps / SignalR</span><span class="stack-note">GPS · Fase 2</span></div>
         </div>
       </div>
     </div>
@@ -872,7 +1372,7 @@
           <div class="df-steps">
             <div class="df-step">→ <span>Registro nuevo tenant</span></div>
             <div class="df-step">→ <span>Crea datos base del tenant</span></div>
-            <div class="df-step">→ <span>Carga catálogo default por tipo</span></div>
+            <div class="df-step">→ <span>Carga catálogo default por sector</span></div>
             <div class="df-step">→ <span>Crea usuario Owner</span></div>
             <div class="df-step">→ <span>Email bienvenida + si no inicia sesión en 3 días → recordatorio</span></div>
           </div>
@@ -887,6 +1387,38 @@
             <div class="df-step">→ <span>Máximo 3 intentos</span></div>
             <div class="df-step">→ <span>Si sigue fallando → alerta al cajero</span></div>
             <div class="df-step">→ <span>Si éxito → genera recibo → email</span></div>
+          </div>
+        </div>
+
+        <div class="df-card">
+          <h4>🎪 DF-06 — Recordatorio de Anticipo (Eventos)</h4>
+          <p>Se activa cuando un evento queda en modalidad contrato sin anticipo pagado.</p>
+          <div class="df-steps">
+            <div class="df-step">→ <span>EventDetails creado con Mode=Contract</span></div>
+            <div class="df-step">→ <span>Espera 48h sin Sale de depósito → recordatorio al cliente</span></div>
+            <div class="df-step">→ <span>7 días antes del evento sin anticipo → alerta al Owner</span></div>
+          </div>
+        </div>
+
+        <div class="df-card future">
+          <h4>📍 DF-07 — Seguimiento de Ruta (GPS) <span style="font-size:10px;font-weight:700;">Fase 2</span></h4>
+          <p>Orquesta el seguimiento en tiempo real de una ruta de entrega.</p>
+          <div class="df-steps">
+            <div class="df-step">→ <span>DeliveryRoute.Status=InProgress (trigger)</span></div>
+            <div class="df-step">→ <span>Recibe pings de ubicación del vehículo cada N segundos</span></div>
+            <div class="df-step">→ <span>Si excede tiempo estimado a la siguiente parada → alerta</span></div>
+            <div class="df-step">→ <span>DeliveryRoute.Status=Completed → detiene el tracking</span></div>
+          </div>
+        </div>
+
+        <div class="df-card">
+          <h4>🔧 DF-08 — Recordatorio de Servicio Preventivo (Talleres)</h4>
+          <p>Se activa después de completar un AssetRecord, para programar el siguiente mantenimiento.</p>
+          <div class="df-steps">
+            <div class="df-step">→ <span>AssetRecord creado con MileageAtService (trigger)</span></div>
+            <div class="df-step">→ <span>Calcula fecha/kilometraje estimado del próximo servicio</span></div>
+            <div class="df-step">→ <span>Se acerca la fecha estimada → notifica al cliente</span></div>
+            <div class="df-step">→ <span>Sin respuesta en 7 días → segundo recordatorio</span></div>
           </div>
         </div>
       </div>
@@ -913,36 +1445,44 @@
 
         <div class="month-card" style="background:#fef9c3;border-color:#fde047;">
           <h4 style="color:#a16207;">Mes 2</h4>
-          <div class="month-sub" style="color:#a16207;">Frontend React</div>
+          <div class="month-sub" style="color:#a16207;">Frontend React + Customers</div>
           <div class="month-item" style="color:#78350f;"><span class="month-dot"></span>Login + dashboard</div>
           <div class="month-item" style="color:#78350f;"><span class="month-dot"></span>Vista de agenda (calendario)</div>
           <div class="month-item" style="color:#78350f;"><span class="month-dot"></span>Gestión de empleados</div>
           <div class="month-item" style="color:#78350f;"><span class="month-dot"></span>Inventario básico</div>
+          <div class="month-item" style="color:#78350f;"><span class="month-dot"></span>Customers + ClinicalRecords + Assets/AssetRecords</div>
           <div class="month-item" style="color:#78350f;"><span class="month-dot"></span>Conectar React → API</div>
         </div>
 
         <div class="month-card" style="background:#eff6ff;border-color:#bfdbfe;">
           <h4 style="color:#1d4ed8;">Mes 3</h4>
-          <div class="month-sub" style="color:#1d4ed8;">POS + Azure</div>
+          <div class="month-sub" style="color:#1d4ed8;">POS + Eventos + Azure</div>
           <div class="month-item" style="color:#1e40af;"><span class="month-dot"></span>Módulo ventas POS</div>
           <div class="month-item" style="color:#1e40af;"><span class="month-dot"></span>Stripe Terminal</div>
           <div class="month-item" style="color:#1e40af;"><span class="month-dot"></span>Recibos PDF</div>
-          <div class="month-item" style="color:#1e40af;"><span class="month-dot"></span>DF-01 Recordatorios</div>
-          <div class="month-item" style="color:#1e40af;"><span class="month-dot"></span>DF-03 Corte de caja</div>
-          <div class="month-item" style="color:#1e40af;"><span class="month-dot"></span>DF-04 Onboarding</div>
+          <div class="month-item" style="color:#1e40af;"><span class="month-dot"></span>EventDetails / EventPackages / EventVendors</div>
+          <div class="month-item" style="color:#1e40af;"><span class="month-dot"></span>DF-01 Recordatorios, DF-03 Corte de caja</div>
+          <div class="month-item" style="color:#1e40af;"><span class="month-dot"></span>DF-04 Onboarding, DF-06 Anticipos</div>
           <div class="month-item" style="color:#1e40af;"><span class="month-dot"></span>AZ-204 prep</div>
         </div>
 
         <div class="month-card" style="background:#f8fafc;border-color:#e2e8f0;">
           <h4 style="color:#475569;">Mes 4</h4>
-          <div class="month-sub" style="color:#475569;">Reportes + Polish</div>
+          <div class="month-sub" style="color:#475569;">Logística + Reportes + Polish</div>
+          <div class="month-item" style="color:#475569;"><span class="month-dot"></span>Vehicles / DeliveryRoutes / DeliveryStops</div>
+          <div class="month-item" style="color:#475569;"><span class="month-dot"></span>VehicleInventory (manifiesto de ruta)</div>
           <div class="month-item" style="color:#475569;"><span class="month-dot"></span>Reportes financieros</div>
           <div class="month-item" style="color:#475569;"><span class="month-dot"></span>Módulo proveedores</div>
-          <div class="month-item" style="color:#475569;"><span class="month-dot"></span>DF-02 Stock alerts</div>
-          <div class="month-item" style="color:#475569;"><span class="month-dot"></span>DF-05 Pago retry</div>
+          <div class="month-item" style="color:#475569;"><span class="month-dot"></span>Ventas de mostrador vs. ruta (Bodega)</div>
+          <div class="month-item" style="color:#475569;"><span class="month-dot"></span>DF-02 Stock alerts, DF-05 Pago retry, DF-08 Mantenimiento</div>
           <div class="month-item" style="color:#475569;"><span class="month-dot"></span>Multi-tenant UI</div>
           <div class="month-item" style="color:#475569;"><span class="month-dot"></span>Testing e2e</div>
         </div>
+      </div>
+
+      <div class="phase2-note">
+        <strong>📍 Fase 2 (post-lanzamiento): GPS en tiempo real</strong>
+        Tracking de ubicación del vehículo durante la ruta (DF-07), mapa en vivo para el Owner, historial de recorrido y estimación de llegada por parada. Se pospone porque requiere una app móvil o dispositivo GPS en el vehículo, fuera del alcance de los 4 meses iniciales.
       </div>
     </div>
   </div>
@@ -951,7 +1491,7 @@
 
 <!-- FOOTER -->
 <div class="footer">
-  <strong>MasterTrackAgenda (MTA)</strong> · System Design Document · v1.0 · 2026
+  <strong>MasterTrackAgenda (MTA)</strong> · System Design Document · v1.2 (4 sectores: Belleza, Eventos, Bodega, Talleres) · 2026
 </div>
 
 <script>
@@ -966,11 +1506,11 @@ function showTab(name) {
 const erDetails = {
   tenant: {
     title: '🏢 Tenants — El negocio raíz',
-    body: 'Es el punto de partida de todo. Cada registro representa un negocio completo.',
+    body: 'Es el punto de partida de todo. Cada registro representa un negocio completo, dentro de uno de los 4 sectores.',
     items: [
       'Slug: identificador URL-friendly único, ej: "salon-glamour"',
-      'BusinessType: define qué tipo de negocio es (1=NailSalon, 2=MechanicShop, 3=PartyVenue)',
-      'OpenTime/CloseTime: horario del negocio, para validar que las citas caigan en horario válido',
+      'Sector: Belleza / Eventos / Bodega / Talleres — define qué módulos ve el negocio',
+      'BusinessType: subtipo dentro del sector (ej. NailSalon, Barbershop, AestheticClinic, EventVenue, Distributor)',
       'TODAS las demás tablas tienen un TenantId que apunta aquí'
     ]
   },
@@ -986,12 +1526,22 @@ const erDetails = {
   },
   employee: {
     title: '👷 Employees — El equipo de trabajo',
-    body: 'Representa a cada trabajador del negocio. Puede o no tener acceso al sistema.',
+    body: 'Representa a cada trabajador del negocio: estilista, animador de eventos, o chofer/repartidor de bodega.',
     items: [
       'UserId nullable: si el empleado tiene cuenta de acceso, se vincula aquí',
-      'Position: su rol en el negocio (Estilista, Mecánico, Animador)',
+      'Position: su rol en el negocio (Estilista, Coordinador de eventos, Chofer)',
       'CommissionRate: porcentaje de comisión sobre sus ventas/servicios',
-      'Tiene WorkSchedules (horarios) y ScheduleTasks (agenda asignada)'
+      'Tiene WorkSchedules (horarios), ScheduleTasks (agenda) y, en bodega, DeliveryRoutes asignadas'
+    ]
+  },
+  customer: {
+    title: '👥 Customers — Cliente unificado',
+    body: 'Tabla nueva que reemplaza los campos sueltos ClientName/ClientPhone. Es el cliente/comprador en cualquiera de los 4 sectores.',
+    items: [
+      'En Belleza: se conecta 1:1 opcional con ClinicalRecord',
+      'En Eventos: es quien contrata el paquete o firma el contrato',
+      'En Bodega: es el cliente que recibe la mercancía en una DeliveryStop, permite ver su historial de compras',
+      'Permite detectar clientes repetidos en vez de re-capturar sus datos cada vez'
     ]
   },
   workschedule: {
@@ -999,49 +1549,51 @@ const erDetails = {
     body: 'Define el horario de trabajo de cada empleado por día de la semana.',
     items: [
       'Un Employee tiene hasta 7 registros (uno por día de la semana)',
-      'IsWorkDay=false: día de descanso (no se le pueden agendar citas)',
+      'IsWorkDay=false: día de descanso (no se le pueden agendar citas ni rutas)',
       'Se usa para validar disponibilidad: no puedes agendar fuera del horario del empleado',
       'Ejemplo: Ana trabaja Lun-Vie 9am-6pm, descansa Sáb-Dom'
     ]
   },
   scheduletask: {
     title: '📋 ScheduleTasks — El corazón de la agenda',
-    body: 'La tabla más importante del sistema. Todo lo que ocupa un slot en la agenda de un empleado.',
+    body: 'La tabla más importante del sistema. Todo lo que ocupa un slot en la agenda de un empleado, en cualquier sector.',
     items: [
-      'Type=Appointment: cita con cliente → usa ClientName, ClientPhone, ServiceId',
+      'Type=Appointment: cita de belleza → vinculada a un Customer y a un Service',
+      'Type=Service: visita de taller → vinculada a un Asset (vehículo/equipo) en vez de solo al Customer',
+      'Type=Event: evento social → tiene un EventDetails asociado',
       'Type=Activity: tarea interna → usa ActivityTitle, ActivityDescription',
-      'Status fluye: Scheduled → Confirmed → InProgress → Completed (o Cancelled/NoShow)',
-      'SaleId: cuando la cita se cobra, se vincula a la venta aquí'
+      'Status fluye: Scheduled → Confirmed → InProgress → Completed (o Cancelled/NoShow)'
     ]
   },
   service: {
     title: '💅 Services — Catálogo de servicios',
-    body: 'Los servicios que ofrece el negocio, configurados por tipo.',
+    body: 'Los servicios que ofrece el negocio, configurados por tipo (principalmente sector Belleza).',
     items: [
       'Salón de uñas: Manicure básica (45min, $150), Gel (90min, $280)',
-      'Taller: Diagnóstico (30min, $200), Cambio de aceite (45min, $350)',
+      'Barbería/salón: corte, color, tratamientos faciales',
       'DurationMinutes: calcula automáticamente el EndTime de una cita',
-      'Cada tenant tiene su propio catálogo de servicios'
+      'También puede formar parte de un EventPackage (sector Eventos)'
     ]
   },
   product: {
     title: '📦 Products — Inventario',
-    body: 'Productos físicos que el negocio vende o consume.',
+    body: 'Productos físicos que el negocio vende, consume, o distribuye (sector Bodega).',
     items: [
       'Stock vs MinStock: cuando Stock <= MinStock, Durable Function envía alerta',
       'CostPrice: lo que pagaste al proveedor',
       'SalePrice: lo que le cobras al cliente (la diferencia es tu margen)',
-      'Stock se descuenta automáticamente al registrar una venta'
+      'En Bodega, además del Stock general, se carga a VehicleInventory por ruta'
     ]
   },
   sale: {
     title: '💳 Sales + SaleItems — Punto de Venta',
-    body: 'Una Sale es un ticket completo. SaleItems son las líneas del ticket.',
+    body: 'Una Sale es un ticket completo. SaleItems son las líneas del ticket. Puede originarse en cualquiera de los 4 sectores.',
     items: [
       'Una Sale puede tener múltiples SaleItems (servicios + productos mezclados)',
       'SaleItem guarda snapshot del precio al momento de venta (no el precio actual)',
       'PaymentMethod: Cash, Card (Stripe), Transfer, Mixed',
-      'Una Sale puede originarse desde una cita o ser una venta directa'
+      'Puede originarse desde una cita, un servicio de taller, un anticipo/cobro de evento, una DeliveryStop (reparto), o una venta de mostrador directa',
+      'Channel: Counter (mostrador) o Delivery (ruta) — útil para reportes en el sector Bodega'
     ]
   },
   receipt: {
@@ -1055,10 +1607,10 @@ const erDetails = {
   },
   supplier: {
     title: '🏭 Suppliers — Proveedores',
-    body: 'Catálogo de proveedores del negocio para rastrear compras.',
+    body: 'Catálogo de proveedores del negocio. Se usa tanto para compras de mercancía como para proveedores externos de eventos.',
     items: [
       'Vinculado a PurchaseOrders para historial de compras por proveedor',
-      'Permite comparar precios y frecuencia de compra',
+      'En sector Eventos, un Supplier puede ser un EventVendor (DJ, banquete, decoración) para un evento específico',
       'Cada tenant tiene sus propios proveedores'
     ]
   },
@@ -1073,13 +1625,111 @@ const erDetails = {
   },
   cashcut: {
     title: '💰 CashRegisterCuts — Corte de caja',
-    body: 'Resumen financiero diario. Generado automáticamente cada noche.',
+    body: 'Resumen financiero diario. Generado automáticamente cada noche, agregando ventas de los 4 sectores.',
     items: [
       'Desglose de ventas por método de pago (efectivo, tarjeta, transferencia)',
       'OpeningAmount: fondo con que abrió la caja del día',
       'ClosingAmount: efectivo físico al cerrar',
       'Diferencia entre TotalSalesCash + Opening vs Closing detecta descuadres',
       'PDF enviado al Owner por email cada noche'
+    ]
+  },
+  clinicalrecord: {
+    title: '🩺 ClinicalRecords — Expediente del cliente (Belleza)',
+    body: 'Historial clínico/estético del cliente, exclusivo del sector Belleza. Vive junto al Customer, no a la cita individual.',
+    items: [
+      'Allergies: alergias o condiciones a considerar antes de un tratamiento',
+      'TreatmentNotes: notas acumuladas de tratamientos anteriores',
+      'PhotoUrls: fotos antes/después guardadas en Azure Blob Storage',
+      'Se consulta antes de cada cita nueva y se actualiza después de atenderla'
+    ]
+  },
+  eventdetails: {
+    title: '🎪 EventDetails — Detalle del evento (Eventos)',
+    body: 'Extiende un ScheduleTask de Type=Event con la información específica de la contratación.',
+    items: [
+      'Mode=Simple: reservación rápida con un EventPackage, sin contrato formal',
+      'Mode=Contract: requiere DepositAmount (anticipo) y puede tener EventVendors coordinados',
+      'GuestCount: número de invitados, usado para validar capacidad del salón',
+      'PackageId: paquete de servicios elegido, si aplica'
+    ]
+  },
+  eventpackage: {
+    title: '🧩 EventPackages — Paquetes de servicios (Eventos)',
+    body: 'Combinaciones predefinidas de servicios/productos que se ofrecen como paquete para un evento.',
+    items: [
+      'BasePrice: precio base del paquete, antes de extras',
+      'IncludedServices: relación N:N con Services (ej. salón + mobiliario + decoración básica)',
+      'Cada tenant del sector Eventos define sus propios paquetes'
+    ]
+  },
+  eventvendor: {
+    title: '🤝 EventVendors — Proveedores externos de un evento (Eventos)',
+    body: 'Solo aplica en Mode=Contract. Vincula un EventDetails con un Supplier externo contratado para ese evento específico.',
+    items: [
+      'Role: qué función cumple (DJ, banquete, decoración, fotografía, etc.)',
+      'Cost: costo acordado con ese proveedor para el evento',
+      'Status: Pending/Confirmed/Paid — para dar seguimiento antes del evento'
+    ]
+  },
+  vehicle: {
+    title: '🚚 Vehicles — Flotilla (Bodega)',
+    body: 'Vehículos usados para las rutas de entrega del sector Bodega/Distribución.',
+    items: [
+      'Plate, Type: identificación y tipo de vehículo (camioneta, van, camión)',
+      'Capacity: capacidad de carga, para no sobrecargar en el manifiesto',
+      'CurrentLat/Lng: reservado para Fase 2 (GPS en tiempo real), no se usa aún'
+    ]
+  },
+  deliveryroute: {
+    title: '🗺️ DeliveryRoutes — Ruta de entrega (Bodega)',
+    body: 'Un viaje de un empleado con un vehículo para entregar producto a uno o varios clientes.',
+    items: [
+      'Puede tener una sola DeliveryStop (entrega directa) o varias (ruta con múltiples paradas)',
+      'Status: Planned → InProgress → Completed',
+      'StartTime/EndTime: para medir duración real de la ruta',
+      'En Fase 2, esta es la entidad que se conecta al tracking GPS'
+    ]
+  },
+  deliverystop: {
+    title: '📍 DeliveryStops — Parada de entrega (Bodega)',
+    body: 'Cada cliente/dirección visitada dentro de una DeliveryRoute.',
+    items: [
+      'Sequence: orden de la parada dentro de la ruta',
+      'Status: Pending/Delivered/Failed (cliente no encontrado, rechazo, etc.)',
+      'SaleId nullable: la venta generada al entregar (si el pago es contra-entrega)',
+      'Guarda el comprobante de entrega (firma o foto) una vez completada'
+    ]
+  },
+  vehicleinventory: {
+    title: '📦 VehicleInventory — Manifiesto de carga (Bodega)',
+    body: 'Snapshot del inventario que sale físicamente en el vehículo para una ruta específica.',
+    items: [
+      'QuantityLoaded: cuánto se cargó al salir de la bodega',
+      'QuantityDelivered: cuánto se ha entregado conforme avanza la ruta',
+      'Al cerrar la ruta, QuantityLoaded - QuantityDelivered = lo que debe regresar a la bodega',
+      'Permite detectar faltantes o descuadres de inventario en tránsito'
+    ]
+  },
+  asset: {
+    title: '🔧 Assets — Ficha del vehículo/equipo (Talleres)',
+    body: 'Representa el vehículo o equipo del cliente que entra a servicio. Es el equivalente al Customer pero para un objeto físico.',
+    items: [
+      'FK CustomerId: dueño del vehículo/equipo',
+      'Type: Vehicle/Equipment',
+      'Identifier: placa o número de serie',
+      'Mileage/UsageHours: se actualiza en cada visita, usado para calcular el próximo mantenimiento'
+    ]
+  },
+  assetrecord: {
+    title: '🩹 AssetRecords — Historial de servicio (Talleres)',
+    body: 'Historial acumulado de reparaciones y mantenimientos de un Asset. Es el equivalente al ClinicalRecord pero para vehículos/equipos.',
+    items: [
+      'RepairNotes: diagnóstico y trabajo realizado',
+      'PartsUsed: refacciones o insumos utilizados en el servicio',
+      'MileageAtService: kilometraje o uso del equipo al momento del servicio',
+      'PhotoUrls: evidencia fotográfica del trabajo realizado',
+      'Se consulta antes de cada nueva visita para ver el historial completo'
     ]
   }
 };
