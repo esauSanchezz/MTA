@@ -129,6 +129,57 @@
 
   /* ---------- Summary strip ---------- */
 
+  .decisions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .decisions .decisions-label {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--caption);
+    margin-right: 0.2rem;
+  }
+
+  .decision-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.75rem 0.35rem 0.6rem;
+    border-radius: 999px;
+    background: var(--lean-soft);
+    border: 1px solid var(--lean);
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .decision-chip .check {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.05rem;
+    height: 1.05rem;
+    border-radius: 999px;
+    background: var(--lean);
+    color: var(--paper-raised);
+    font-size: 0.7rem;
+    line-height: 1;
+    flex: none;
+  }
+
+  .decision-chip .muted {
+    color: var(--caption);
+    font-weight: 400;
+  }
+
   .summary {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -449,9 +500,27 @@
     width: 0.95rem;
     height: 0.95rem;
     margin-top: 0.2rem;
-    border: 1.5px solid var(--lean);
+    border: 1.5px solid var(--line);
     border-radius: 3px;
-    background: var(--lean-soft);
+    background: transparent;
+  }
+
+  .checklist li.done {
+    color: var(--caption);
+  }
+
+  .checklist li.done strong { color: var(--ink-soft); }
+
+  .checklist li.done::before {
+    content: "\2713";
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.68rem;
+    line-height: 1;
+    color: var(--paper-raised);
+    border-color: var(--lean);
+    background: var(--lean);
   }
 
   .checklist .final {
@@ -491,6 +560,12 @@
       <span>Estado del código: <strong>sin integraciones de Azure implementadas todavía</strong></span>
     </div>
   </header>
+
+  <div class="decisions">
+    <span class="decisions-label">Decidido</span>
+    <span class="decision-chip"><span class="check">&#10003;</span>Hosting: ruta económica<span class="muted">— VPS + Postgres administrado</span></span>
+    <span class="decision-chip"><span class="check">&#10003;</span>IDE: Rider<span class="muted">— licencia Personal, se compra</span></span>
+  </div>
 
   <div class="summary">
     <div class="stat">
@@ -565,7 +640,7 @@
       <div class="route" data-route="lean">
         <div class="route-head">
           <h3>Ruta económica</h3>
-          <span class="pill">Recomendada</span>
+          <span class="pill">Elegida</span>
         </div>
         <div class="route-body">
           <div class="line-item">
@@ -598,7 +673,7 @@
       <div class="route" data-route="azure">
         <div class="route-head">
           <h3>Ruta Azure</h3>
-          <span class="pill">Diseño original</span>
+          <span class="pill">No elegida por ahora</span>
         </div>
         <div class="route-body">
           <div class="line-item">
@@ -674,7 +749,8 @@
     </div>
     <div class="checklist">
       <ul>
-        <li>Decidir IDE antes de que venza el trial de Rider (30 días): comprar licencia Personal o migrar a VS Community</li>
+        <li class="done"><strong>Decidido:</strong>&nbsp;comprar licencia Rider Personal (~$149 USD/año) antes de que venza el trial</li>
+        <li class="done"><strong>Decidido:</strong>&nbsp;hosting por la ruta económica (VPS + Postgres administrado), no Azure</li>
         <li>Levantar VPS económico (Hetzner / Railway / Render) para reemplazar el hosting Azure planeado originalmente</li>
         <li>Crear Postgres administrado en Neon o Supabase (tier free)</li>
         <li>Registrar dominio</li>
