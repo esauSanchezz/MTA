@@ -1,0 +1,695 @@
+<title>Gastos a Considerar</title>
+<style>
+  :root {
+    --ink: #14181f;
+    --ink-soft: #3c4553;
+    --caption: #6b7684;
+    --paper: #eef1f5;
+    --paper-raised: #ffffff;
+    --line: #cfd6e0;
+    --line-soft: #dfe4ea;
+    --azure: #3a6f93;
+    --azure-soft: #e4edf3;
+    --lean: #2f7a58;
+    --lean-soft: #e3f0e9;
+    --amber: #a15b1f;
+    --amber-soft: #f4e9dc;
+    --shadow: 0 1px 2px rgba(20, 24, 31, 0.04), 0 8px 24px rgba(20, 24, 31, 0.05);
+  }
+
+  :root[data-theme="dark"] {
+    --ink: #eef1f5;
+    --ink-soft: #c4cbd6;
+    --caption: #8b93a3;
+    --paper: #10141b;
+    --paper-raised: #171c25;
+    --line: #2b3140;
+    --line-soft: #232838;
+    --azure: #7fb3d9;
+    --azure-soft: #1c2b38;
+    --lean: #7ecda6;
+    --lean-soft: #17281f;
+    --amber: #e0a468;
+    --amber-soft: #2c2115;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 32px rgba(0, 0, 0, 0.35);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #eef1f5;
+      --ink-soft: #c4cbd6;
+      --caption: #8b93a3;
+      --paper: #10141b;
+      --paper-raised: #171c25;
+      --line: #2b3140;
+      --line-soft: #232838;
+      --azure: #7fb3d9;
+      --azure-soft: #1c2b38;
+      --lean: #7ecda6;
+      --lean-soft: #17281f;
+      --amber: #e0a468;
+      --amber-soft: #2c2115;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 32px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: Charter, "Iowan Old Style", Georgia, ui-serif, serif;
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, ui-sans-serif, sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .sheet {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 3.5rem 1.5rem 5rem;
+  }
+
+  .mono {
+    font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---------- Masthead ---------- */
+
+  .masthead {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding-bottom: 2rem;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 2.5rem;
+  }
+
+  .masthead .eyebrow {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--caption);
+  }
+
+  .masthead h1 {
+    font-family: Charter, "Iowan Old Style", Georgia, ui-serif, serif;
+    font-size: clamp(2.1rem, 5vw, 2.9rem);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  .masthead .dek {
+    font-size: 1.05rem;
+    color: var(--ink-soft);
+    max-width: 62ch;
+    margin: 0;
+  }
+
+  .masthead .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.4rem;
+    margin-top: 0.6rem;
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 0.82rem;
+    color: var(--caption);
+  }
+
+  .masthead .meta span strong {
+    color: var(--ink-soft);
+    font-weight: 600;
+  }
+
+  /* ---------- Summary strip ---------- */
+
+  .summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 3rem;
+    box-shadow: var(--shadow);
+  }
+
+  .summary .stat {
+    background: var(--paper-raised);
+    padding: 1.3rem 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .summary .stat .figure {
+    font-family: Charter, Georgia, ui-serif, serif;
+    font-size: 1.7rem;
+    font-weight: 600;
+    color: var(--lean);
+  }
+
+  .summary .stat .label {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 0.78rem;
+    color: var(--caption);
+    line-height: 1.35;
+  }
+
+  /* ---------- Sections ---------- */
+
+  section {
+    margin-bottom: 3rem;
+  }
+
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.1rem;
+  }
+
+  .section-head h2 {
+    font-family: Charter, Georgia, ui-serif, serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .section-head .tag {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--caption);
+    white-space: nowrap;
+  }
+
+  section > p {
+    color: var(--ink-soft);
+    max-width: 68ch;
+  }
+
+  /* ---------- Tables ---------- */
+
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--paper-raised);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    min-width: 480px;
+  }
+
+  thead th {
+    text-align: left;
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--caption);
+    font-weight: 600;
+    padding: 0.7rem 1rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  tbody td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--line-soft);
+    vertical-align: top;
+    color: var(--ink-soft);
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+
+  tbody td.item {
+    color: var(--ink);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  tbody td.cost {
+    white-space: nowrap;
+    color: var(--ink);
+  }
+
+  /* ---------- Route comparison ---------- */
+
+  .routes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+  }
+
+  @media (max-width: 680px) {
+    .routes { grid-template-columns: 1fr; }
+  }
+
+  .route {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--paper-raised);
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .route-head {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .route[data-route="azure"] .route-head { background: var(--azure-soft); }
+  .route[data-route="lean"] .route-head { background: var(--lean-soft); }
+
+  .route-head h3 {
+    margin: 0;
+    font-family: Charter, Georgia, ui-serif, serif;
+    font-size: 1.15rem;
+  }
+
+  .route[data-route="azure"] .route-head h3 { color: var(--azure); }
+  .route[data-route="lean"] .route-head h3 { color: var(--lean); }
+
+  .pill {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.22rem 0.55rem;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .route[data-route="lean"] .pill {
+    background: var(--lean);
+    color: var(--paper-raised);
+  }
+
+  .route[data-route="azure"] .pill {
+    background: transparent;
+    color: var(--azure);
+    border: 1px solid var(--azure);
+  }
+
+  .route-body {
+    padding: 1rem 1.25rem 1.25rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+
+  .line-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    font-size: 0.9rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px dashed var(--line-soft);
+  }
+
+  .line-item:last-of-type { border-bottom: none; padding-bottom: 0; }
+
+  .line-item .desc {
+    color: var(--ink-soft);
+  }
+
+  .line-item .desc strong {
+    display: block;
+    color: var(--ink);
+    font-weight: 600;
+    font-size: 0.92rem;
+  }
+
+  .line-item .amt {
+    white-space: nowrap;
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .route-total {
+    margin-top: 0.3rem;
+    padding-top: 0.85rem;
+    border-top: 2px solid var(--ink);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  .route-total .label {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--caption);
+  }
+
+  .route-total .amt {
+    font-family: Charter, Georgia, ui-serif, serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+
+  .route[data-route="lean"] .route-total .amt { color: var(--lean); }
+  .route[data-route="azure"] .route-total .amt { color: var(--azure); }
+
+  .note {
+    margin-top: 1.25rem;
+    padding: 0.9rem 1.1rem;
+    background: var(--amber-soft);
+    border-left: 3px solid var(--amber);
+    border-radius: 0 6px 6px 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  .note strong { color: var(--ink); }
+
+  /* ---------- Two-item payments comparison ---------- */
+
+  .split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+  }
+
+  @media (max-width: 680px) {
+    .split { grid-template-columns: 1fr; }
+  }
+
+  .split-card {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--paper-raised);
+    padding: 1rem 1.15rem;
+  }
+
+  .split-card h4 {
+    margin: 0 0 0.35rem;
+    font-size: 0.95rem;
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  .split-card p {
+    margin: 0;
+    font-size: 0.87rem;
+    color: var(--ink-soft);
+  }
+
+  /* ---------- Checklist ---------- */
+
+  .checklist {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--paper-raised);
+    box-shadow: var(--shadow);
+    padding: 1.5rem 1.6rem;
+  }
+
+  .checklist ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
+    font-size: 0.94rem;
+  }
+
+  .checklist li::before {
+    content: "";
+    flex: none;
+    width: 0.95rem;
+    height: 0.95rem;
+    margin-top: 0.2rem;
+    border: 1.5px solid var(--lean);
+    border-radius: 3px;
+    background: var(--lean-soft);
+  }
+
+  .checklist .final {
+    margin-top: 1.1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--line);
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+  }
+
+  .checklist .final .amt {
+    font-family: Charter, Georgia, ui-serif, serif;
+    font-weight: 700;
+    font-size: 1.15rem;
+    color: var(--lean);
+  }
+
+  footer {
+    margin-top: 3.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--line);
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 0.78rem;
+    color: var(--caption);
+  }
+</style>
+
+<div class="sheet">
+
+  <header class="masthead">
+    <div class="eyebrow">Documento de referencia</div>
+    <h1>Gastos a Considerar</h1>
+    <p class="dek">Licencias, herramientas y costos de infraestructura para llevar MasterTrackAgenda de proyecto personal a un producto que se pueda vender por membresía.</p>
+    <div class="meta">
+      <span>Preparado para: <strong>desarrollo solo, etapa bootstrap</strong></span>
+      <span>Stack: <strong>ASP.NET Core 8 · EF Core · PostgreSQL</strong></span>
+      <span>Estado del código: <strong>sin integraciones de Azure implementadas todavía</strong></span>
+    </div>
+  </header>
+
+  <div class="summary">
+    <div class="stat">
+      <div class="figure mono">&lt; $20 USD</div>
+      <div class="label">gasto mensual estimado si arrancas por la ruta económica, antes de tener clientes pagando</div>
+    </div>
+    <div class="stat">
+      <div class="figure mono">$0</div>
+      <div class="label">costo de migración hoy — Blob, Stripe y email real todavía no están implementados en el código</div>
+    </div>
+    <div class="stat">
+      <div class="figure mono">30 días</div>
+      <div class="label">plazo antes de que venza el trial de Rider y tengas que decidir IDE</div>
+    </div>
+  </div>
+
+  <section>
+    <div class="section-head">
+      <h2>Herramientas de desarrollo</h2>
+      <span class="tag">Necesarias ya, en tu laptop</span>
+    </div>
+    <p>Lo que corre en tu máquina para escribir y compilar el sistema.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Herramienta</th><th>Licencia / costo</th><th>Nota</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="item">Rider</td>
+            <td class="cost mono">~$149 USD/año</td>
+            <td>Trial vence en 30 días. Licencia <em>Personal</em> (pagas tú, no una empresa) — sí puedes usarla para software comercial; baja a ~$89/año a partir del tercero.</td>
+          </tr>
+          <tr>
+            <td class="item">Visual Studio Community</td>
+            <td class="cost mono">Gratis</td>
+            <td>Alternativa a Rider. Gratis para individuos y negocios &lt;250 empleados y &lt;$1M USD de ingresos/año — te cubre en tu etapa actual sin costo.</td>
+          </tr>
+          <tr>
+            <td class="item">.NET SDK / EF Core</td>
+            <td class="cost mono">Gratis</td>
+            <td>Open source, sin restricción de uso comercial.</td>
+          </tr>
+          <tr>
+            <td class="item">PostgreSQL</td>
+            <td class="cost mono">Gratis</td>
+            <td>Open source.</td>
+          </tr>
+          <tr>
+            <td class="item">Docker Desktop</td>
+            <td class="cost mono">Gratis</td>
+            <td>"Docker Personal" es gratis para individuos/negocios &lt;250 empleados y &lt;$10M ingresos/año. Revisar si el negocio crece.</td>
+          </tr>
+          <tr>
+            <td class="item">GitHub</td>
+            <td class="cost mono">Gratis</td>
+            <td>Plan free: repos privados ilimitados + 2000 min/mes de Actions.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Hosting &amp; cloud</h2>
+      <span class="tag">Aquí hay gasto recurrente real</span>
+    </div>
+    <p>El diseño original del sistema asume Azure completo. Comparado contra una ruta económica para arrancar solo, sin clientes todavía.</p>
+
+    <div class="routes">
+      <div class="route" data-route="lean">
+        <div class="route-head">
+          <h3>Ruta económica</h3>
+          <span class="pill">Recomendada</span>
+        </div>
+        <div class="route-body">
+          <div class="line-item">
+            <span class="desc"><strong>VPS (Hetzner / Railway / Render)</strong>API + Docker</span>
+            <span class="amt mono">$5&ndash;7</span>
+          </div>
+          <div class="line-item">
+            <span class="desc"><strong>Postgres administrado</strong>Neon o Supabase, tier free</span>
+            <span class="amt mono">$0</span>
+          </div>
+          <div class="line-item">
+            <span class="desc"><strong>Storage (Cloudflare R2)</strong>10GB gratis, sin cargo por egress</span>
+            <span class="amt mono">$0</span>
+          </div>
+          <div class="line-item">
+            <span class="desc"><strong>Email transaccional</strong>Resend / SendGrid, 100/día gratis</span>
+            <span class="amt mono">$0</span>
+          </div>
+          <div class="line-item">
+            <span class="desc"><strong>SSL</strong>Let's Encrypt / Cloudflare</span>
+            <span class="amt mono">$0</span>
+          </div>
+          <div class="route-total">
+            <span class="label">Total estimado / mes</span>
+            <span class="amt mono">$5&ndash;12</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="route" data-route="azure">
+        <div class="route-head">
+          <h3>Ruta Azure</h3>
+          <span class="pill">Diseño original</span>
+        </div>
+        <div class="route-body">
+          <div class="line-item">
+            <span class="desc"><strong>App Service B1</strong>mínimo viable, no el tier Free que duerme</span>
+            <span class="amt mono">~$13</span>
+          </div>
+          <div class="line-item">
+            <span class="desc"><strong>Postgres Flexible (Burstable B1ms)</strong>Azure Database for PostgreSQL</span>
+            <span class="amt mono">~$12&ndash;15</span>
+          </div>
+          <div class="line-item">
+            <span class="desc"><strong>Blob Storage</strong>bajo volumen</span>
+            <span class="amt mono">~$1&ndash;2</span>
+          </div>
+          <div class="line-item">
+            <span class="desc"><strong>Communication Services</strong>email / SMS, bajo volumen</span>
+            <span class="amt mono">~$1&ndash;5</span>
+          </div>
+          <div class="line-item">
+            <span class="desc"><strong>Durable Functions</strong>plan Consumption, 1M ejecuciones gratis/mes</span>
+            <span class="amt mono">$0</span>
+          </div>
+          <div class="route-total">
+            <span class="label">Total estimado / mes</span>
+            <span class="amt mono">$30&ndash;50+</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="note">
+      <strong>Por qué la ruta económica primero:</strong> ningún módulo del backend usa todavía un SDK de Azure — Blob Storage, Stripe y el envío real de email son placeholders. Elegir proveedor hoy no tiene costo de migración. Cuenta nueva de Azure incluye $200 USD de crédito los primeros 30 días si de todas formas quieres probarlo.
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Pagos</h2>
+      <span class="tag">Dos usos distintos de Stripe</span>
+    </div>
+    <p>Fáciles de confundir porque ambos son "Stripe", pero resuelven cosas distintas.</p>
+    <div class="split">
+      <div class="split-card">
+        <h4>Stripe Billing — para que tú cobres la membresía</h4>
+        <p>Suscripciones recurrentes de MTA a tus clientes. Sin costo de licencia, solo comisión por transacción (~3.6% + $3 MXN en México). Esto es lo que necesitas para vender por membresía.</p>
+      </div>
+      <div class="split-card">
+        <h4>Stripe Terminal — feature dentro del producto</h4>
+        <p>Lector físico de tarjeta para que <em>tus clientes</em> (salones, talleres) cobren en persona a sus propios clientes. Hardware aparte (~$59&ndash;300 USD/lector). Opcional, se puede posponer para después del lanzamiento.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Dominio</h2>
+      <span class="tag">Namecheap / Cloudflare</span>
+    </div>
+    <p>~$12&ndash;15 USD/año. Sin renta adicional de SSL — se cubre gratis con Let's Encrypt o el certificado administrado del proveedor.</p>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Legal &amp; facturación</h2>
+      <span class="tag">No es licencia de software, pero aplica</span>
+    </div>
+    <p>Para cobrar suscripciones formalmente en México necesitas RFC con actividad empresarial (persona física o moral), términos de servicio y aviso de privacidad. No es parte del stack técnico, pero es requisito para vender de forma legal.</p>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Checklist para arrancar</h2>
+    </div>
+    <div class="checklist">
+      <ul>
+        <li>Decidir IDE antes de que venza el trial de Rider (30 días): comprar licencia Personal o migrar a VS Community</li>
+        <li>Levantar VPS económico (Hetzner / Railway / Render) para reemplazar el hosting Azure planeado originalmente</li>
+        <li>Crear Postgres administrado en Neon o Supabase (tier free)</li>
+        <li>Registrar dominio</li>
+        <li>Configurar Stripe Billing cuando esté listo el flujo de suscripción de MTA</li>
+        <li>Dejar Blob Storage, Stripe Terminal y email real (Azure Communication / Resend) para cuando el producto tenga esos flujos construidos</li>
+        <li>Resolver RFC / facturación antes de cobrar el primer cliente real</li>
+      </ul>
+      <div class="final">
+        Con esto puedes estar operando por <span class="amt mono">menos de $20 USD/mes</span> hasta tener clientes pagando.
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Gastos a Considerar — MasterTrackAgenda · Documento vivo, revisar cuando cambien ingresos o volumen de clientes.
+  </footer>
+
+</div>
