@@ -1,0 +1,851 @@
+<title>UI por sector — MasterTrackAgenda</title>
+<style>
+  :root {
+    --ink: #171a1f;
+    --ink-soft: #454c56;
+    --caption: #6b7280;
+    --paper: #f2f3f5;
+    --surface: #ffffff;
+    --line: #dadfe5;
+    --line-soft: #e9ecf0;
+    --shadow: 0 1px 2px rgba(23, 26, 31, 0.05), 0 16px 40px rgba(23, 26, 31, 0.08);
+
+    --good: #2f7a4f;
+    --good-soft: #e5f2ea;
+    --pending: #b8790e;
+    --pending-soft: #f7ecd8;
+    --bad: #b23b3b;
+    --bad-soft: #f8e7e7;
+
+    --beauty-accent: #b1546f;
+    --beauty-soft: #f6e9ee;
+    --beauty-deep: #7a2f49;
+
+    --events-accent: #7a5cc2;
+    --events-soft: #ece8f7;
+    --events-deep: #4f3a86;
+
+    --logistics-accent: #2e7da6;
+    --logistics-soft: #e2edf3;
+    --logistics-deep: #1c4e68;
+
+    --workshops-accent: #3f7a78;
+    --workshops-soft: #e2eeed;
+    --workshops-deep: #244d4b;
+  }
+
+  :root[data-theme="dark"] {
+    --ink: #eef0f3;
+    --ink-soft: #c3c9d1;
+    --caption: #8b93a0;
+    --paper: #0e1116;
+    --surface: #171b21;
+    --line: #2a2f37;
+    --line-soft: #20242b;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 18px 44px rgba(0, 0, 0, 0.45);
+
+    --good: #6fbf8e;
+    --good-soft: #16281e;
+    --pending: #e0ac4b;
+    --pending-soft: #2c2314;
+    --bad: #e08080;
+    --bad-soft: #2c1a1a;
+
+    --beauty-accent: #e39cb2;
+    --beauty-soft: #35222a;
+    --beauty-deep: #f0bccb;
+
+    --events-accent: #b3a0e6;
+    --events-soft: #251f38;
+    --events-deep: #d0c3f2;
+
+    --logistics-accent: #7ab8dd;
+    --logistics-soft: #17262f;
+    --logistics-deep: #a6d3ef;
+
+    --workshops-accent: #7fc4c1;
+    --workshops-soft: #14231f;
+    --workshops-deep: #a9dcd9;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #eef0f3;
+      --ink-soft: #c3c9d1;
+      --caption: #8b93a0;
+      --paper: #0e1116;
+      --surface: #171b21;
+      --line: #2a2f37;
+      --line-soft: #20242b;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 18px 44px rgba(0, 0, 0, 0.45);
+
+      --good: #6fbf8e;
+      --good-soft: #16281e;
+      --pending: #e0ac4b;
+      --pending-soft: #2c2314;
+      --bad: #e08080;
+      --bad-soft: #2c1a1a;
+
+      --beauty-accent: #e39cb2;
+      --beauty-soft: #35222a;
+      --beauty-deep: #f0bccb;
+
+      --events-accent: #b3a0e6;
+      --events-soft: #251f38;
+      --events-deep: #d0c3f2;
+
+      --logistics-accent: #7ab8dd;
+      --logistics-soft: #17262f;
+      --logistics-deep: #a6d3ef;
+
+      --workshops-accent: #7fc4c1;
+      --workshops-soft: #14231f;
+      --workshops-deep: #a9dcd9;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, ui-sans-serif, sans-serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .mono {
+    font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stage {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 4.5rem;
+  }
+
+  /* ---------- Masthead ---------- */
+
+  .masthead {
+    margin-bottom: 2rem;
+  }
+
+  .masthead .eyebrow {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--caption);
+    margin-bottom: 0.5rem;
+  }
+
+  .masthead h1 {
+    font-size: clamp(1.9rem, 4.5vw, 2.5rem);
+    font-weight: 800;
+    letter-spacing: -0.015em;
+    margin: 0 0 0.55rem;
+    text-wrap: balance;
+  }
+
+  .masthead p {
+    margin: 0;
+    color: var(--ink-soft);
+    max-width: 66ch;
+    font-size: 0.98rem;
+  }
+
+  /* ---------- Switcher ---------- */
+
+  input[type="radio"].sector-radio { display: none; }
+
+  .switcher {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1.6rem 0 1.75rem;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 1.1rem;
+  }
+
+  .switcher label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.95rem;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .switcher label:hover { border-color: var(--caption); }
+
+  .switcher label:focus-visible,
+  input[type="radio"]:focus-visible ~ .switcher label {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+  }
+
+  .switcher .dot {
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 999px;
+    flex: none;
+  }
+
+  .switcher label[for="sec-beauty"] .dot { background: var(--beauty-accent); }
+  .switcher label[for="sec-events"] .dot { background: var(--events-accent); }
+  .switcher label[for="sec-logistics"] .dot { background: var(--logistics-accent); }
+  .switcher label[for="sec-workshops"] .dot { background: var(--workshops-accent); }
+
+  #sec-beauty:checked ~ .switcher label[for="sec-beauty"],
+  #sec-events:checked ~ .switcher label[for="sec-events"],
+  #sec-logistics:checked ~ .switcher label[for="sec-logistics"],
+  #sec-workshops:checked ~ .switcher label[for="sec-workshops"] {
+    color: var(--ink);
+    border-color: currentColor;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+  }
+
+  /* ---------- Panels ---------- */
+
+  .panel { display: none; }
+
+  #sec-beauty:checked ~ .panel[data-sector="beauty"],
+  #sec-events:checked ~ .panel[data-sector="events"],
+  #sec-logistics:checked ~ .panel[data-sector="logistics"],
+  #sec-workshops:checked ~ .panel[data-sector="workshops"] {
+    display: block;
+  }
+
+  .panel[data-sector="beauty"] { --accent: var(--beauty-accent); --accent-soft: var(--beauty-soft); --accent-deep: var(--beauty-deep); }
+  .panel[data-sector="events"] { --accent: var(--events-accent); --accent-soft: var(--events-soft); --accent-deep: var(--events-deep); }
+  .panel[data-sector="logistics"] { --accent: var(--logistics-accent); --accent-soft: var(--logistics-soft); --accent-deep: var(--logistics-deep); }
+  .panel[data-sector="workshops"] { --accent: var(--workshops-accent); --accent-soft: var(--workshops-soft); --accent-deep: var(--workshops-deep); }
+
+  .panel-caption {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.85rem;
+  }
+
+  .panel-caption .sector-name {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--accent-deep);
+  }
+
+  .panel-caption .screen-ref {
+    font-size: 0.78rem;
+    color: var(--caption);
+  }
+
+  /* ---------- App frame (the mockup shell) ---------- */
+
+  .app-frame {
+    display: flex;
+    min-height: 560px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .app-sidebar {
+    width: 208px;
+    flex: none;
+    background: var(--paper);
+    border-right: 1px solid var(--line);
+    padding: 1.25rem 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .app-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0 0.4rem;
+  }
+
+  .app-brand .mark {
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 6px;
+    background: var(--accent);
+    flex: none;
+  }
+
+  .app-brand .name {
+    font-size: 0.88rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+
+  .app-nav {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .app-nav li a {
+    display: block;
+    padding: 0.5rem 0.65rem;
+    border-radius: 7px;
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+
+  .app-nav li.active a {
+    background: var(--accent-soft);
+    color: var(--accent-deep);
+  }
+
+  .app-nav li a:hover:not(.active a) {
+    background: var(--line-soft);
+  }
+
+  .app-main {
+    flex: 1;
+    min-width: 0;
+    padding: 1.5rem 1.75rem 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.35rem;
+  }
+
+  .app-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .app-topbar h2 {
+    margin: 0 0 0.2rem;
+    font-size: 1.3rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+
+  .app-topbar .sub {
+    margin: 0;
+    font-size: 0.86rem;
+    color: var(--caption);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.9rem;
+    border-radius: 7px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.84rem;
+    font-weight: 700;
+    border: none;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  .btn:hover { filter: brightness(1.06); }
+
+  .btn.ghost {
+    background: transparent;
+    color: var(--ink-soft);
+    border: 1px solid var(--line);
+  }
+
+  .tabline {
+    display: flex;
+    gap: 1.4rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .tabline span {
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: var(--caption);
+    padding-bottom: 0.6rem;
+    border-bottom: 2px solid transparent;
+  }
+
+  .tabline span.active {
+    color: var(--ink);
+    border-bottom-color: var(--accent);
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .pill.good { background: var(--good-soft); color: var(--good); }
+  .pill.pending { background: var(--pending-soft); color: var(--pending); }
+  .pill.bad { background: var(--bad-soft); color: var(--bad); }
+  .pill.accent { background: var(--accent-soft); color: var(--accent-deep); }
+
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .stat-card {
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    padding: 0.8rem 0.95rem;
+    background: var(--paper);
+  }
+
+  .stat-card .k {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--caption);
+    margin-bottom: 0.3rem;
+  }
+
+  .stat-card .v {
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+
+  /* history / timeline list (Beauty + Workshops) */
+
+  .history {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .history-item {
+    display: flex;
+    gap: 0.9rem;
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    background: var(--paper);
+  }
+
+  .history-item .date {
+    flex: none;
+    width: 5.4rem;
+    font-size: 0.78rem;
+    color: var(--caption);
+    font-weight: 600;
+  }
+
+  .history-item .body { flex: 1; min-width: 0; }
+
+  .history-item .title {
+    font-size: 0.92rem;
+    font-weight: 700;
+    margin-bottom: 0.15rem;
+  }
+
+  .history-item .meta {
+    font-size: 0.82rem;
+    color: var(--caption);
+  }
+
+  .history-item .meta strong { color: var(--ink-soft); font-weight: 600; }
+
+  /* stop list (Logistics) */
+
+  .stops {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+
+  .stop {
+    display: grid;
+    grid-template-columns: 1.9rem 1fr auto;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 0.75rem 0.95rem;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--paper);
+  }
+
+  .stop .seq {
+    width: 1.9rem;
+    height: 1.9rem;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent-deep);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.82rem;
+  }
+
+  .stop .name { font-size: 0.9rem; font-weight: 700; }
+  .stop .addr { font-size: 0.8rem; color: var(--caption); }
+
+  /* vendor rows (Events) */
+
+  .rows { display: flex; flex-direction: column; gap: 0.5rem; }
+
+  .row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 0.7rem 0.95rem;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--paper);
+    font-size: 0.88rem;
+  }
+
+  .row .primary { font-weight: 700; }
+  .row .secondary { font-size: 0.8rem; color: var(--caption); }
+
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    min-width: 420px;
+  }
+
+  thead th {
+    text-align: left;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--caption);
+    font-weight: 700;
+    padding: 0.6rem 0.85rem;
+    background: var(--paper);
+    border-bottom: 1px solid var(--line);
+  }
+
+  tbody td {
+    padding: 0.65rem 0.85rem;
+    border-bottom: 1px solid var(--line-soft);
+    color: var(--ink-soft);
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+  tbody td.strong { color: var(--ink); font-weight: 600; }
+
+  .rationale {
+    margin-top: 2rem;
+    padding: 1rem 1.15rem;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    font-size: 0.87rem;
+    color: var(--ink-soft);
+  }
+
+  .rationale strong { color: var(--ink); }
+
+  footer {
+    margin-top: 3rem;
+    padding-top: 1.1rem;
+    border-top: 1px solid var(--line);
+    font-size: 0.78rem;
+    color: var(--caption);
+  }
+</style>
+
+<div class="stage">
+
+  <header class="masthead">
+    <div class="eyebrow">Concepto de UI — referencia para React</div>
+    <h1>Una pantalla representativa por sector</h1>
+    <p>No es el set completo de pantallas — para eso está la guía de flujo. Esto es el concepto visual de la pantalla más característica de cada sector, con datos reales del backend, para que definas layout y jerarquía antes de picar código.</p>
+  </header>
+
+  <input type="radio" name="sector" id="sec-beauty" class="sector-radio" checked="checked">
+  <input type="radio" name="sector" id="sec-events" class="sector-radio">
+  <input type="radio" name="sector" id="sec-logistics" class="sector-radio">
+  <input type="radio" name="sector" id="sec-workshops" class="sector-radio">
+
+  <nav class="switcher">
+    <label for="sec-beauty"><span class="dot"></span>Beauty &amp; Wellness</label>
+    <label for="sec-events"><span class="dot"></span>Social Events</label>
+    <label for="sec-logistics"><span class="dot"></span>Distribution &amp; Logistics</label>
+    <label for="sec-workshops"><span class="dot"></span>Technical Workshops</label>
+  </nav>
+
+  <!-- ================= BEAUTY ================= -->
+  <div class="panel" data-sector="beauty">
+    <div class="panel-caption">
+      <span class="sector-name">Beauty &amp; Wellness</span>
+      <span class="screen-ref mono">GET /api/clinicalrecords?customerId=</span>
+    </div>
+    <div class="app-frame">
+      <aside class="app-sidebar">
+        <div class="app-brand"><span class="mark"></span><span class="name">MTA</span></div>
+        <ul class="app-nav">
+          <li><a href="#">Agenda</a></li>
+          <li><a href="#">Clientes</a></li>
+          <li class="active"><a href="#">Historial clínico</a></li>
+          <li><a href="#">Servicios</a></li>
+          <li><a href="#">Productos</a></li>
+          <li><a href="#">Ventas</a></li>
+        </ul>
+      </aside>
+      <main class="app-main">
+        <div class="app-topbar">
+          <div>
+            <h2>Ana Pérez</h2>
+            <p class="sub">555-9999 · ana@test.com · cliente desde ene 2026</p>
+          </div>
+          <button class="btn">+ Nueva cita</button>
+        </div>
+        <div class="tabline">
+          <span>Perfil</span>
+          <span class="active">Historial clínico</span>
+          <span>Citas</span>
+          <span>Ventas</span>
+        </div>
+        <div class="history">
+          <div class="history-item">
+            <div class="date">01 jul 2026</div>
+            <div class="body">
+              <div class="title">Retoque</div>
+              <div class="meta">Empleado Test · alergias: <strong>ninguna</strong> · <span class="pill accent">2 fotos</span></div>
+            </div>
+          </div>
+          <div class="history-item">
+            <div class="date">01 jun 2026</div>
+            <div class="body">
+              <div class="title">Corte y color</div>
+              <div class="meta">Empleado Test · alergias: <strong>ninguna</strong> · <span class="pill accent">2 fotos</span></div>
+            </div>
+          </div>
+        </div>
+        <button class="btn ghost" style="align-self:flex-start;">+ Nuevo registro clínico</button>
+      </main>
+    </div>
+    <div class="rationale">
+      <strong>Por qué así:</strong> el historial es cronológico, por eso es una lista tipo timeline (más reciente arriba), no una tabla. El badge de fotos es un contador — el detalle de cada foto vive en la pantalla de detalle del registro, no aquí.
+    </div>
+  </div>
+
+  <!-- ================= EVENTS ================= -->
+  <div class="panel" data-sector="events">
+    <div class="panel-caption">
+      <span class="sector-name">Social Events</span>
+      <span class="screen-ref mono">GET /api/eventdetails?scheduleTaskId=</span>
+    </div>
+    <div class="app-frame">
+      <aside class="app-sidebar">
+        <div class="app-brand"><span class="mark"></span><span class="name">MTA</span></div>
+        <ul class="app-nav">
+          <li><a href="#">Agenda</a></li>
+          <li><a href="#">Clientes</a></li>
+          <li><a href="#">Venues</a></li>
+          <li><a href="#">Paquetes</a></li>
+          <li class="active"><a href="#">Eventos</a></li>
+          <li><a href="#">Proveedores</a></li>
+          <li><a href="#">Ventas</a></li>
+        </ul>
+      </aside>
+      <main class="app-main">
+        <div class="app-topbar">
+          <div>
+            <h2>Boda — Ana &amp; Carlos</h2>
+            <p class="sub">15 ago 2026 · Salón Jardín · 120 invitados · <span class="pill accent">Contract</span></p>
+          </div>
+          <button class="btn ghost">Editar evento</button>
+        </div>
+        <div class="stat-row">
+          <div class="stat-card">
+            <div class="k">Depósito</div>
+            <div class="v mono">$5,000</div>
+            <span class="pill good">Pagado</span>
+          </div>
+          <div class="stat-card">
+            <div class="k">Garantía</div>
+            <div class="v mono">$2,000</div>
+            <span class="pill pending">Pendiente</span>
+          </div>
+          <div class="stat-card">
+            <div class="k">Venue</div>
+            <div class="v">Salón Jardín</div>
+            <span class="pill accent">150 cap.</span>
+          </div>
+        </div>
+        <div>
+          <div class="tabline" style="margin-bottom:0.75rem;"><span class="active">Proveedores</span></div>
+          <div class="rows">
+            <div class="row">
+              <div><div class="primary">DJ Ramírez</div><div class="secondary">DJ</div></div>
+              <div class="mono">$3,500</div>
+              <span class="pill good">Confirmado</span>
+            </div>
+            <div class="row">
+              <div><div class="primary">Catering Fiesta</div><div class="secondary">Catering</div></div>
+              <div class="mono">$8,000</div>
+              <span class="pill pending">Pendiente</span>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <div class="rationale">
+      <strong>Por qué así:</strong> depósito y garantía son dos obligaciones distintas (una no-reembolsable, otra sí) — por eso van en tarjetas separadas con su propio pill de estado, no como una sola línea de "pago". El modo (Simple/Contract) es un pill junto al título porque cambia qué campos existen debajo.
+    </div>
+  </div>
+
+  <!-- ================= LOGISTICS ================= -->
+  <div class="panel" data-sector="logistics">
+    <div class="panel-caption">
+      <span class="sector-name">Distribution &amp; Logistics</span>
+      <span class="screen-ref mono">GET /api/deliveryroutes/{id}</span>
+    </div>
+    <div class="app-frame">
+      <aside class="app-sidebar">
+        <div class="app-brand"><span class="mark"></span><span class="name">MTA</span></div>
+        <ul class="app-nav">
+          <li class="active"><a href="#">Rutas</a></li>
+          <li><a href="#">Vehículos</a></li>
+          <li><a href="#">Productos</a></li>
+          <li><a href="#">Clientes</a></li>
+          <li><a href="#">Ventas</a></li>
+        </ul>
+      </aside>
+      <main class="app-main">
+        <div class="app-topbar">
+          <div>
+            <h2>Ruta — 20 ago 2026</h2>
+            <p class="sub">Empleado Test · Vehículo ABC-123 · <span class="pill accent">En curso</span></p>
+          </div>
+          <button class="btn ghost">Cerrar ruta</button>
+        </div>
+        <div>
+          <div class="tabline" style="margin-bottom:0.75rem;"><span class="active">Paradas</span></div>
+          <div class="stops">
+            <div class="stop">
+              <div class="seq">1</div>
+              <div><div class="name">Tienda Don Pepe</div><div class="addr">venta ligada · $350</div></div>
+              <span class="pill good">Entregado</span>
+            </div>
+            <div class="stop">
+              <div class="seq">2</div>
+              <div><div class="name">Av. Siempre Viva 742</div><div class="addr">sin cliente registrado</div></div>
+              <span class="pill pending">Pendiente</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="tabline" style="margin-bottom:0.75rem;"><span class="active">Manifiesto</span></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Producto</th><th>Cargado</th><th>Entregado</th><th>Devuelto</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td class="strong">Garrafón Agua</td>
+                  <td class="mono">50</td>
+                  <td class="mono">10</td>
+                  <td class="mono">5</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+    <div class="rationale">
+      <strong>Por qué así:</strong> paradas y manifiesto son dos preguntas distintas — "¿a dónde voy?" vs. "¿qué traigo cargado?" — por eso son dos bloques separados en vez de una sola tabla gigante. El número de secuencia en cada parada importa (es el orden real de la ruta), así que va como badge circular, no como columna de tabla.
+    </div>
+  </div>
+
+  <!-- ================= WORKSHOPS ================= -->
+  <div class="panel" data-sector="workshops">
+    <div class="panel-caption">
+      <span class="sector-name">Technical Workshops</span>
+      <span class="screen-ref mono">GET /api/assetrecords?assetId=</span>
+    </div>
+    <div class="app-frame">
+      <aside class="app-sidebar">
+        <div class="app-brand"><span class="mark"></span><span class="name">MTA</span></div>
+        <ul class="app-nav">
+          <li><a href="#">Agenda</a></li>
+          <li><a href="#">Clientes</a></li>
+          <li class="active"><a href="#">Activos</a></li>
+          <li><a href="#">Órdenes</a></li>
+          <li><a href="#">Ventas</a></li>
+        </ul>
+      </aside>
+      <main class="app-main">
+        <div class="app-topbar">
+          <div>
+            <h2>ABC-9988 — Nissan NP300</h2>
+            <p class="sub">Ana Pérez · kilometraje actual: <strong class="mono">15,000 km</strong></p>
+          </div>
+          <button class="btn">+ Nuevo registro</button>
+        </div>
+        <div class="stat-row">
+          <div class="stat-card"><div class="k">Kilometraje</div><div class="v mono">15,000 km</div></div>
+          <div class="stat-card"><div class="k">Último servicio</div><div class="v">Frenos</div></div>
+          <div class="stat-card"><div class="k">Próximo sugerido</div><div class="v mono">20,000 km</div></div>
+        </div>
+        <div class="history">
+          <div class="history-item">
+            <div class="date">07 jul 2026</div>
+            <div class="body">
+              <div class="title">Frenos</div>
+              <div class="meta">15,000 km · partes: <strong>balatas delanteras</strong> · Empleado Test</div>
+            </div>
+          </div>
+          <div class="history-item">
+            <div class="date">01 jun 2026</div>
+            <div class="body">
+              <div class="title">Cambio de aceite</div>
+              <div class="meta">10,000 km · partes: <strong>filtro de aceite, aceite 5W30</strong> · Empleado Test</div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <div class="rationale">
+      <strong>Por qué así:</strong> las tres cifras de arriba (kilometraje, último servicio, próximo sugerido) son lo que un mecánico necesita saber antes de abrir el historial completo — por eso van como stat cards encima del timeline, no enterradas dentro de cada registro.
+    </div>
+  </div>
+
+  <footer>
+    UI por sector — MasterTrackAgenda · El color de acento cambia por sector; la estructura de la app (sidebar, tipografía, spacing) se mantiene igual — es un producto, no cuatro apps distintas.
+  </footer>
+
+</div>
