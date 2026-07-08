@@ -10,12 +10,31 @@
     --line-soft: #e9ecf0;
     --shadow: 0 1px 2px rgba(23, 26, 31, 0.05), 0 16px 40px rgba(23, 26, 31, 0.08);
 
+    --accent: #2f6fa8;
+    --accent-soft: #e4edf5;
+    --accent-deep: #1c4a72;
+
     --good: #2f7a4f;
     --good-soft: #e5f2ea;
     --pending: #b8790e;
     --pending-soft: #f7ecd8;
     --bad: #b23b3b;
     --bad-soft: #f8e7e7;
+
+    --progress: #b8790e;
+    --progress-soft: #f7ecd8;
+    --done: #2f7a4f;
+    --done-soft: #e5f2ea;
+    --cancelled: #b23b3b;
+    --cancelled-soft: #f8e7e7;
+
+    --closed-stripe: repeating-linear-gradient(
+      135deg,
+      var(--line-soft),
+      var(--line-soft) 6px,
+      var(--paper) 6px,
+      var(--paper) 12px
+    );
 
     --beauty-accent: #b1546f;
     --beauty-soft: #f6e9ee;
@@ -86,7 +105,7 @@
     font-size: 0.98rem;
   }
 
-  /* ---------- Switcher ---------- */
+  /* ---------- Switcher (nivel pantalla) ---------- */
 
   input[type="radio"].sector-radio { display: none; }
 
@@ -129,11 +148,13 @@
     flex: none;
   }
 
+  .switcher label[for="sec-agenda"] .dot { background: var(--caption); }
   .switcher label[for="sec-beauty"] .dot { background: var(--beauty-accent); }
   .switcher label[for="sec-events"] .dot { background: var(--events-accent); }
   .switcher label[for="sec-logistics"] .dot { background: var(--logistics-accent); }
   .switcher label[for="sec-workshops"] .dot { background: var(--workshops-accent); }
 
+  #sec-agenda:checked ~ .switcher label[for="sec-agenda"],
   #sec-beauty:checked ~ .switcher label[for="sec-beauty"],
   #sec-events:checked ~ .switcher label[for="sec-events"],
   #sec-logistics:checked ~ .switcher label[for="sec-logistics"],
@@ -148,6 +169,7 @@
 
   .panel { display: none; }
 
+  #sec-agenda:checked ~ .panel[data-sector="agenda"],
   #sec-beauty:checked ~ .panel[data-sector="beauty"],
   #sec-events:checked ~ .panel[data-sector="events"],
   #sec-logistics:checked ~ .panel[data-sector="logistics"],
@@ -506,6 +528,8 @@
   }
 
   .rationale strong { color: var(--ink); }
+  .rationale ul { margin: 0.5rem 0 0; padding-left: 1.15rem; }
+  .rationale li { margin-bottom: 0.3rem; }
 
   footer {
     margin-top: 3rem;
@@ -514,27 +538,617 @@
     font-size: 0.78rem;
     color: var(--caption);
   }
+
+  /* =====================================================
+     AGENDA — sub-switcher de color por sector + calendario
+     ===================================================== */
+
+  .sector-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .sector-tabs .tabs-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--caption);
+    display: flex;
+    align-items: center;
+    margin-right: 0.3rem;
+  }
+
+  .sector-tabs label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .sector-tabs label:hover { border-color: var(--caption); }
+
+  .sector-tabs .dot {
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 999px;
+    flex: none;
+  }
+
+  .sector-tabs label[for="agenda-sector-beauty"] .dot { background: var(--beauty-accent); }
+  .sector-tabs label[for="agenda-sector-events"] .dot { background: var(--events-accent); }
+  .sector-tabs label[for="agenda-sector-logistics"] .dot { background: var(--logistics-accent); }
+  .sector-tabs label[for="agenda-sector-workshops"] .dot { background: var(--workshops-accent); }
+
+  #agenda-sector-beauty:checked ~ .sector-tabs label[for="agenda-sector-beauty"],
+  #agenda-sector-events:checked ~ .sector-tabs label[for="agenda-sector-events"],
+  #agenda-sector-logistics:checked ~ .sector-tabs label[for="agenda-sector-logistics"],
+  #agenda-sector-workshops:checked ~ .sector-tabs label[for="agenda-sector-workshops"] {
+    color: var(--ink);
+    border-color: currentColor;
+    box-shadow: var(--shadow);
+  }
+
+  #agenda-sector-beauty:checked ~ .agenda-shell {
+    --accent: var(--beauty-accent);
+    --accent-soft: var(--beauty-soft);
+    --accent-deep: var(--beauty-deep);
+  }
+  #agenda-sector-events:checked ~ .agenda-shell {
+    --accent: var(--events-accent);
+    --accent-soft: var(--events-soft);
+    --accent-deep: var(--events-deep);
+  }
+  #agenda-sector-logistics:checked ~ .agenda-shell {
+    --accent: var(--logistics-accent);
+    --accent-soft: var(--logistics-soft);
+    --accent-deep: var(--logistics-deep);
+  }
+  #agenda-sector-workshops:checked ~ .agenda-shell {
+    --accent: var(--workshops-accent);
+    --accent-soft: var(--workshops-soft);
+    --accent-deep: var(--workshops-deep);
+  }
+
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin: 0 0 1rem;
+  }
+
+  .day-strip {
+    display: flex;
+    gap: 0.35rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 0.3rem;
+    box-shadow: var(--shadow);
+  }
+
+  .day-strip button {
+    appearance: none;
+    border: none;
+    background: transparent;
+    padding: 0.45rem 0.75rem;
+    border-radius: 7px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--caption);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.1rem;
+    line-height: 1.1;
+  }
+
+  .day-strip button .num { font-size: 0.72rem; font-weight: 500; color: var(--caption); }
+
+  .day-strip button.active {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .day-strip button.active .num { color: rgba(255, 255, 255, 0.8); }
+
+  .day-strip button:hover:not(.active) { background: var(--line-soft); }
+
+  .hours-note {
+    font-size: 0.82rem;
+    color: var(--caption);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .hours-note strong { color: var(--ink-soft); font-weight: 700; }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.1rem;
+    margin-bottom: 1.1rem;
+  }
+
+  .legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    color: var(--caption);
+  }
+
+  .legend-item .swatch {
+    width: 0.85rem;
+    height: 0.85rem;
+    border-radius: 3px;
+    flex: none;
+    border: 1.5px solid transparent;
+  }
+
+  .legend-item .swatch.free { background: var(--surface); border-color: var(--line); }
+  .legend-item .swatch.confirmed { background: var(--accent-soft); border-left: 3px solid var(--accent); }
+  .legend-item .swatch.progress { background: var(--progress-soft); border-left: 3px solid var(--progress); }
+  .legend-item .swatch.done { background: var(--done-soft); border-left: 3px solid var(--done); }
+  .legend-item .swatch.cancelled { background: var(--cancelled-soft); border-left: 3px solid var(--cancelled); }
+  .legend-item .swatch.closed { background: var(--closed-stripe); border-color: var(--line); }
+
+  .board {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .board-scroll {
+    overflow-x: auto;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 4.25rem repeat(4, minmax(180px, 1fr));
+    min-width: 780px;
+  }
+
+  .grid-head {
+    display: contents;
+  }
+
+  .grid-head .corner {
+    background: var(--paper);
+    border-bottom: 1px solid var(--line);
+    border-right: 1px solid var(--line);
+  }
+
+  .grid-head .worker {
+    background: var(--paper);
+    border-bottom: 1px solid var(--line);
+    border-right: 1px solid var(--line-soft);
+    padding: 0.85rem 1rem;
+  }
+
+  .grid-head .worker:last-child { border-right: none; }
+
+  .grid-head .worker .name {
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+
+  .grid-head .worker .role {
+    font-size: 0.76rem;
+    color: var(--caption);
+    margin-top: 0.1rem;
+  }
+
+  .grid-head .worker.add-worker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .grid-head .worker.add-worker a {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--accent-deep);
+    text-decoration: none;
+  }
+
+  .hour-gutter {
+    border-right: 1px solid var(--line);
+    background: var(--paper);
+  }
+
+  .hour-gutter .tick {
+    height: 60px;
+    padding: 0 0.6rem;
+    text-align: right;
+    font-size: 0.72rem;
+    color: var(--caption);
+    border-top: 1px solid var(--line-soft);
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding-top: 0.25rem;
+  }
+
+  .hour-gutter .tick:first-child { border-top: none; }
+
+  .column {
+    position: relative;
+    border-right: 1px solid var(--line-soft);
+  }
+
+  .column:last-child { border-right: none; }
+
+  .column .row-line {
+    height: 60px;
+    border-top: 1px solid var(--line-soft);
+    cursor: pointer;
+  }
+
+  .column .row-line:first-child { border-top: none; }
+
+  .column .row-line:hover,
+  .column .row-line:focus-visible {
+    background: var(--accent-soft);
+  }
+
+  .column .row-line:hover::after,
+  .column .row-line:focus-visible::after {
+    content: "+ nueva cita";
+    position: absolute;
+    left: 0.6rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--accent-deep);
+    pointer-events: none;
+  }
+
+  .column .row-line:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+  }
+
+  .closed-block {
+    position: absolute;
+    left: 0;
+    right: 0;
+    background: var(--closed-stripe);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: not-allowed;
+  }
+
+  .closed-block span {
+    font-size: 0.74rem;
+    color: var(--caption);
+    font-weight: 600;
+    background: var(--surface);
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+  }
+
+  .appt {
+    position: absolute;
+    left: 0.35rem;
+    right: 0.35rem;
+    border-radius: 6px;
+    padding: 0.4rem 0.55rem;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+
+  .appt .title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .appt .when {
+    font-size: 0.72rem;
+    opacity: 0.85;
+  }
+
+  .appt.confirmed { background: var(--accent-soft); border-left: 3px solid var(--accent); color: var(--ink); }
+  .appt.progress { background: var(--progress-soft); border-left: 3px solid var(--progress); color: var(--ink); }
+  .appt.done { background: var(--done-soft); border-left: 3px solid var(--done); color: var(--ink-soft); opacity: 0.85; }
+  .appt.cancelled {
+    background: var(--cancelled-soft);
+    border-left: 3px solid var(--cancelled);
+    color: var(--ink-soft);
+    opacity: 0.75;
+  }
+  .appt.cancelled .title { text-decoration: line-through; }
+
+  .appt .tag {
+    display: inline-block;
+    margin-top: 0.15rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+  .appt.progress .tag { color: var(--progress); }
+
+  .popover {
+    position: fixed;
+    width: 250px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    padding: 0.8rem;
+    z-index: 50;
+  }
+
+  .popover[hidden] { display: none; }
+
+  .popover-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.65rem;
+  }
+
+  .popover-context {
+    font-size: 0.72rem;
+    color: var(--caption);
+    text-transform: capitalize;
+  }
+
+  .popover-close {
+    appearance: none;
+    border: none;
+    background: transparent;
+    font-size: 1.05rem;
+    line-height: 1;
+    color: var(--caption);
+    cursor: pointer;
+    padding: 0.15rem 0.4rem;
+    border-radius: 5px;
+    flex: none;
+  }
+
+  .popover-close:hover { background: var(--line-soft); color: var(--ink); }
+
+  .popover-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .popover-option {
+    appearance: none;
+    text-align: left;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    border-radius: 8px;
+    padding: 0.55rem 0.65rem;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    width: 100%;
+  }
+
+  .popover-option:hover { border-color: var(--accent); background: var(--accent-soft); }
+
+  .popover-option:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+
+  .popover-option .opt-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .popover-option .opt-sub {
+    font-size: 0.75rem;
+    color: var(--caption);
+  }
+
+  .popover-closed-msg {
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+    line-height: 1.4;
+  }
 </style>
 
 <div class="stage">
 
   <header class="masthead">
     <div class="eyebrow">Concepto de UI — referencia para React</div>
-    <h1>Una pantalla representativa por sector</h1>
-    <p>No es el set completo de pantallas — para eso está la guía de flujo. Esto es el concepto visual de la pantalla más característica de cada sector, con datos reales del backend, para que definas layout y jerarquía antes de picar código.</p>
+    <h1>Agenda núcleo + una pantalla representativa por sector</h1>
+    <p>No es el set completo de pantallas — para eso está la guía de flujo. Esto es el concepto visual de la Agenda compartida y de la pantalla más característica de cada sector, con datos reales del backend, para que definas layout y jerarquía antes de picar código.</p>
   </header>
 
-  <input type="radio" name="sector" id="sec-beauty" class="sector-radio" checked="checked">
+  <input type="radio" name="sector" id="sec-agenda" class="sector-radio" checked="checked">
+  <input type="radio" name="sector" id="sec-beauty" class="sector-radio">
   <input type="radio" name="sector" id="sec-events" class="sector-radio">
   <input type="radio" name="sector" id="sec-logistics" class="sector-radio">
   <input type="radio" name="sector" id="sec-workshops" class="sector-radio">
 
   <nav class="switcher">
+    <label for="sec-agenda"><span class="dot"></span>Agenda (núcleo)</label>
     <label for="sec-beauty"><span class="dot"></span>Beauty &amp; Wellness</label>
     <label for="sec-events"><span class="dot"></span>Social Events</label>
     <label for="sec-logistics"><span class="dot"></span>Distribution &amp; Logistics</label>
     <label for="sec-workshops"><span class="dot"></span>Technical Workshops</label>
   </nav>
+
+  <!-- ================= AGENDA (NÚCLEO) ================= -->
+  <div class="panel" data-sector="agenda">
+    <div class="panel-caption">
+      <span class="sector-name">Agenda — núcleo compartido, todos los sectores</span>
+      <span class="screen-ref mono">GET /api/scheduletasks?from=&amp;to=&amp;employeeId=</span>
+    </div>
+
+    <input type="radio" name="agenda-sector" id="agenda-sector-beauty" class="sector-radio" checked="checked">
+    <input type="radio" name="agenda-sector" id="agenda-sector-events" class="sector-radio">
+    <input type="radio" name="agenda-sector" id="agenda-sector-logistics" class="sector-radio">
+    <input type="radio" name="agenda-sector" id="agenda-sector-workshops" class="sector-radio">
+
+    <nav class="sector-tabs">
+      <span class="tabs-label">Color para</span>
+      <label for="agenda-sector-beauty"><span class="dot"></span>Beauty</label>
+      <label for="agenda-sector-events"><span class="dot"></span>Events</label>
+      <label for="agenda-sector-logistics"><span class="dot"></span>Logistics</label>
+      <label for="agenda-sector-workshops"><span class="dot"></span>Workshops</label>
+    </nav>
+
+    <div class="agenda-shell">
+
+      <div class="toolbar">
+        <div class="day-strip">
+          <button type="button"><span>Lun</span><span class="num mono">11</span></button>
+          <button type="button"><span>Mar</span><span class="num mono">12</span></button>
+          <button type="button"><span>Mié</span><span class="num mono">13</span></button>
+          <button type="button" class="active"><span>Jue</span><span class="num mono">14</span></button>
+          <button type="button"><span>Vie</span><span class="num mono">15</span></button>
+          <button type="button"><span>Sáb</span><span class="num mono">16</span></button>
+          <button type="button"><span>Dom</span><span class="num mono">17</span></button>
+        </div>
+        <div class="hours-note">
+          Horario del negocio: <strong class="mono">09:00–19:00</strong> · configurable (8h / 10h / 24h) en Ajustes del tenant
+        </div>
+      </div>
+
+      <div class="legend">
+        <span class="legend-item"><span class="swatch free"></span>Libre</span>
+        <span class="legend-item"><span class="swatch confirmed"></span>Confirmada</span>
+        <span class="legend-item"><span class="swatch progress"></span>En curso</span>
+        <span class="legend-item"><span class="swatch done"></span>Completada</span>
+        <span class="legend-item"><span class="swatch cancelled"></span>Cancelada</span>
+        <span class="legend-item"><span class="swatch closed"></span>Fuera de horario del trabajador</span>
+      </div>
+
+      <div class="board">
+        <div class="board-scroll">
+          <div class="grid">
+
+            <div class="grid-head">
+              <div class="corner"></div>
+              <div class="worker"><div class="name">Ana Ruiz</div><div class="role">Estilista</div></div>
+              <div class="worker"><div class="name">Bruno Vega</div><div class="role">Colorista</div></div>
+              <div class="worker"><div class="name">Carla Soto</div><div class="role">Manicurista · turno tarde</div></div>
+              <div class="worker add-worker"><a href="#">+ Gestionar personal</a></div>
+            </div>
+
+            <div class="hour-gutter">
+              <div class="tick mono">09:00</div>
+              <div class="tick mono">10:00</div>
+              <div class="tick mono">11:00</div>
+              <div class="tick mono">12:00</div>
+              <div class="tick mono">13:00</div>
+              <div class="tick mono">14:00</div>
+              <div class="tick mono">15:00</div>
+              <div class="tick mono">16:00</div>
+              <div class="tick mono">17:00</div>
+              <div class="tick mono">18:00</div>
+            </div>
+
+            <!-- Ana Ruiz -->
+            <div class="column" data-worker="Ana Ruiz">
+              <div class="row-line" data-time="09:00"></div><div class="row-line" data-time="10:00"></div><div class="row-line" data-time="11:00"></div>
+              <div class="row-line" data-time="12:00"></div><div class="row-line" data-time="13:00"></div><div class="row-line" data-time="14:00"></div>
+              <div class="row-line" data-time="15:00"></div><div class="row-line" data-time="16:00"></div><div class="row-line" data-time="17:00"></div><div class="row-line" data-time="18:00"></div>
+              <div class="appt confirmed" style="top:60px; height:60px;">
+                <div class="title">Corte — Ana Pérez</div>
+                <div class="when mono">10:00–11:00</div>
+              </div>
+              <div class="appt done" style="top:180px; height:90px;">
+                <div class="title">Corte y color — Luis Nava</div>
+                <div class="when mono">12:00–13:30</div>
+              </div>
+            </div>
+
+            <!-- Bruno Vega -->
+            <div class="column" data-worker="Bruno Vega">
+              <div class="row-line" data-time="09:00"></div><div class="row-line" data-time="10:00"></div><div class="row-line" data-time="11:00"></div>
+              <div class="row-line" data-time="12:00"></div><div class="row-line" data-time="13:00"></div><div class="row-line" data-time="14:00"></div>
+              <div class="row-line" data-time="15:00"></div><div class="row-line" data-time="16:00"></div><div class="row-line" data-time="17:00"></div><div class="row-line" data-time="18:00"></div>
+              <div class="appt progress" style="top:30px; height:60px;">
+                <div class="title">Tinte — Marta Ruiz</div>
+                <div class="when mono">09:30–10:30</div>
+                <div class="tag">En curso</div>
+              </div>
+              <div class="appt cancelled" style="top:300px; height:60px;">
+                <div class="title">Consulta — Jorge Díaz</div>
+                <div class="when mono">14:00–15:00</div>
+              </div>
+            </div>
+
+            <!-- Carla Soto: no trabaja hasta las 12:00 este día -->
+            <div class="column" data-worker="Carla Soto">
+              <div class="row-line" data-time="09:00"></div><div class="row-line" data-time="10:00"></div><div class="row-line" data-time="11:00"></div>
+              <div class="row-line" data-time="12:00"></div><div class="row-line" data-time="13:00"></div><div class="row-line" data-time="14:00"></div>
+              <div class="row-line" data-time="15:00"></div><div class="row-line" data-time="16:00"></div><div class="row-line" data-time="17:00"></div><div class="row-line" data-time="18:00"></div>
+              <div class="closed-block" style="top:0; height:180px;"><span>Sin turno hasta 12:00</span></div>
+              <div class="appt confirmed" style="top:240px; height:60px;">
+                <div class="title">Manicure — Ana Pérez</div>
+                <div class="when mono">13:00–14:00</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div id="slot-popover" class="popover" hidden="hidden">
+        <div class="popover-head">
+          <span id="popover-context" class="popover-context mono"></span>
+          <button type="button" class="popover-close" aria-label="Cerrar" onclick="window.closeSlotPopover()">&times;</button>
+        </div>
+        <div id="popover-options" class="popover-options">
+          <button type="button" class="popover-option">
+            <span class="opt-title">Cita</span>
+            <span class="opt-sub">Agenda un servicio con un cliente</span>
+          </button>
+          <button type="button" class="popover-option">
+            <span class="opt-title">Actividad</span>
+            <span class="opt-sub">Bloquea este horario — junta, descanso, tarea interna</span>
+          </button>
+        </div>
+        <p id="popover-closed-msg" class="popover-closed-msg" hidden="hidden"></p>
+      </div>
+
+    </div><!-- /.agenda-shell -->
+
+    <div class="rationale">
+      <strong>De dónde sale cada cosa:</strong>
+      <ul>
+        <li>El rango de horas (09:00–19:00) viene de <span class="mono">Tenant.OpenTime / CloseTime</span> — ya existe en el backend y es lo que hace el calendario "configurable por negocio" sin tocar código.</li>
+        <li>La franja gris rayada de Carla sale de comparar la hora contra el <span class="mono">WorkSchedule</span> de esa empleada para ese día de la semana (<span class="mono">DayOfWeek, StartTime, EndTime, IsWorkDay</span>).</li>
+        <li>Cada bloque de cita es un <span class="mono">ScheduleTask</span>; su posición y alto se calculan desde <span class="mono">StartTime</span>/<span class="mono">EndTime</span>, y el color del borde izquierdo viene directo de su <span class="mono">Status</span> (Scheduled/Confirmed/InProgress/Completed/Cancelled/NoShow).</li>
+        <li>"+ Gestionar personal" es el punto de entrada para que el negocio decida cuántos trabajadores registrar — el grid no tiene un límite fijo de columnas, por eso el tablero completo hace scroll horizontal en vez de comprimir columnas.</li>
+        <li>Click en un slot libre (probarlo arriba) abre un popover anclado ahí mismo con <span class="mono">Cita</span> / <span class="mono">Actividad</span> — los dos tipos genéricos de <span class="mono">ScheduleTask.Type</span>. Evento y Servicio existen también en el enum, pero solo aplican a tenants de Events/Workshops. Click en una franja "fuera de horario" abre el mismo popover en modo informativo, sin opciones de creación.</li>
+        <li>El selector "Color para" de arriba no es una pantalla aparte — es la misma Agenda, mostrando cómo su acento adopta el color del módulo activo del tenant (igual que las 4 pantallas de sector de al lado).</li>
+      </ul>
+    </div>
+  </div>
 
   <!-- ================= BEAUTY ================= -->
   <div class="panel" data-sector="beauty">
@@ -775,7 +1389,94 @@
   </div>
 
   <footer>
-    UI por sector — MasterTrackAgenda · El color de acento cambia por sector; la estructura de la app (sidebar, tipografía, spacing) se mantiene igual — es un producto, no cuatro apps distintas.
+    UI por sector — MasterTrackAgenda · El color de acento cambia por sector (y en la Agenda, según el módulo activo); la estructura de la app (sidebar, tipografía, spacing) se mantiene igual — es un producto, no cuatro apps distintas.
   </footer>
 
 </div>
+
+<script>
+  (function () {
+    var popover = document.getElementById("slot-popover");
+    var contextEl = document.getElementById("popover-context");
+    var optionsEl = document.getElementById("popover-options");
+    var closedMsgEl = document.getElementById("popover-closed-msg");
+    var POPOVER_WIDTH = 250;
+    var MARGIN = 10;
+
+    function positionNear(rect) {
+      var left = rect.right + MARGIN;
+      if (left + POPOVER_WIDTH > window.innerWidth - MARGIN) {
+        left = rect.left - POPOVER_WIDTH - MARGIN;
+      }
+      if (left < MARGIN) { left = MARGIN; }
+      var top = rect.top;
+      var maxTop = window.innerHeight - 190;
+      if (top > maxTop) { top = maxTop; }
+      popover.style.left = left + "px";
+      popover.style.top = top + "px";
+    }
+
+    function openFree(cell) {
+      var worker = cell.closest(".column").dataset.worker;
+      var time = cell.dataset.time;
+      contextEl.textContent = worker + " · jue 14 · " + time;
+      optionsEl.hidden = false;
+      closedMsgEl.hidden = true;
+      positionNear(cell.getBoundingClientRect());
+      popover.hidden = false;
+    }
+
+    function openClosed(block) {
+      var worker = block.closest(".column").dataset.worker;
+      contextEl.textContent = worker + " · fuera de horario";
+      optionsEl.hidden = true;
+      closedMsgEl.hidden = false;
+      closedMsgEl.textContent = "No se puede agendar aquí: " + worker + " no tiene turno asignado en este horario.";
+      positionNear(block.getBoundingClientRect());
+      popover.hidden = false;
+    }
+
+    window.closeSlotPopover = function () {
+      popover.hidden = true;
+    };
+
+    Array.prototype.forEach.call(document.querySelectorAll(".row-line[data-time]"), function (cell) {
+      cell.setAttribute("tabindex", "0");
+      cell.setAttribute("role", "button");
+      cell.setAttribute("aria-label", "Crear en " + cell.dataset.time);
+      cell.addEventListener("click", function () { openFree(cell); });
+      cell.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          openFree(cell);
+        }
+      });
+    });
+
+    Array.prototype.forEach.call(document.querySelectorAll(".closed-block"), function (block) {
+      block.setAttribute("tabindex", "0");
+      block.setAttribute("role", "button");
+      block.addEventListener("click", function () { openClosed(block); });
+      block.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          openClosed(block);
+        }
+      });
+    });
+
+    Array.prototype.forEach.call(document.querySelectorAll(".popover-option"), function (btn) {
+      btn.addEventListener("click", function () { window.closeSlotPopover(); });
+    });
+
+    document.addEventListener("click", function (e) {
+      if (!popover.hidden && !popover.contains(e.target) && !e.target.closest(".row-line") && !e.target.closest(".closed-block")) {
+        window.closeSlotPopover();
+      }
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") { window.closeSlotPopover(); }
+    });
+  })();
+</script>
