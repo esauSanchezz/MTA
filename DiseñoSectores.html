@@ -77,9 +77,7 @@
 
   /* ---------- Masthead ---------- */
 
-  .masthead {
-    margin-bottom: 2rem;
-  }
+  .masthead { margin-bottom: 2rem; }
 
   .masthead .eyebrow {
     font-size: 0.72rem;
@@ -105,9 +103,10 @@
     font-size: 0.98rem;
   }
 
-  /* ---------- Switcher (nivel pantalla) ---------- */
+  /* ---------- Switcher (nivel sector) ---------- */
 
-  input[type="radio"].sector-radio { display: none; }
+  input[type="radio"].sector-radio,
+  input[type="radio"].view-radio { display: none; }
 
   .switcher {
     display: flex;
@@ -148,13 +147,11 @@
     flex: none;
   }
 
-  .switcher label[for="sec-agenda"] .dot { background: var(--caption); }
   .switcher label[for="sec-beauty"] .dot { background: var(--beauty-accent); }
   .switcher label[for="sec-events"] .dot { background: var(--events-accent); }
   .switcher label[for="sec-logistics"] .dot { background: var(--logistics-accent); }
   .switcher label[for="sec-workshops"] .dot { background: var(--workshops-accent); }
 
-  #sec-agenda:checked ~ .switcher label[for="sec-agenda"],
   #sec-beauty:checked ~ .switcher label[for="sec-beauty"],
   #sec-events:checked ~ .switcher label[for="sec-events"],
   #sec-logistics:checked ~ .switcher label[for="sec-logistics"],
@@ -169,7 +166,6 @@
 
   .panel { display: none; }
 
-  #sec-agenda:checked ~ .panel[data-sector="agenda"],
   #sec-beauty:checked ~ .panel[data-sector="beauty"],
   #sec-events:checked ~ .panel[data-sector="events"],
   #sec-logistics:checked ~ .panel[data-sector="logistics"],
@@ -255,7 +251,8 @@
     gap: 0.15rem;
   }
 
-  .app-nav li a {
+  .app-nav li a,
+  .app-nav li label {
     display: block;
     padding: 0.5rem 0.65rem;
     border-radius: 7px;
@@ -263,24 +260,47 @@
     font-weight: 600;
     color: var(--ink-soft);
     text-decoration: none;
+    cursor: pointer;
   }
 
-  .app-nav li.active a {
+  .app-nav li a:hover,
+  .app-nav li label:hover {
+    background: var(--line-soft);
+  }
+
+  #beauty-nav-agenda:checked ~ .app-frame .app-nav label[for="beauty-nav-agenda"],
+  #beauty-nav-screen:checked ~ .app-frame .app-nav label[for="beauty-nav-screen"],
+  #events-nav-agenda:checked ~ .app-frame .app-nav label[for="events-nav-agenda"],
+  #events-nav-screen:checked ~ .app-frame .app-nav label[for="events-nav-screen"],
+  #logistics-nav-agenda:checked ~ .app-frame .app-nav label[for="logistics-nav-agenda"],
+  #logistics-nav-screen:checked ~ .app-frame .app-nav label[for="logistics-nav-screen"],
+  #workshops-nav-agenda:checked ~ .app-frame .app-nav label[for="workshops-nav-agenda"],
+  #workshops-nav-screen:checked ~ .app-frame .app-nav label[for="workshops-nav-screen"] {
     background: var(--accent-soft);
     color: var(--accent-deep);
-  }
-
-  .app-nav li a:hover:not(.active a) {
-    background: var(--line-soft);
   }
 
   .app-main {
     flex: 1;
     min-width: 0;
     padding: 1.5rem 1.75rem 1.75rem;
-    display: flex;
+  }
+
+  .view {
+    display: none;
     flex-direction: column;
     gap: 1.35rem;
+  }
+
+  #beauty-nav-agenda:checked ~ .app-frame .view[data-view="agenda"],
+  #beauty-nav-screen:checked ~ .app-frame .view[data-view="screen"],
+  #events-nav-agenda:checked ~ .app-frame .view[data-view="agenda"],
+  #events-nav-screen:checked ~ .app-frame .view[data-view="screen"],
+  #logistics-nav-agenda:checked ~ .app-frame .view[data-view="agenda"],
+  #logistics-nav-screen:checked ~ .app-frame .view[data-view="screen"],
+  #workshops-nav-agenda:checked ~ .app-frame .view[data-view="agenda"],
+  #workshops-nav-screen:checked ~ .app-frame .view[data-view="screen"] {
+    display: flex;
   }
 
   .app-topbar {
@@ -540,86 +560,8 @@
   }
 
   /* =====================================================
-     AGENDA — sub-switcher de color por sector + calendario
+     AGENDA — vista de calendario, reusada dentro de cada sector
      ===================================================== */
-
-  .sector-tabs {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .sector-tabs .tabs-label {
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--caption);
-    display: flex;
-    align-items: center;
-    margin-right: 0.3rem;
-  }
-
-  .sector-tabs label {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45rem;
-    padding: 0.4rem 0.85rem;
-    border-radius: 999px;
-    border: 1px solid var(--line);
-    background: var(--surface);
-    font-size: 0.82rem;
-    font-weight: 600;
-    color: var(--ink-soft);
-    cursor: pointer;
-    user-select: none;
-  }
-
-  .sector-tabs label:hover { border-color: var(--caption); }
-
-  .sector-tabs .dot {
-    width: 0.55rem;
-    height: 0.55rem;
-    border-radius: 999px;
-    flex: none;
-  }
-
-  .sector-tabs label[for="agenda-sector-beauty"] .dot { background: var(--beauty-accent); }
-  .sector-tabs label[for="agenda-sector-events"] .dot { background: var(--events-accent); }
-  .sector-tabs label[for="agenda-sector-logistics"] .dot { background: var(--logistics-accent); }
-  .sector-tabs label[for="agenda-sector-workshops"] .dot { background: var(--workshops-accent); }
-
-  #agenda-sector-beauty:checked ~ .sector-tabs label[for="agenda-sector-beauty"],
-  #agenda-sector-events:checked ~ .sector-tabs label[for="agenda-sector-events"],
-  #agenda-sector-logistics:checked ~ .sector-tabs label[for="agenda-sector-logistics"],
-  #agenda-sector-workshops:checked ~ .sector-tabs label[for="agenda-sector-workshops"] {
-    color: var(--ink);
-    border-color: currentColor;
-    box-shadow: var(--shadow);
-  }
-
-  #agenda-sector-beauty:checked ~ .agenda-shell {
-    --accent: var(--beauty-accent);
-    --accent-soft: var(--beauty-soft);
-    --accent-deep: var(--beauty-deep);
-  }
-  #agenda-sector-events:checked ~ .agenda-shell {
-    --accent: var(--events-accent);
-    --accent-soft: var(--events-soft);
-    --accent-deep: var(--events-deep);
-  }
-  #agenda-sector-logistics:checked ~ .agenda-shell {
-    --accent: var(--logistics-accent);
-    --accent-soft: var(--logistics-soft);
-    --accent-deep: var(--logistics-deep);
-  }
-  #agenda-sector-workshops:checked ~ .agenda-shell {
-    --accent: var(--workshops-accent);
-    --accent-soft: var(--workshops-soft);
-    --accent-deep: var(--workshops-deep);
-  }
 
   .toolbar {
     display: flex;
@@ -627,7 +569,6 @@
     justify-content: space-between;
     align-items: center;
     gap: 1rem;
-    margin: 0 0 1rem;
   }
 
   .day-strip {
@@ -682,7 +623,6 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem 1.1rem;
-    margin-bottom: 1.1rem;
   }
 
   .legend-item {
@@ -722,7 +662,7 @@
 
   .grid {
     display: grid;
-    grid-template-columns: 4.25rem repeat(4, minmax(180px, 1fr));
+    grid-template-columns: 4.25rem repeat(3, minmax(180px, 1fr)) minmax(120px, 0.8fr);
     min-width: 780px;
   }
 
@@ -981,174 +921,21 @@
 
   <header class="masthead">
     <div class="eyebrow">Concepto de UI — referencia para React</div>
-    <h1>Agenda núcleo + una pantalla representativa por sector</h1>
-    <p>No es el set completo de pantallas — para eso está la guía de flujo. Esto es el concepto visual de la Agenda compartida y de la pantalla más característica de cada sector, con datos reales del backend, para que definas layout y jerarquía antes de picar código.</p>
+    <h1>Una pantalla representativa por sector</h1>
+    <p>No es el set completo de pantallas — para eso está la guía de flujo. Cada sector trae su pantalla más característica más "Agenda" en el mismo nav — click ahí para ver el calendario compartido, ya en el color de ese sector. Datos reales del backend, para que definas layout y jerarquía antes de picar código.</p>
   </header>
 
-  <input type="radio" name="sector" id="sec-agenda" class="sector-radio" checked="checked">
-  <input type="radio" name="sector" id="sec-beauty" class="sector-radio">
+  <input type="radio" name="sector" id="sec-beauty" class="sector-radio" checked="checked">
   <input type="radio" name="sector" id="sec-events" class="sector-radio">
   <input type="radio" name="sector" id="sec-logistics" class="sector-radio">
   <input type="radio" name="sector" id="sec-workshops" class="sector-radio">
 
   <nav class="switcher">
-    <label for="sec-agenda"><span class="dot"></span>Agenda (núcleo)</label>
     <label for="sec-beauty"><span class="dot"></span>Beauty &amp; Wellness</label>
     <label for="sec-events"><span class="dot"></span>Social Events</label>
     <label for="sec-logistics"><span class="dot"></span>Distribution &amp; Logistics</label>
     <label for="sec-workshops"><span class="dot"></span>Technical Workshops</label>
   </nav>
-
-  <!-- ================= AGENDA (NÚCLEO) ================= -->
-  <div class="panel" data-sector="agenda">
-    <div class="panel-caption">
-      <span class="sector-name">Agenda — núcleo compartido, todos los sectores</span>
-      <span class="screen-ref mono">GET /api/scheduletasks?from=&amp;to=&amp;employeeId=</span>
-    </div>
-
-    <input type="radio" name="agenda-sector" id="agenda-sector-beauty" class="sector-radio" checked="checked">
-    <input type="radio" name="agenda-sector" id="agenda-sector-events" class="sector-radio">
-    <input type="radio" name="agenda-sector" id="agenda-sector-logistics" class="sector-radio">
-    <input type="radio" name="agenda-sector" id="agenda-sector-workshops" class="sector-radio">
-
-    <nav class="sector-tabs">
-      <span class="tabs-label">Color para</span>
-      <label for="agenda-sector-beauty"><span class="dot"></span>Beauty</label>
-      <label for="agenda-sector-events"><span class="dot"></span>Events</label>
-      <label for="agenda-sector-logistics"><span class="dot"></span>Logistics</label>
-      <label for="agenda-sector-workshops"><span class="dot"></span>Workshops</label>
-    </nav>
-
-    <div class="agenda-shell">
-
-      <div class="toolbar">
-        <div class="day-strip">
-          <button type="button"><span>Lun</span><span class="num mono">11</span></button>
-          <button type="button"><span>Mar</span><span class="num mono">12</span></button>
-          <button type="button"><span>Mié</span><span class="num mono">13</span></button>
-          <button type="button" class="active"><span>Jue</span><span class="num mono">14</span></button>
-          <button type="button"><span>Vie</span><span class="num mono">15</span></button>
-          <button type="button"><span>Sáb</span><span class="num mono">16</span></button>
-          <button type="button"><span>Dom</span><span class="num mono">17</span></button>
-        </div>
-        <div class="hours-note">
-          Horario del negocio: <strong class="mono">09:00–19:00</strong> · configurable (8h / 10h / 24h) en Ajustes del tenant
-        </div>
-      </div>
-
-      <div class="legend">
-        <span class="legend-item"><span class="swatch free"></span>Libre</span>
-        <span class="legend-item"><span class="swatch confirmed"></span>Confirmada</span>
-        <span class="legend-item"><span class="swatch progress"></span>En curso</span>
-        <span class="legend-item"><span class="swatch done"></span>Completada</span>
-        <span class="legend-item"><span class="swatch cancelled"></span>Cancelada</span>
-        <span class="legend-item"><span class="swatch closed"></span>Fuera de horario del trabajador</span>
-      </div>
-
-      <div class="board">
-        <div class="board-scroll">
-          <div class="grid">
-
-            <div class="grid-head">
-              <div class="corner"></div>
-              <div class="worker"><div class="name">Ana Ruiz</div><div class="role">Estilista</div></div>
-              <div class="worker"><div class="name">Bruno Vega</div><div class="role">Colorista</div></div>
-              <div class="worker"><div class="name">Carla Soto</div><div class="role">Manicurista · turno tarde</div></div>
-              <div class="worker add-worker"><a href="#">+ Gestionar personal</a></div>
-            </div>
-
-            <div class="hour-gutter">
-              <div class="tick mono">09:00</div>
-              <div class="tick mono">10:00</div>
-              <div class="tick mono">11:00</div>
-              <div class="tick mono">12:00</div>
-              <div class="tick mono">13:00</div>
-              <div class="tick mono">14:00</div>
-              <div class="tick mono">15:00</div>
-              <div class="tick mono">16:00</div>
-              <div class="tick mono">17:00</div>
-              <div class="tick mono">18:00</div>
-            </div>
-
-            <!-- Ana Ruiz -->
-            <div class="column" data-worker="Ana Ruiz">
-              <div class="row-line" data-time="09:00"></div><div class="row-line" data-time="10:00"></div><div class="row-line" data-time="11:00"></div>
-              <div class="row-line" data-time="12:00"></div><div class="row-line" data-time="13:00"></div><div class="row-line" data-time="14:00"></div>
-              <div class="row-line" data-time="15:00"></div><div class="row-line" data-time="16:00"></div><div class="row-line" data-time="17:00"></div><div class="row-line" data-time="18:00"></div>
-              <div class="appt confirmed" style="top:60px; height:60px;">
-                <div class="title">Corte — Ana Pérez</div>
-                <div class="when mono">10:00–11:00</div>
-              </div>
-              <div class="appt done" style="top:180px; height:90px;">
-                <div class="title">Corte y color — Luis Nava</div>
-                <div class="when mono">12:00–13:30</div>
-              </div>
-            </div>
-
-            <!-- Bruno Vega -->
-            <div class="column" data-worker="Bruno Vega">
-              <div class="row-line" data-time="09:00"></div><div class="row-line" data-time="10:00"></div><div class="row-line" data-time="11:00"></div>
-              <div class="row-line" data-time="12:00"></div><div class="row-line" data-time="13:00"></div><div class="row-line" data-time="14:00"></div>
-              <div class="row-line" data-time="15:00"></div><div class="row-line" data-time="16:00"></div><div class="row-line" data-time="17:00"></div><div class="row-line" data-time="18:00"></div>
-              <div class="appt progress" style="top:30px; height:60px;">
-                <div class="title">Tinte — Marta Ruiz</div>
-                <div class="when mono">09:30–10:30</div>
-                <div class="tag">En curso</div>
-              </div>
-              <div class="appt cancelled" style="top:300px; height:60px;">
-                <div class="title">Consulta — Jorge Díaz</div>
-                <div class="when mono">14:00–15:00</div>
-              </div>
-            </div>
-
-            <!-- Carla Soto: no trabaja hasta las 12:00 este día -->
-            <div class="column" data-worker="Carla Soto">
-              <div class="row-line" data-time="09:00"></div><div class="row-line" data-time="10:00"></div><div class="row-line" data-time="11:00"></div>
-              <div class="row-line" data-time="12:00"></div><div class="row-line" data-time="13:00"></div><div class="row-line" data-time="14:00"></div>
-              <div class="row-line" data-time="15:00"></div><div class="row-line" data-time="16:00"></div><div class="row-line" data-time="17:00"></div><div class="row-line" data-time="18:00"></div>
-              <div class="closed-block" style="top:0; height:180px;"><span>Sin turno hasta 12:00</span></div>
-              <div class="appt confirmed" style="top:240px; height:60px;">
-                <div class="title">Manicure — Ana Pérez</div>
-                <div class="when mono">13:00–14:00</div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </div>
-
-      <div id="slot-popover" class="popover" hidden="hidden">
-        <div class="popover-head">
-          <span id="popover-context" class="popover-context mono"></span>
-          <button type="button" class="popover-close" aria-label="Cerrar" onclick="window.closeSlotPopover()">&times;</button>
-        </div>
-        <div id="popover-options" class="popover-options">
-          <button type="button" class="popover-option">
-            <span class="opt-title">Cita</span>
-            <span class="opt-sub">Agenda un servicio con un cliente</span>
-          </button>
-          <button type="button" class="popover-option">
-            <span class="opt-title">Actividad</span>
-            <span class="opt-sub">Bloquea este horario — junta, descanso, tarea interna</span>
-          </button>
-        </div>
-        <p id="popover-closed-msg" class="popover-closed-msg" hidden="hidden"></p>
-      </div>
-
-    </div><!-- /.agenda-shell -->
-
-    <div class="rationale">
-      <strong>De dónde sale cada cosa:</strong>
-      <ul>
-        <li>El rango de horas (09:00–19:00) viene de <span class="mono">Tenant.OpenTime / CloseTime</span> — ya existe en el backend y es lo que hace el calendario "configurable por negocio" sin tocar código.</li>
-        <li>La franja gris rayada de Carla sale de comparar la hora contra el <span class="mono">WorkSchedule</span> de esa empleada para ese día de la semana (<span class="mono">DayOfWeek, StartTime, EndTime, IsWorkDay</span>).</li>
-        <li>Cada bloque de cita es un <span class="mono">ScheduleTask</span>; su posición y alto se calculan desde <span class="mono">StartTime</span>/<span class="mono">EndTime</span>, y el color del borde izquierdo viene directo de su <span class="mono">Status</span> (Scheduled/Confirmed/InProgress/Completed/Cancelled/NoShow).</li>
-        <li>"+ Gestionar personal" es el punto de entrada para que el negocio decida cuántos trabajadores registrar — el grid no tiene un límite fijo de columnas, por eso el tablero completo hace scroll horizontal en vez de comprimir columnas.</li>
-        <li>Click en un slot libre (probarlo arriba) abre un popover anclado ahí mismo con <span class="mono">Cita</span> / <span class="mono">Actividad</span> — los dos tipos genéricos de <span class="mono">ScheduleTask.Type</span>. Evento y Servicio existen también en el enum, pero solo aplican a tenants de Events/Workshops. Click en una franja "fuera de horario" abre el mismo popover en modo informativo, sin opciones de creación.</li>
-        <li>El selector "Color para" de arriba no es una pantalla aparte — es la misma Agenda, mostrando cómo su acento adopta el color del módulo activo del tenant (igual que las 4 pantallas de sector de al lado).</li>
-      </ul>
-    </div>
-  </div>
 
   <!-- ================= BEAUTY ================= -->
   <div class="panel" data-sector="beauty">
@@ -1156,53 +943,160 @@
       <span class="sector-name">Beauty &amp; Wellness</span>
       <span class="screen-ref mono">GET /api/clinicalrecords?customerId=</span>
     </div>
+
+    <input type="radio" name="beauty-nav" id="beauty-nav-agenda" class="view-radio">
+    <input type="radio" name="beauty-nav" id="beauty-nav-screen" class="view-radio" checked="checked">
+
     <div class="app-frame">
       <aside class="app-sidebar">
         <div class="app-brand"><span class="mark"></span><span class="name">MTA</span></div>
         <ul class="app-nav">
-          <li><a href="#">Agenda</a></li>
+          <li><label for="beauty-nav-agenda">Agenda</label></li>
           <li><a href="#">Clientes</a></li>
-          <li class="active"><a href="#">Historial clínico</a></li>
+          <li><label for="beauty-nav-screen">Historial clínico</label></li>
           <li><a href="#">Servicios</a></li>
           <li><a href="#">Productos</a></li>
           <li><a href="#">Ventas</a></li>
         </ul>
       </aside>
       <main class="app-main">
-        <div class="app-topbar">
-          <div>
-            <h2>Ana Pérez</h2>
-            <p class="sub">555-9999 · ana@test.com · cliente desde ene 2026</p>
-          </div>
-          <button class="btn">+ Nueva cita</button>
-        </div>
-        <div class="tabline">
-          <span>Perfil</span>
-          <span class="active">Historial clínico</span>
-          <span>Citas</span>
-          <span>Ventas</span>
-        </div>
-        <div class="history">
-          <div class="history-item">
-            <div class="date">01 jul 2026</div>
-            <div class="body">
-              <div class="title">Retoque</div>
-              <div class="meta">Empleado Test · alergias: <strong>ninguna</strong> · <span class="pill accent">2 fotos</span></div>
+
+        <div class="view" data-view="agenda">
+          <div class="toolbar">
+            <div class="day-strip">
+              <button type="button"><span>Lun</span><span class="num mono">11</span></button>
+              <button type="button"><span>Mar</span><span class="num mono">12</span></button>
+              <button type="button"><span>Mié</span><span class="num mono">13</span></button>
+              <button type="button" class="active"><span>Jue</span><span class="num mono">14</span></button>
+              <button type="button"><span>Vie</span><span class="num mono">15</span></button>
+              <button type="button"><span>Sáb</span><span class="num mono">16</span></button>
+              <button type="button"><span>Dom</span><span class="num mono">17</span></button>
+            </div>
+            <div class="hours-note">
+              Horario: <strong class="mono">09:00–19:00</strong> · configurable en Ajustes
             </div>
           </div>
-          <div class="history-item">
-            <div class="date">01 jun 2026</div>
-            <div class="body">
-              <div class="title">Corte y color</div>
-              <div class="meta">Empleado Test · alergias: <strong>ninguna</strong> · <span class="pill accent">2 fotos</span></div>
+          <div class="legend">
+            <span class="legend-item"><span class="swatch free"></span>Libre</span>
+            <span class="legend-item"><span class="swatch confirmed"></span>Confirmada</span>
+            <span class="legend-item"><span class="swatch progress"></span>En curso</span>
+            <span class="legend-item"><span class="swatch done"></span>Completada</span>
+            <span class="legend-item"><span class="swatch cancelled"></span>Cancelada</span>
+            <span class="legend-item"><span class="swatch closed"></span>Fuera de horario</span>
+          </div>
+          <div class="board">
+            <div class="board-scroll">
+              <div class="grid">
+                <div class="grid-head">
+                  <div class="corner"></div>
+                  <div class="worker"><div class="name">Ana Ruiz</div><div class="role">Estilista</div></div>
+                  <div class="worker"><div class="name">Bruno Vega</div><div class="role">Colorista</div></div>
+                  <div class="worker"><div class="name">Carla Soto</div><div class="role">Manicurista · turno tarde</div></div>
+                  <div class="worker add-worker"><a href="#">+ Gestionar personal</a></div>
+                </div>
+                <div class="hour-gutter">
+                  <div class="tick mono">09:00</div><div class="tick mono">10:00</div><div class="tick mono">11:00</div>
+                  <div class="tick mono">12:00</div><div class="tick mono">13:00</div><div class="tick mono">14:00</div>
+                  <div class="tick mono">15:00</div><div class="tick mono">16:00</div><div class="tick mono">17:00</div><div class="tick mono">18:00</div>
+                </div>
+                <div class="column" data-worker="Ana Ruiz">
+                  <div class="row-line" data-time="09:00"></div><div class="row-line" data-time="10:00"></div><div class="row-line" data-time="11:00"></div>
+                  <div class="row-line" data-time="12:00"></div><div class="row-line" data-time="13:00"></div><div class="row-line" data-time="14:00"></div>
+                  <div class="row-line" data-time="15:00"></div><div class="row-line" data-time="16:00"></div><div class="row-line" data-time="17:00"></div><div class="row-line" data-time="18:00"></div>
+                  <div class="appt confirmed" style="top:60px; height:60px;">
+                    <div class="title">Corte — Ana Pérez</div>
+                    <div class="when mono">10:00–11:00</div>
+                  </div>
+                  <div class="appt done" style="top:180px; height:90px;">
+                    <div class="title">Corte y color — Luis Nava</div>
+                    <div class="when mono">12:00–13:30</div>
+                  </div>
+                </div>
+                <div class="column" data-worker="Bruno Vega">
+                  <div class="row-line" data-time="09:00"></div><div class="row-line" data-time="10:00"></div><div class="row-line" data-time="11:00"></div>
+                  <div class="row-line" data-time="12:00"></div><div class="row-line" data-time="13:00"></div><div class="row-line" data-time="14:00"></div>
+                  <div class="row-line" data-time="15:00"></div><div class="row-line" data-time="16:00"></div><div class="row-line" data-time="17:00"></div><div class="row-line" data-time="18:00"></div>
+                  <div class="appt progress" style="top:30px; height:60px;">
+                    <div class="title">Tinte — Marta Ruiz</div>
+                    <div class="when mono">09:30–10:30</div>
+                    <div class="tag">En curso</div>
+                  </div>
+                  <div class="appt cancelled" style="top:300px; height:60px;">
+                    <div class="title">Consulta — Jorge Díaz</div>
+                    <div class="when mono">14:00–15:00</div>
+                  </div>
+                </div>
+                <div class="column" data-worker="Carla Soto">
+                  <div class="row-line" data-time="09:00"></div><div class="row-line" data-time="10:00"></div><div class="row-line" data-time="11:00"></div>
+                  <div class="row-line" data-time="12:00"></div><div class="row-line" data-time="13:00"></div><div class="row-line" data-time="14:00"></div>
+                  <div class="row-line" data-time="15:00"></div><div class="row-line" data-time="16:00"></div><div class="row-line" data-time="17:00"></div><div class="row-line" data-time="18:00"></div>
+                  <div class="closed-block" style="top:0; height:180px;"><span>Sin turno hasta 12:00</span></div>
+                  <div class="appt confirmed" style="top:240px; height:60px;">
+                    <div class="title">Manicure — Ana Pérez</div>
+                    <div class="when mono">13:00–14:00</div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        <button class="btn ghost" style="align-self:flex-start;">+ Nuevo registro clínico</button>
+
+        <div class="view" data-view="screen">
+          <div class="app-topbar">
+            <div>
+              <h2>Ana Pérez</h2>
+              <p class="sub">555-9999 · ana@test.com · cliente desde ene 2026</p>
+            </div>
+            <button class="btn">+ Nueva cita</button>
+          </div>
+          <div class="tabline">
+            <span>Perfil</span>
+            <span class="active">Historial clínico</span>
+            <span>Citas</span>
+            <span>Ventas</span>
+          </div>
+          <div class="history">
+            <div class="history-item">
+              <div class="date">01 jul 2026</div>
+              <div class="body">
+                <div class="title">Retoque</div>
+                <div class="meta">Empleado Test · alergias: <strong>ninguna</strong> · <span class="pill accent">2 fotos</span></div>
+              </div>
+            </div>
+            <div class="history-item">
+              <div class="date">01 jun 2026</div>
+              <div class="body">
+                <div class="title">Corte y color</div>
+                <div class="meta">Empleado Test · alergias: <strong>ninguna</strong> · <span class="pill accent">2 fotos</span></div>
+              </div>
+            </div>
+          </div>
+          <button class="btn ghost" style="align-self:flex-start;">+ Nuevo registro clínico</button>
+        </div>
+
       </main>
     </div>
+
+    <div class="popover" hidden="hidden">
+      <div class="popover-head">
+        <span class="popover-context mono"></span>
+        <button type="button" class="popover-close" aria-label="Cerrar">&times;</button>
+      </div>
+      <div class="popover-options">
+        <button type="button" class="popover-option">
+          <span class="opt-title">Cita</span>
+          <span class="opt-sub">Agenda un servicio con un cliente</span>
+        </button>
+        <button type="button" class="popover-option">
+          <span class="opt-title">Actividad</span>
+          <span class="opt-sub">Bloquea este horario — junta, descanso, tarea interna</span>
+        </button>
+      </div>
+      <p class="popover-closed-msg" hidden="hidden"></p>
+    </div>
+
     <div class="rationale">
-      <strong>Por qué así:</strong> el historial es cronológico, por eso es una lista tipo timeline (más reciente arriba), no una tabla. El badge de fotos es un contador — el detalle de cada foto vive en la pantalla de detalle del registro, no aquí.
+      <strong>Por qué así:</strong> el historial es cronológico, por eso es una lista tipo timeline (más reciente arriba), no una tabla. El badge de fotos es un contador. "Agenda" en el nav muestra el mismo calendario compartido, aquí en rosa porque este panel es Beauty.
     </div>
   </div>
 
@@ -1212,63 +1106,170 @@
       <span class="sector-name">Social Events</span>
       <span class="screen-ref mono">GET /api/eventdetails?scheduleTaskId=</span>
     </div>
+
+    <input type="radio" name="events-nav" id="events-nav-agenda" class="view-radio">
+    <input type="radio" name="events-nav" id="events-nav-screen" class="view-radio" checked="checked">
+
     <div class="app-frame">
       <aside class="app-sidebar">
         <div class="app-brand"><span class="mark"></span><span class="name">MTA</span></div>
         <ul class="app-nav">
-          <li><a href="#">Agenda</a></li>
+          <li><label for="events-nav-agenda">Agenda</label></li>
           <li><a href="#">Clientes</a></li>
           <li><a href="#">Venues</a></li>
           <li><a href="#">Paquetes</a></li>
-          <li class="active"><a href="#">Eventos</a></li>
+          <li><label for="events-nav-screen">Eventos</label></li>
           <li><a href="#">Proveedores</a></li>
           <li><a href="#">Ventas</a></li>
         </ul>
       </aside>
       <main class="app-main">
-        <div class="app-topbar">
-          <div>
-            <h2>Boda — Ana &amp; Carlos</h2>
-            <p class="sub">15 ago 2026 · Salón Jardín · 120 invitados · <span class="pill accent">Contract</span></p>
-          </div>
-          <button class="btn ghost">Editar evento</button>
-        </div>
-        <div class="stat-row">
-          <div class="stat-card">
-            <div class="k">Depósito</div>
-            <div class="v mono">$5,000</div>
-            <span class="pill good">Pagado</span>
-          </div>
-          <div class="stat-card">
-            <div class="k">Garantía</div>
-            <div class="v mono">$2,000</div>
-            <span class="pill pending">Pendiente</span>
-          </div>
-          <div class="stat-card">
-            <div class="k">Venue</div>
-            <div class="v">Salón Jardín</div>
-            <span class="pill accent">150 cap.</span>
-          </div>
-        </div>
-        <div>
-          <div class="tabline" style="margin-bottom:0.75rem;"><span class="active">Proveedores</span></div>
-          <div class="rows">
-            <div class="row">
-              <div><div class="primary">DJ Ramírez</div><div class="secondary">DJ</div></div>
-              <div class="mono">$3,500</div>
-              <span class="pill good">Confirmado</span>
+
+        <div class="view" data-view="agenda">
+          <div class="toolbar">
+            <div class="day-strip">
+              <button type="button"><span>Lun</span><span class="num mono">11</span></button>
+              <button type="button"><span>Mar</span><span class="num mono">12</span></button>
+              <button type="button"><span>Mié</span><span class="num mono">13</span></button>
+              <button type="button" class="active"><span>Jue</span><span class="num mono">14</span></button>
+              <button type="button"><span>Vie</span><span class="num mono">15</span></button>
+              <button type="button"><span>Sáb</span><span class="num mono">16</span></button>
+              <button type="button"><span>Dom</span><span class="num mono">17</span></button>
             </div>
-            <div class="row">
-              <div><div class="primary">Catering Fiesta</div><div class="secondary">Catering</div></div>
-              <div class="mono">$8,000</div>
+            <div class="hours-note">
+              Horario: <strong class="mono">09:00–19:00</strong> · configurable en Ajustes
+            </div>
+          </div>
+          <div class="legend">
+            <span class="legend-item"><span class="swatch free"></span>Libre</span>
+            <span class="legend-item"><span class="swatch confirmed"></span>Confirmada</span>
+            <span class="legend-item"><span class="swatch progress"></span>En curso</span>
+            <span class="legend-item"><span class="swatch done"></span>Completada</span>
+            <span class="legend-item"><span class="swatch cancelled"></span>Cancelada</span>
+            <span class="legend-item"><span class="swatch closed"></span>Fuera de horario</span>
+          </div>
+          <div class="board">
+            <div class="board-scroll">
+              <div class="grid">
+                <div class="grid-head">
+                  <div class="corner"></div>
+                  <div class="worker"><div class="name">Ana Ruiz</div><div class="role">Estilista</div></div>
+                  <div class="worker"><div class="name">Bruno Vega</div><div class="role">Colorista</div></div>
+                  <div class="worker"><div class="name">Carla Soto</div><div class="role">Manicurista · turno tarde</div></div>
+                  <div class="worker add-worker"><a href="#">+ Gestionar personal</a></div>
+                </div>
+                <div class="hour-gutter">
+                  <div class="tick mono">09:00</div><div class="tick mono">10:00</div><div class="tick mono">11:00</div>
+                  <div class="tick mono">12:00</div><div class="tick mono">13:00</div><div class="tick mono">14:00</div>
+                  <div class="tick mono">15:00</div><div class="tick mono">16:00</div><div class="tick mono">17:00</div><div class="tick mono">18:00</div>
+                </div>
+                <div class="column" data-worker="Ana Ruiz">
+                  <div class="row-line" data-time="09:00"></div><div class="row-line" data-time="10:00"></div><div class="row-line" data-time="11:00"></div>
+                  <div class="row-line" data-time="12:00"></div><div class="row-line" data-time="13:00"></div><div class="row-line" data-time="14:00"></div>
+                  <div class="row-line" data-time="15:00"></div><div class="row-line" data-time="16:00"></div><div class="row-line" data-time="17:00"></div><div class="row-line" data-time="18:00"></div>
+                  <div class="appt confirmed" style="top:60px; height:60px;">
+                    <div class="title">Corte — Ana Pérez</div>
+                    <div class="when mono">10:00–11:00</div>
+                  </div>
+                  <div class="appt done" style="top:180px; height:90px;">
+                    <div class="title">Corte y color — Luis Nava</div>
+                    <div class="when mono">12:00–13:30</div>
+                  </div>
+                </div>
+                <div class="column" data-worker="Bruno Vega">
+                  <div class="row-line" data-time="09:00"></div><div class="row-line" data-time="10:00"></div><div class="row-line" data-time="11:00"></div>
+                  <div class="row-line" data-time="12:00"></div><div class="row-line" data-time="13:00"></div><div class="row-line" data-time="14:00"></div>
+                  <div class="row-line" data-time="15:00"></div><div class="row-line" data-time="16:00"></div><div class="row-line" data-time="17:00"></div><div class="row-line" data-time="18:00"></div>
+                  <div class="appt progress" style="top:30px; height:60px;">
+                    <div class="title">Tinte — Marta Ruiz</div>
+                    <div class="when mono">09:30–10:30</div>
+                    <div class="tag">En curso</div>
+                  </div>
+                  <div class="appt cancelled" style="top:300px; height:60px;">
+                    <div class="title">Consulta — Jorge Díaz</div>
+                    <div class="when mono">14:00–15:00</div>
+                  </div>
+                </div>
+                <div class="column" data-worker="Carla Soto">
+                  <div class="row-line" data-time="09:00"></div><div class="row-line" data-time="10:00"></div><div class="row-line" data-time="11:00"></div>
+                  <div class="row-line" data-time="12:00"></div><div class="row-line" data-time="13:00"></div><div class="row-line" data-time="14:00"></div>
+                  <div class="row-line" data-time="15:00"></div><div class="row-line" data-time="16:00"></div><div class="row-line" data-time="17:00"></div><div class="row-line" data-time="18:00"></div>
+                  <div class="closed-block" style="top:0; height:180px;"><span>Sin turno hasta 12:00</span></div>
+                  <div class="appt confirmed" style="top:240px; height:60px;">
+                    <div class="title">Manicure — Ana Pérez</div>
+                    <div class="when mono">13:00–14:00</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="view" data-view="screen">
+          <div class="app-topbar">
+            <div>
+              <h2>Boda — Ana &amp; Carlos</h2>
+              <p class="sub">15 ago 2026 · Salón Jardín · 120 invitados · <span class="pill accent">Contract</span></p>
+            </div>
+            <button class="btn ghost">Editar evento</button>
+          </div>
+          <div class="stat-row">
+            <div class="stat-card">
+              <div class="k">Depósito</div>
+              <div class="v mono">$5,000</div>
+              <span class="pill good">Pagado</span>
+            </div>
+            <div class="stat-card">
+              <div class="k">Garantía</div>
+              <div class="v mono">$2,000</div>
               <span class="pill pending">Pendiente</span>
             </div>
+            <div class="stat-card">
+              <div class="k">Venue</div>
+              <div class="v">Salón Jardín</div>
+              <span class="pill accent">150 cap.</span>
+            </div>
+          </div>
+          <div>
+            <div class="tabline" style="margin-bottom:0.75rem;"><span class="active">Proveedores</span></div>
+            <div class="rows">
+              <div class="row">
+                <div><div class="primary">DJ Ramírez</div><div class="secondary">DJ</div></div>
+                <div class="mono">$3,500</div>
+                <span class="pill good">Confirmado</span>
+              </div>
+              <div class="row">
+                <div><div class="primary">Catering Fiesta</div><div class="secondary">Catering</div></div>
+                <div class="mono">$8,000</div>
+                <span class="pill pending">Pendiente</span>
+              </div>
+            </div>
           </div>
         </div>
+
       </main>
     </div>
+
+    <div class="popover" hidden="hidden">
+      <div class="popover-head">
+        <span class="popover-context mono"></span>
+        <button type="button" class="popover-close" aria-label="Cerrar">&times;</button>
+      </div>
+      <div class="popover-options">
+        <button type="button" class="popover-option">
+          <span class="opt-title">Cita</span>
+          <span class="opt-sub">Agenda un servicio con un cliente</span>
+        </button>
+        <button type="button" class="popover-option">
+          <span class="opt-title">Actividad</span>
+          <span class="opt-sub">Bloquea este horario — junta, descanso, tarea interna</span>
+        </button>
+      </div>
+      <p class="popover-closed-msg" hidden="hidden"></p>
+    </div>
+
     <div class="rationale">
-      <strong>Por qué así:</strong> depósito y garantía son dos obligaciones distintas (una no-reembolsable, otra sí) — por eso van en tarjetas separadas con su propio pill de estado, no como una sola línea de "pago". El modo (Simple/Contract) es un pill junto al título porque cambia qué campos existen debajo.
+      <strong>Por qué así:</strong> depósito y garantía son dos obligaciones distintas (una no-reembolsable, otra sí) — por eso van en tarjetas separadas con su propio pill de estado. "Agenda" en el nav muestra el mismo calendario compartido, aquí en violeta porque este panel es Events.
     </div>
   </div>
 
@@ -1278,11 +1279,16 @@
       <span class="sector-name">Distribution &amp; Logistics</span>
       <span class="screen-ref mono">GET /api/deliveryroutes/{id}</span>
     </div>
+
+    <input type="radio" name="logistics-nav" id="logistics-nav-agenda" class="view-radio">
+    <input type="radio" name="logistics-nav" id="logistics-nav-screen" class="view-radio" checked="checked">
+
     <div class="app-frame">
       <aside class="app-sidebar">
         <div class="app-brand"><span class="mark"></span><span class="name">MTA</span></div>
         <ul class="app-nav">
-          <li class="active"><a href="#">Rutas</a></li>
+          <li><label for="logistics-nav-agenda">Agenda</label></li>
+          <li><label for="logistics-nav-screen">Rutas</label></li>
           <li><a href="#">Vehículos</a></li>
           <li><a href="#">Productos</a></li>
           <li><a href="#">Clientes</a></li>
@@ -1290,48 +1296,151 @@
         </ul>
       </aside>
       <main class="app-main">
-        <div class="app-topbar">
+
+        <div class="view" data-view="agenda">
+          <div class="toolbar">
+            <div class="day-strip">
+              <button type="button"><span>Lun</span><span class="num mono">11</span></button>
+              <button type="button"><span>Mar</span><span class="num mono">12</span></button>
+              <button type="button"><span>Mié</span><span class="num mono">13</span></button>
+              <button type="button" class="active"><span>Jue</span><span class="num mono">14</span></button>
+              <button type="button"><span>Vie</span><span class="num mono">15</span></button>
+              <button type="button"><span>Sáb</span><span class="num mono">16</span></button>
+              <button type="button"><span>Dom</span><span class="num mono">17</span></button>
+            </div>
+            <div class="hours-note">
+              Horario: <strong class="mono">09:00–19:00</strong> · configurable en Ajustes
+            </div>
+          </div>
+          <div class="legend">
+            <span class="legend-item"><span class="swatch free"></span>Libre</span>
+            <span class="legend-item"><span class="swatch confirmed"></span>Confirmada</span>
+            <span class="legend-item"><span class="swatch progress"></span>En curso</span>
+            <span class="legend-item"><span class="swatch done"></span>Completada</span>
+            <span class="legend-item"><span class="swatch cancelled"></span>Cancelada</span>
+            <span class="legend-item"><span class="swatch closed"></span>Fuera de horario</span>
+          </div>
+          <div class="board">
+            <div class="board-scroll">
+              <div class="grid">
+                <div class="grid-head">
+                  <div class="corner"></div>
+                  <div class="worker"><div class="name">Ana Ruiz</div><div class="role">Conductora</div></div>
+                  <div class="worker"><div class="name">Bruno Vega</div><div class="role">Conductor</div></div>
+                  <div class="worker"><div class="name">Carla Soto</div><div class="role">Conductora · turno tarde</div></div>
+                  <div class="worker add-worker"><a href="#">+ Gestionar personal</a></div>
+                </div>
+                <div class="hour-gutter">
+                  <div class="tick mono">09:00</div><div class="tick mono">10:00</div><div class="tick mono">11:00</div>
+                  <div class="tick mono">12:00</div><div class="tick mono">13:00</div><div class="tick mono">14:00</div>
+                  <div class="tick mono">15:00</div><div class="tick mono">16:00</div><div class="tick mono">17:00</div><div class="tick mono">18:00</div>
+                </div>
+                <div class="column" data-worker="Ana Ruiz">
+                  <div class="row-line" data-time="09:00"></div><div class="row-line" data-time="10:00"></div><div class="row-line" data-time="11:00"></div>
+                  <div class="row-line" data-time="12:00"></div><div class="row-line" data-time="13:00"></div><div class="row-line" data-time="14:00"></div>
+                  <div class="row-line" data-time="15:00"></div><div class="row-line" data-time="16:00"></div><div class="row-line" data-time="17:00"></div><div class="row-line" data-time="18:00"></div>
+                  <div class="appt confirmed" style="top:60px; height:60px;">
+                    <div class="title">Ruta centro — Tienda Don Pepe</div>
+                    <div class="when mono">10:00–11:00</div>
+                  </div>
+                  <div class="appt done" style="top:180px; height:90px;">
+                    <div class="title">Entrega — Luis Nava</div>
+                    <div class="when mono">12:00–13:30</div>
+                  </div>
+                </div>
+                <div class="column" data-worker="Bruno Vega">
+                  <div class="row-line" data-time="09:00"></div><div class="row-line" data-time="10:00"></div><div class="row-line" data-time="11:00"></div>
+                  <div class="row-line" data-time="12:00"></div><div class="row-line" data-time="13:00"></div><div class="row-line" data-time="14:00"></div>
+                  <div class="row-line" data-time="15:00"></div><div class="row-line" data-time="16:00"></div><div class="row-line" data-time="17:00"></div><div class="row-line" data-time="18:00"></div>
+                  <div class="appt progress" style="top:30px; height:60px;">
+                    <div class="title">Ruta norte — Marta Ruiz</div>
+                    <div class="when mono">09:30–10:30</div>
+                    <div class="tag">En curso</div>
+                  </div>
+                  <div class="appt cancelled" style="top:300px; height:60px;">
+                    <div class="title">Entrega — Jorge Díaz</div>
+                    <div class="when mono">14:00–15:00</div>
+                  </div>
+                </div>
+                <div class="column" data-worker="Carla Soto">
+                  <div class="row-line" data-time="09:00"></div><div class="row-line" data-time="10:00"></div><div class="row-line" data-time="11:00"></div>
+                  <div class="row-line" data-time="12:00"></div><div class="row-line" data-time="13:00"></div><div class="row-line" data-time="14:00"></div>
+                  <div class="row-line" data-time="15:00"></div><div class="row-line" data-time="16:00"></div><div class="row-line" data-time="17:00"></div><div class="row-line" data-time="18:00"></div>
+                  <div class="closed-block" style="top:0; height:180px;"><span>Sin turno hasta 12:00</span></div>
+                  <div class="appt confirmed" style="top:240px; height:60px;">
+                    <div class="title">Entrega — Ana Pérez</div>
+                    <div class="when mono">13:00–14:00</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="view" data-view="screen">
+          <div class="app-topbar">
+            <div>
+              <h2>Ruta — 20 ago 2026</h2>
+              <p class="sub">Empleado Test · Vehículo ABC-123 · <span class="pill accent">En curso</span></p>
+            </div>
+            <button class="btn ghost">Cerrar ruta</button>
+          </div>
           <div>
-            <h2>Ruta — 20 ago 2026</h2>
-            <p class="sub">Empleado Test · Vehículo ABC-123 · <span class="pill accent">En curso</span></p>
-          </div>
-          <button class="btn ghost">Cerrar ruta</button>
-        </div>
-        <div>
-          <div class="tabline" style="margin-bottom:0.75rem;"><span class="active">Paradas</span></div>
-          <div class="stops">
-            <div class="stop">
-              <div class="seq">1</div>
-              <div><div class="name">Tienda Don Pepe</div><div class="addr">venta ligada · $350</div></div>
-              <span class="pill good">Entregado</span>
-            </div>
-            <div class="stop">
-              <div class="seq">2</div>
-              <div><div class="name">Av. Siempre Viva 742</div><div class="addr">sin cliente registrado</div></div>
-              <span class="pill pending">Pendiente</span>
+            <div class="tabline" style="margin-bottom:0.75rem;"><span class="active">Paradas</span></div>
+            <div class="stops">
+              <div class="stop">
+                <div class="seq">1</div>
+                <div><div class="name">Tienda Don Pepe</div><div class="addr">venta ligada · $350</div></div>
+                <span class="pill good">Entregado</span>
+              </div>
+              <div class="stop">
+                <div class="seq">2</div>
+                <div><div class="name">Av. Siempre Viva 742</div><div class="addr">sin cliente registrado</div></div>
+                <span class="pill pending">Pendiente</span>
+              </div>
             </div>
           </div>
-        </div>
-        <div>
-          <div class="tabline" style="margin-bottom:0.75rem;"><span class="active">Manifiesto</span></div>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>Producto</th><th>Cargado</th><th>Entregado</th><th>Devuelto</th></tr></thead>
-              <tbody>
-                <tr>
-                  <td class="strong">Garrafón Agua</td>
-                  <td class="mono">50</td>
-                  <td class="mono">10</td>
-                  <td class="mono">5</td>
-                </tr>
-              </tbody>
-            </table>
+          <div>
+            <div class="tabline" style="margin-bottom:0.75rem;"><span class="active">Manifiesto</span></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Producto</th><th>Cargado</th><th>Entregado</th><th>Devuelto</th></tr></thead>
+                <tbody>
+                  <tr>
+                    <td class="strong">Garrafón Agua</td>
+                    <td class="mono">50</td>
+                    <td class="mono">10</td>
+                    <td class="mono">5</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
+
       </main>
     </div>
+
+    <div class="popover" hidden="hidden">
+      <div class="popover-head">
+        <span class="popover-context mono"></span>
+        <button type="button" class="popover-close" aria-label="Cerrar">&times;</button>
+      </div>
+      <div class="popover-options">
+        <button type="button" class="popover-option">
+          <span class="opt-title">Cita</span>
+          <span class="opt-sub">Agenda un servicio con un cliente</span>
+        </button>
+        <button type="button" class="popover-option">
+          <span class="opt-title">Actividad</span>
+          <span class="opt-sub">Bloquea este horario — junta, descanso, tarea interna</span>
+        </button>
+      </div>
+      <p class="popover-closed-msg" hidden="hidden"></p>
+    </div>
+
     <div class="rationale">
-      <strong>Por qué así:</strong> paradas y manifiesto son dos preguntas distintas — "¿a dónde voy?" vs. "¿qué traigo cargado?" — por eso son dos bloques separados en vez de una sola tabla gigante. El número de secuencia en cada parada importa (es el orden real de la ruta), así que va como badge circular, no como columna de tabla.
+      <strong>Por qué así:</strong> paradas y manifiesto son dos preguntas distintas — "¿a dónde voy?" vs. "¿qué traigo cargado?". "Agenda" en el nav muestra el mismo calendario compartido, aquí en azul porque este panel es Logistics.
     </div>
   </div>
 
@@ -1341,69 +1450,181 @@
       <span class="sector-name">Technical Workshops</span>
       <span class="screen-ref mono">GET /api/assetrecords?assetId=</span>
     </div>
+
+    <input type="radio" name="workshops-nav" id="workshops-nav-agenda" class="view-radio">
+    <input type="radio" name="workshops-nav" id="workshops-nav-screen" class="view-radio" checked="checked">
+
     <div class="app-frame">
       <aside class="app-sidebar">
         <div class="app-brand"><span class="mark"></span><span class="name">MTA</span></div>
         <ul class="app-nav">
-          <li><a href="#">Agenda</a></li>
+          <li><label for="workshops-nav-agenda">Agenda</label></li>
           <li><a href="#">Clientes</a></li>
-          <li class="active"><a href="#">Activos</a></li>
+          <li><label for="workshops-nav-screen">Activos</label></li>
           <li><a href="#">Órdenes</a></li>
           <li><a href="#">Ventas</a></li>
         </ul>
       </aside>
       <main class="app-main">
-        <div class="app-topbar">
-          <div>
-            <h2>ABC-9988 — Nissan NP300</h2>
-            <p class="sub">Ana Pérez · kilometraje actual: <strong class="mono">15,000 km</strong></p>
-          </div>
-          <button class="btn">+ Nuevo registro</button>
-        </div>
-        <div class="stat-row">
-          <div class="stat-card"><div class="k">Kilometraje</div><div class="v mono">15,000 km</div></div>
-          <div class="stat-card"><div class="k">Último servicio</div><div class="v">Frenos</div></div>
-          <div class="stat-card"><div class="k">Próximo sugerido</div><div class="v mono">20,000 km</div></div>
-        </div>
-        <div class="history">
-          <div class="history-item">
-            <div class="date">07 jul 2026</div>
-            <div class="body">
-              <div class="title">Frenos</div>
-              <div class="meta">15,000 km · partes: <strong>balatas delanteras</strong> · Empleado Test</div>
+
+        <div class="view" data-view="agenda">
+          <div class="toolbar">
+            <div class="day-strip">
+              <button type="button"><span>Lun</span><span class="num mono">11</span></button>
+              <button type="button"><span>Mar</span><span class="num mono">12</span></button>
+              <button type="button"><span>Mié</span><span class="num mono">13</span></button>
+              <button type="button" class="active"><span>Jue</span><span class="num mono">14</span></button>
+              <button type="button"><span>Vie</span><span class="num mono">15</span></button>
+              <button type="button"><span>Sáb</span><span class="num mono">16</span></button>
+              <button type="button"><span>Dom</span><span class="num mono">17</span></button>
+            </div>
+            <div class="hours-note">
+              Horario: <strong class="mono">09:00–19:00</strong> · configurable en Ajustes
             </div>
           </div>
-          <div class="history-item">
-            <div class="date">01 jun 2026</div>
-            <div class="body">
-              <div class="title">Cambio de aceite</div>
-              <div class="meta">10,000 km · partes: <strong>filtro de aceite, aceite 5W30</strong> · Empleado Test</div>
+          <div class="legend">
+            <span class="legend-item"><span class="swatch free"></span>Libre</span>
+            <span class="legend-item"><span class="swatch confirmed"></span>Confirmada</span>
+            <span class="legend-item"><span class="swatch progress"></span>En curso</span>
+            <span class="legend-item"><span class="swatch done"></span>Completada</span>
+            <span class="legend-item"><span class="swatch cancelled"></span>Cancelada</span>
+            <span class="legend-item"><span class="swatch closed"></span>Fuera de horario</span>
+          </div>
+          <div class="board">
+            <div class="board-scroll">
+              <div class="grid">
+                <div class="grid-head">
+                  <div class="corner"></div>
+                  <div class="worker"><div class="name">Ana Ruiz</div><div class="role">Mecánica</div></div>
+                  <div class="worker"><div class="name">Bruno Vega</div><div class="role">Mecánico</div></div>
+                  <div class="worker"><div class="name">Carla Soto</div><div class="role">Mecánica · turno tarde</div></div>
+                  <div class="worker add-worker"><a href="#">+ Gestionar personal</a></div>
+                </div>
+                <div class="hour-gutter">
+                  <div class="tick mono">09:00</div><div class="tick mono">10:00</div><div class="tick mono">11:00</div>
+                  <div class="tick mono">12:00</div><div class="tick mono">13:00</div><div class="tick mono">14:00</div>
+                  <div class="tick mono">15:00</div><div class="tick mono">16:00</div><div class="tick mono">17:00</div><div class="tick mono">18:00</div>
+                </div>
+                <div class="column" data-worker="Ana Ruiz">
+                  <div class="row-line" data-time="09:00"></div><div class="row-line" data-time="10:00"></div><div class="row-line" data-time="11:00"></div>
+                  <div class="row-line" data-time="12:00"></div><div class="row-line" data-time="13:00"></div><div class="row-line" data-time="14:00"></div>
+                  <div class="row-line" data-time="15:00"></div><div class="row-line" data-time="16:00"></div><div class="row-line" data-time="17:00"></div><div class="row-line" data-time="18:00"></div>
+                  <div class="appt confirmed" style="top:60px; height:60px;">
+                    <div class="title">Servicio — Ana Pérez</div>
+                    <div class="when mono">10:00–11:00</div>
+                  </div>
+                  <div class="appt done" style="top:180px; height:90px;">
+                    <div class="title">Diagnóstico — Luis Nava</div>
+                    <div class="when mono">12:00–13:30</div>
+                  </div>
+                </div>
+                <div class="column" data-worker="Bruno Vega">
+                  <div class="row-line" data-time="09:00"></div><div class="row-line" data-time="10:00"></div><div class="row-line" data-time="11:00"></div>
+                  <div class="row-line" data-time="12:00"></div><div class="row-line" data-time="13:00"></div><div class="row-line" data-time="14:00"></div>
+                  <div class="row-line" data-time="15:00"></div><div class="row-line" data-time="16:00"></div><div class="row-line" data-time="17:00"></div><div class="row-line" data-time="18:00"></div>
+                  <div class="appt progress" style="top:30px; height:60px;">
+                    <div class="title">Frenos — Marta Ruiz</div>
+                    <div class="when mono">09:30–10:30</div>
+                    <div class="tag">En curso</div>
+                  </div>
+                  <div class="appt cancelled" style="top:300px; height:60px;">
+                    <div class="title">Revisión — Jorge Díaz</div>
+                    <div class="when mono">14:00–15:00</div>
+                  </div>
+                </div>
+                <div class="column" data-worker="Carla Soto">
+                  <div class="row-line" data-time="09:00"></div><div class="row-line" data-time="10:00"></div><div class="row-line" data-time="11:00"></div>
+                  <div class="row-line" data-time="12:00"></div><div class="row-line" data-time="13:00"></div><div class="row-line" data-time="14:00"></div>
+                  <div class="row-line" data-time="15:00"></div><div class="row-line" data-time="16:00"></div><div class="row-line" data-time="17:00"></div><div class="row-line" data-time="18:00"></div>
+                  <div class="closed-block" style="top:0; height:180px;"><span>Sin turno hasta 12:00</span></div>
+                  <div class="appt confirmed" style="top:240px; height:60px;">
+                    <div class="title">Cambio de aceite — Ana Pérez</div>
+                    <div class="when mono">13:00–14:00</div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
+
+        <div class="view" data-view="screen">
+          <div class="app-topbar">
+            <div>
+              <h2>ABC-9988 — Nissan NP300</h2>
+              <p class="sub">Ana Pérez · kilometraje actual: <strong class="mono">15,000 km</strong></p>
+            </div>
+            <button class="btn">+ Nuevo registro</button>
+          </div>
+          <div class="stat-row">
+            <div class="stat-card"><div class="k">Kilometraje</div><div class="v mono">15,000 km</div></div>
+            <div class="stat-card"><div class="k">Último servicio</div><div class="v">Frenos</div></div>
+            <div class="stat-card"><div class="k">Próximo sugerido</div><div class="v mono">20,000 km</div></div>
+          </div>
+          <div class="history">
+            <div class="history-item">
+              <div class="date">07 jul 2026</div>
+              <div class="body">
+                <div class="title">Frenos</div>
+                <div class="meta">15,000 km · partes: <strong>balatas delanteras</strong> · Empleado Test</div>
+              </div>
+            </div>
+            <div class="history-item">
+              <div class="date">01 jun 2026</div>
+              <div class="body">
+                <div class="title">Cambio de aceite</div>
+                <div class="meta">10,000 km · partes: <strong>filtro de aceite, aceite 5W30</strong> · Empleado Test</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </main>
     </div>
+
+    <div class="popover" hidden="hidden">
+      <div class="popover-head">
+        <span class="popover-context mono"></span>
+        <button type="button" class="popover-close" aria-label="Cerrar">&times;</button>
+      </div>
+      <div class="popover-options">
+        <button type="button" class="popover-option">
+          <span class="opt-title">Cita</span>
+          <span class="opt-sub">Agenda un servicio con un cliente</span>
+        </button>
+        <button type="button" class="popover-option">
+          <span class="opt-title">Actividad</span>
+          <span class="opt-sub">Bloquea este horario — junta, descanso, tarea interna</span>
+        </button>
+      </div>
+      <p class="popover-closed-msg" hidden="hidden"></p>
+    </div>
+
     <div class="rationale">
-      <strong>Por qué así:</strong> las tres cifras de arriba (kilometraje, último servicio, próximo sugerido) son lo que un mecánico necesita saber antes de abrir el historial completo — por eso van como stat cards encima del timeline, no enterradas dentro de cada registro.
+      <strong>Por qué así:</strong> las tres cifras de arriba (kilometraje, último servicio, próximo sugerido) son lo que un mecánico necesita antes de abrir el historial completo. "Agenda" en el nav muestra el mismo calendario compartido, aquí en verde-oxidado porque este panel es Workshops.
     </div>
   </div>
 
   <footer>
-    UI por sector — MasterTrackAgenda · El color de acento cambia por sector (y en la Agenda, según el módulo activo); la estructura de la app (sidebar, tipografía, spacing) se mantiene igual — es un producto, no cuatro apps distintas.
+    UI por sector — MasterTrackAgenda · El color de acento cambia por sector, incluida la Agenda cuando la abres desde el nav de cada uno; la estructura de la app (sidebar, tipografía, spacing) se mantiene igual — es un producto, no cuatro apps distintas.
   </footer>
 
 </div>
 
 <script>
   (function () {
-    var popover = document.getElementById("slot-popover");
-    var contextEl = document.getElementById("popover-context");
-    var optionsEl = document.getElementById("popover-options");
-    var closedMsgEl = document.getElementById("popover-closed-msg");
     var POPOVER_WIDTH = 250;
     var MARGIN = 10;
+    var openPopover = null;
 
-    function positionNear(rect) {
+    function closePopover() {
+      if (openPopover) {
+        openPopover.hidden = true;
+        openPopover = null;
+      }
+    }
+    window.closeSlotPopover = closePopover;
+
+    function positionNear(popover, rect) {
       var left = rect.right + MARGIN;
       if (left + POPOVER_WIDTH > window.innerWidth - MARGIN) {
         left = rect.left - POPOVER_WIDTH - MARGIN;
@@ -1416,29 +1637,37 @@
       popover.style.top = top + "px";
     }
 
+    function getPopoverFor(el) {
+      var panel = el.closest(".panel");
+      return panel ? panel.querySelector(".popover") : null;
+    }
+
     function openFree(cell) {
+      var popover = getPopoverFor(cell);
+      if (!popover) return;
       var worker = cell.closest(".column").dataset.worker;
       var time = cell.dataset.time;
-      contextEl.textContent = worker + " · jue 14 · " + time;
-      optionsEl.hidden = false;
-      closedMsgEl.hidden = true;
-      positionNear(cell.getBoundingClientRect());
+      popover.querySelector(".popover-context").textContent = worker + " · jue 14 · " + time;
+      popover.querySelector(".popover-options").hidden = false;
+      popover.querySelector(".popover-closed-msg").hidden = true;
+      positionNear(popover, cell.getBoundingClientRect());
       popover.hidden = false;
+      openPopover = popover;
     }
 
     function openClosed(block) {
+      var popover = getPopoverFor(block);
+      if (!popover) return;
       var worker = block.closest(".column").dataset.worker;
-      contextEl.textContent = worker + " · fuera de horario";
-      optionsEl.hidden = true;
-      closedMsgEl.hidden = false;
-      closedMsgEl.textContent = "No se puede agendar aquí: " + worker + " no tiene turno asignado en este horario.";
-      positionNear(block.getBoundingClientRect());
+      popover.querySelector(".popover-context").textContent = worker + " · fuera de horario";
+      popover.querySelector(".popover-options").hidden = true;
+      var msg = popover.querySelector(".popover-closed-msg");
+      msg.hidden = false;
+      msg.textContent = "No se puede agendar aquí: " + worker + " no tiene turno asignado en este horario.";
+      positionNear(popover, block.getBoundingClientRect());
       popover.hidden = false;
+      openPopover = popover;
     }
-
-    window.closeSlotPopover = function () {
-      popover.hidden = true;
-    };
 
     Array.prototype.forEach.call(document.querySelectorAll(".row-line[data-time]"), function (cell) {
       cell.setAttribute("tabindex", "0");
@@ -1465,18 +1694,18 @@
       });
     });
 
-    Array.prototype.forEach.call(document.querySelectorAll(".popover-option"), function (btn) {
-      btn.addEventListener("click", function () { window.closeSlotPopover(); });
+    Array.prototype.forEach.call(document.querySelectorAll(".popover-option, .popover-close"), function (btn) {
+      btn.addEventListener("click", closePopover);
     });
 
     document.addEventListener("click", function (e) {
-      if (!popover.hidden && !popover.contains(e.target) && !e.target.closest(".row-line") && !e.target.closest(".closed-block")) {
-        window.closeSlotPopover();
+      if (openPopover && !openPopover.contains(e.target) && !e.target.closest(".row-line") && !e.target.closest(".closed-block")) {
+        closePopover();
       }
     });
 
     document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape") { window.closeSlotPopover(); }
+      if (e.key === "Escape") { closePopover(); }
     });
   })();
 </script>
